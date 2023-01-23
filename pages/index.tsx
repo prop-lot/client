@@ -7,6 +7,7 @@ import { useAccount } from "wagmi";
 import { useLazyQuery } from "@apollo/client";
 import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import IdeaRow from "@/components/IdeaRow";
+import UIFilter from "@/components/UIFilter";
 
 export default function Home() {
   const { address, isConnecting, isDisconnected } = useAccount();
@@ -54,6 +55,21 @@ export default function Home() {
     refetch({ options: { requestUUID: v4(), filters: appliedFilters } });
   };
 
+  const handleUpdateFilters = (updatedFilters: string[], filterId: string) => {
+    /*
+      Keep previously applied filters, remove any that match the filterId value.
+      Then add the selection of updatedFilters and remove the __typename property.
+    */
+    const selectedfilters: string[] = [
+      ...appliedFilters.filter((f: string) => {
+        return !f.includes(`${filterId}=`);
+      }),
+      ...updatedFilters,
+    ];
+
+    refetch({ options: { requestUUID: v4(), filters: selectedfilters } });
+  };
+
   const nounBalance = 5; // todo: replace
 
   return (
@@ -80,6 +96,31 @@ export default function Home() {
           <div className="my-12 flex flex-row space-x-4 items-center">
             <span className="w-52 h-52 border bg-gray-200 block rounded-lg"></span>
             <h3 className="text-3xl font-bold">Nouns PropLot</h3>
+          </div>
+          <div className="flex justify-between mb-4 items-center">
+            <div className="flex flex-row space-x-4">
+              {data?.propLot?.sortFilter && (
+                <UIFilter
+                  filter={data.propLot.sortFilter}
+                  updateFilters={handleUpdateFilters}
+                />
+              )}
+              {data?.propLot?.tagFilter && (
+                <UIFilter
+                  filter={data.propLot.tagFilter}
+                  updateFilters={handleUpdateFilters}
+                />
+              )}
+              {data?.propLot?.dateFilter && (
+                <UIFilter
+                  filter={data.propLot.dateFilter}
+                  updateFilters={handleUpdateFilters}
+                />
+              )}
+            </div>
+            <button className="bg-gray-700 text-white rounded-lg px-3 py-2">
+              New Submission
+            </button>
           </div>
         </section>
 
