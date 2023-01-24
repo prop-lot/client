@@ -1,6 +1,4 @@
 import prisma from "@/lib/prisma";
-import { signAccessToken } from "../utils/jwt";
-import { generateNonce } from "siwe";
 
 class AuthService {
   static async register(data: any) {
@@ -31,14 +29,6 @@ class AuthService {
     }
   }
 
-  static async getNonce() {
-    try {
-      return generateNonce();
-    } catch (e: any) {
-      throw e;
-    }
-  }
-
   static async login(data: { wallet: string; lilnounCount: number }) {
     const { wallet } = data;
     try {
@@ -54,11 +44,7 @@ class AuthService {
         user = await this.update(data);
       }
 
-      const accessToken = await signAccessToken({
-        wallet: user.wallet,
-        lilnounCount: user.lilnounCount,
-      });
-      return { ...user, accessToken };
+      return { ...user };
     } catch (e: any) {
       throw e;
     }
