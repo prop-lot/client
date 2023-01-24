@@ -24,7 +24,7 @@ const IdeaVoteControls = ({
 }) => {
   const { id, votecount: voteCount, closed, votes } = idea;
   const { account, library: provider } = useEthers();
-  const { getAuthHeader, isLoggedIn, triggerSignIn } = useAuth();
+  const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
   // Store voteCount in state that we can mutate for optimistic updates
   const [calculatedVoteCount, setCalculatedVoteCount] = useState(voteCount);
@@ -40,11 +40,7 @@ const IdeaVoteControls = ({
     });
 
   const getVoteMutationArgs = (direction: number) => ({
-    context: {
-      headers: {
-        ...getAuthHeader(),
-      },
-    },
+    context: {},
     variables: {
       options: {
         ideaId: id,
@@ -54,11 +50,15 @@ const IdeaVoteControls = ({
   });
 
   const vote = async (direction: number) => {
-    if (!isLoggedIn()) {
+    if (!isLoggedIn) {
       try {
-        await triggerSignIn();
-        submitVoteMutation(getVoteMutationArgs(direction));
-      } catch (e) {}
+        const { success } = await triggerSignIn();
+        if (success) {
+          submitVoteMutation(getVoteMutationArgs(direction));
+        }
+      } catch (e) {
+        console.log(e)
+      }
     } else {
       submitVoteMutation(getVoteMutationArgs(direction));
     }
