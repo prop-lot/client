@@ -1,130 +1,128 @@
-import { useContext, createContext, ReactNode } from "react";
-import { useEthers } from "@usedapp/core";
-import Cookies from "js-cookie";
+import { useContext, createContext, ReactNode, useState, useEffect } from "react";
+import { useAccount, useNetwork, useSignMessage } from 'wagmi'
 import { SiweMessage } from "siwe";
-import { useApiError } from "./useApiError";
 
 interface AuthCtx {
-  isLoggedIn: () => boolean;
-  triggerSignIn: () => Promise<void>;
+  isLoggedIn: boolean;
+  triggerSignIn: () => Promise<any>;
   logout: () => void;
-  getAuthHeader: () => { ["Authorization"]: string } | undefined;
-  getAuthToken: () => string | undefined;
 }
 
 const AuthContext = createContext<AuthCtx>({
-  isLoggedIn: () => false,
+  isLoggedIn: false,
   triggerSignIn: async () => undefined,
   logout: () => undefined,
-  getAuthHeader: () => undefined,
-  getAuthToken: () => undefined,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const HOST = process.env.API_HOST;
+  const [state, setState] = useState<{
+    loading?: boolean
+    nonce?: string
+    error?: Error
+    currentUser?: string
+  }>({})
 
-  const getAuthToken = () => Cookies.get("lil-noun-token");
-  const getAuthHeader = () => ({ Authorization: `Bearer ${getAuthToken()}` });
-
-  const { library, account, chainId } = useEthers();
-  const { setError } = useApiError();
-
-  // Create message for user to sign to authenticate.
-  const createSiweMessage = async (
-    address: string | undefined,
-    statement: string,
-    chainId?: number
-  ) => {
+  const fetchNonce = async () => {
     try {
-      const res = await fetch(`${HOST}/nonce`);
-      const { data } = await res.json();
+      const nonceRes = await fetch('/api/nonce')
+      const nonce = await nonceRes.text()
+      setState((x) => ({ ...x, nonce }))
+    } catch (error) {
+      setState((x) => ({ ...x, error: error as Error }))
+    }
+  }
 
+  // Pre-fetch random nonce when button is rendered
+  // to ensure deep linking works for WalletConnect
+  // users on iOS when signing the SIWE message
+  useEffect(() => {
+    fetchNonce()
+  }, [])
+
+  // Fetch user when:
+  useEffect(() => {
+    const handler = async () => {
+      try {
+        const res = await fetch('/api/current-user')
+        const json = await res.json()
+        console.log('CURRENT USER', json.address)
+        setState((x) => ({ ...x, currentUser: json.address }))
+      } catch (_error) {}
+    }
+    // 1. page loads
+    handler()
+
+    // 2. window is focused (in case user logs out of another window)
+    window.addEventListener('focus', handler)
+    return () => window.removeEventListener('focus', handler)
+  }, [])
+
+  const { address } = useAccount()
+  const { chain } = useNetwork()
+  const { signMessageAsync } = useSignMessage()
+
+  const signIn = async () => {
+    try {
+      const chainId = chain?.id
+      if (!address || !chainId) {
+        throw new Error('Web3 provider not available')
+      }
+
+      setState((x) => ({ ...x, loading: true }))
+      // Create SIWE message with pre-fetched nonce and sign with wallet
       const message = new SiweMessage({
         domain: window.location.host,
         address,
-        statement,
+        statement: 'Sign in with Ethereum to the app.',
         uri: window.location.origin,
-        version: "1",
+        version: '1',
         chainId,
-        nonce: data.nonce,
-      });
-      return { message: message.prepareMessage(), nonce: data.nonce };
-    } catch (e: any) {
-      setError({
-        message: e.message || "Failed to generate message",
-        status: e.status,
-      });
-    }
-  };
+        nonce: state.nonce,
+      })
+      const signature = await signMessageAsync({
+        message: message.prepareMessage(),
+      })
 
-  // Sign in with ethereum flow. Need to auth users so we know the signer is who they claim to be.
-  const signInWithEthereum = async () => {
-    try {
-      if (!account) {
-        throw new Error("Connect wallet");
-      }
-      // @ts-ignore
-      const signer = library?.getSigner();
-
-      const siweMessage = await createSiweMessage(
-        await signer?.getAddress(),
-        "Sign in with Ethereum to the app.",
-        chainId
-      );
-
-      if (!siweMessage?.message) {
-        throw new Error("Failed to generate message");
-      }
-
-      const signature = await signer?.signMessage(siweMessage?.message);
-
-      const res = await fetch(`${HOST}/login`, {
-        method: "POST",
+      // Verify signature
+      const verifyRes = await fetch('/api/login', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: siweMessage?.message,
-          signature,
-          nonce: siweMessage?.nonce,
-        }),
-      });
+        body: JSON.stringify({ message, signature }),
+      })
 
-      const data = await res.json();
-
-      if (res.status !== 200) {
-        throw new Error("Unauthorized");
+      if (!verifyRes.ok) {
+        throw new Error('Error verifying message')
       }
 
-      const one_hour = new Date(new Date().getTime() + 3600 * 1000);
-      Cookies.set("lil-noun-token", data.data.accessToken, {
-        expires: one_hour,
-      });
-
-      return data;
-    } catch (e: any) {
-      setError({ message: e.message || "Login Failed", status: e.status });
-      throw e;
+      setState((x) => ({ ...x, loading: false, currentUser: address }))
+      return { success: true }
+    } catch (error) {
+      setState((x) => ({ ...x, loading: false, nonce: undefined, error: error as Error }))
+      fetchNonce()
     }
-  };
+  }
 
-  const logout = () => {
-    if (!!getAuthToken()) {
-      Cookies.remove("lil-noun-token");
+  const logout = async () => {
+    try {
+      await fetch('/api/logout')
+      setState({})
+    } catch (_error) {
+      setState({})
     }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        isLoggedIn: () => !!getAuthToken(),
-        triggerSignIn: signInWithEthereum,
+        isLoggedIn: !!state.currentUser,
+        triggerSignIn: signIn,
         logout,
-        getAuthToken,
-        getAuthHeader,
       }}
-      children={children}
-    />
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
 
