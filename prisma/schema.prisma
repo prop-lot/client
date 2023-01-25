@@ -32,7 +32,6 @@ model Idea {
   communityId Int
   comments    Comment[]
   votes       Vote[]
-  votecount   Int       @default(value: 0) // Vote.direction * Vote.voter.lilnounCount
   tags        Tag[]
   tokenSupplyOnCreate Int? @default(value: 0) // token supply at time of Idea creation.
   deleted     Boolean @default(value: false)

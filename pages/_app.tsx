@@ -6,6 +6,7 @@ import { ApolloProvider } from "@apollo/client";
 import { client as ApolloClient } from "@/lib/apollo";
 
 import "../styles/globals.css";
+import { AuthProvider } from "@/hooks/useAuth";
 
 const alchemyId = process.env.ALCHEMY_ID;
 
@@ -21,7 +22,9 @@ export default function App({ Component, pageProps }: AppProps) {
     <ApolloProvider client={ApolloClient}>
       <WagmiConfig client={client}>
         <ConnectKitProvider>
-          <Component {...pageProps} />
+          <AuthProvider>
+            <Component {...pageProps} />
+          </AuthProvider>
         </ConnectKitProvider>
       </WagmiConfig>
     </ApolloProvider>
