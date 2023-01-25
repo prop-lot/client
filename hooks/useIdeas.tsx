@@ -2,6 +2,7 @@ import useSWR, { useSWRConfig, Fetcher } from "swr";
 import { useEffect, useState } from "react";
 import { useAuth } from "./useAuth";
 import { useApiError } from "./useApiError";
+import { useRouter } from "next/router";
 
 export interface VoteFormData {
   id: number;
@@ -133,6 +134,7 @@ export const useIdeas = () => {
   const HOST = process.env.API_HOST;
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
+  const router = useRouter();
   const { mutate } = useSWRConfig();
   const [sortBy, setSortBy] = useState(undefined);
 
@@ -310,6 +312,49 @@ export const useIdeas = () => {
       setError(error);
     }
   };
+
+  // Use to submit an idea
+  // const submitIdea = async ({
+  //   title,
+  //   tldr,
+  //   description,
+  //   tags,
+  // }: {
+  //   title: string;
+  //   tldr: string;
+  //   description: string;
+  //   tags?: string[];
+  // }) => {
+  //   try {
+  //     const res = await fetch(`${HOST}/ideas`, {
+  //       method: "POST",
+  //       headers: {
+  //         ...getAuthHeader(),
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         title,
+  //         tldr,
+  //         description,
+  //         tags,
+  //       }),
+  //     });
+
+  //     const { data } = await res.json();
+
+  //     if (!res.ok) {
+  //       throw new Error("Failed to create Idea");
+  //     }
+
+  //     router.replace(`/proplot/${data.id}`);
+  //   } catch (e: any) {
+  //     const error = {
+  //       message: e.message || "Failed to submit your idea!",
+  //       status: e.status || 500,
+  //     };
+  //     setError(error);
+  //   }
+  // };
 
   const deleteCommentWithoutReValidation = async (
     ideaId: number,

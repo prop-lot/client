@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react";
 import { Col, Row, Container } from "react-bootstrap";
 import { useParams } from "react-router-dom";
-import { createBrowserHistory } from "history";
 import { useEthers } from "@usedapp/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowAltCircleLeft } from "@fortawesome/free-solid-svg-icons";
 // import { useReverseENSLookUp } from "@/utils/ensLookup";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
-import {
-  useIdeas,
-  CommentFormData,
-  Comment as CommentType,
-} from "../../../hooks/useIdeas";
+import { useIdeas, CommentFormData } from "@/hooks/useIdeas";
 // import { useAuth } from "../../../hooks/useAuth";
 // import { useAccountVotes } from "../../../wrappers/nounToken";
 import moment from "moment";
@@ -46,7 +41,6 @@ marked.setOptions({
 
 const IdeaPage = () => {
   const { id } = useParams() as { id: string };
-  const history = createBrowserHistory();
   const { account } = useEthers();
   const { getComments, commentOnIdea } = useIdeas();
   const { comments, error } = getComments(id);
@@ -98,16 +92,16 @@ const IdeaPage = () => {
         <Col lg={10} className="mx-auto">
           <Row>
             <div>
-              <span
+              <a
                 className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
-                onClick={() => history.push("/proplot")}
+                href="/proplot"
               >
                 <FontAwesomeIcon
                   icon={faArrowAltCircleLeft}
                   className={`mr-2 text-2xl cursor-pointer`}
                 />
                 <span className="text-lg lodrina">Back</span>
-              </span>
+              </a>
             </div>
             <div className="flex flex-col mb-12">
               <div className="flex flex-row justify-between items-center">
@@ -159,15 +153,15 @@ const IdeaPage = () => {
           </div>
 
           <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-12 whitespace-pre">
-            <span
+            <a
               className="text-[#2B83F6] underline cursor-pointer"
-              onClick={() => {
+              href={
                 data.getIdea?.creatorId &&
-                  history.push(`/proplot/profile/${data.getIdea.creatorId}`);
-              }}
+                `/proplot/profile/${data.getIdea.creatorId}`
+              }
             >
               {ens || shortAddress}
-            </span>
+            </a>
             {` | ${
               creatorLilNoun === 1
                 ? `${creatorLilNoun} lil noun`

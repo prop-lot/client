@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { createBrowserHistory } from "history";
+
+import { useRouter } from "next/router";
+
 import { useEthers } from "@usedapp/core";
 import { useParams } from "react-router-dom";
 // import { useReverseENSLookUp } from "@/utils/ensLookup";
@@ -25,7 +27,7 @@ const Comment = ({
   isIdeaClosed: boolean;
 }) => {
   const { id } = useParams() as { id: string };
-  const history = createBrowserHistory();
+  const router = useRouter();
   const [isReply, setIsReply] = useState<boolean>(false);
   const [reply, setReply] = useState<string>("");
   const [showReplies, setShowReplies] = useState<boolean>(level > 1);
@@ -60,7 +62,7 @@ const Comment = ({
               <span
                 className="lodrina pl-2 text-[#2B83F6] underline cursor-pointer"
                 onClick={() => {
-                  history.push(`/proplot/profile/${comment.authorId}`);
+                  router.replace(`/proplot/profile/${comment.authorId}`);
                 }}
               >
                 {ens || shortAddress}
