@@ -1,4 +1,3 @@
-
 import useSWR, { useSWRConfig, Fetcher } from "swr";
 import { useEffect, useState } from "react";
 import { useAuth } from "./useAuth";
