@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import Image from "next/image";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { v4 } from "uuid";
 import Head from "next/head";
 import { ConnectKitButton } from "connectkit";

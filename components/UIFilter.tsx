@@ -54,9 +54,9 @@ const CustomToggle = forwardRef(
         e.preventDefault();
         onClick(e);
       }}
-      className="font-propLot font-semibold flex flex-1 btn !rounded-[10px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#2B83F6]"
+      className="font-propLot flex flex-1 btn !rounded-[6px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#333]"
     >
-      <span className="flex items-center justify-center font-semibold text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
+      <span className="flex items-center justify-center text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
         {children}
       </span>
     </a>
@@ -91,7 +91,7 @@ const UIFilter = ({
   };
 
   return (
-    <Dropdown className="flex flex-1 sm:block sm:flex-none mr-[8px] last:mr-[0px]">
+    <Dropdown className="flex flex-1 sm:block sm:flex-none">
       <Dropdown.Toggle as={CustomToggle} id={`dropdown-${filter.id}`}>
         <span className="pr-2">{filter.label}</span>
         <FontAwesomeIcon icon={faCaretDown} />
@@ -146,7 +146,7 @@ const UIFilter = ({
                       icon={SUPPORTED_ICONS[opt.icon as string]}
                       className={`${
                         isSelected ? "text-[#231F20]" : "text-[#8C8D92]"
-                      } font-semibold text-[14px]`}
+                      } font-semibold w-[14px]`}
                     />
                   )}
                 </span>
