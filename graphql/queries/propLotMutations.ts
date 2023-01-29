@@ -14,3 +14,11 @@ export const SUBMIT_VOTE_MUTATION = gql`
     }
   }
 `;
+
+export const SUBMIT_IDEA_MUTATION = gql`
+  mutation submitIdea($options: SubmitIdeaInputOptions!) {
+    submitIdea(options: $options) {
+      id
+    }
+  }
+`;

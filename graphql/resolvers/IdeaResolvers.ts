@@ -7,7 +7,11 @@ import {
   MutationSubmitIdeaVoteArgs,
   Idea,
   Vote,
+  TagType,
 } from "../generated";
+import {
+  MutationSubmitIdeaArgs
+} from "../server/generated";
 import { VirtualTags } from "@/utils/virtual";
 
 const resolvers: IResolvers = {
@@ -44,6 +48,26 @@ const resolvers: IResolvers = {
         context.authScope.user
       );
       return vote;
+    },
+    submitIdea: async (
+      _parent: any,
+      args: MutationSubmitIdeaArgs,
+      context
+    ): Promise<Idea> => {
+      if (!context.authScope.isAuthorized) {
+        throw new Error("Failed to save vote: unauthorized");
+      }
+
+      const idea: Idea = await IdeasService.createIdea(
+        {
+          title: args.options.title,
+          description: args.options.description,
+          tldr: args.options.tldr,
+          tags: [], // args.options.tags as TagType[]
+        },
+        context.authScope.user
+      );
+      return idea;
     },
   },
   Idea: {
