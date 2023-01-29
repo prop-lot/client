@@ -1,8 +1,9 @@
+import Router from 'next/router';
+
 import useSWR, { useSWRConfig, Fetcher } from "swr";
 import { useEffect, useState } from "react";
 import { useAuth } from "./useAuth";
 import { useApiError } from "./useApiError";
-import { createBrowserHistory } from "history";
 
 export interface VoteFormData {
   id: number;
@@ -132,9 +133,8 @@ const buildCommentState = (
 
 export const useIdeas = () => {
   const HOST = process.env.API_HOST;
-  const { getAuthHeader, isLoggedIn, triggerSignIn } = useAuth();
+  const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
-  let history = createBrowserHistory();
   const { mutate } = useSWRConfig();
   const [sortBy, setSortBy] = useState(undefined);
 
@@ -188,7 +188,6 @@ export const useIdeas = () => {
     const response = await fetch(`${HOST}/idea/vote`, {
       method: "POST",
       headers: {
-        ...getAuthHeader(),
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
@@ -239,7 +238,6 @@ export const useIdeas = () => {
             {
               method: "POST",
               headers: {
-                ...getAuthHeader(),
                 "Content-Type": "application/json",
               },
               body: JSON.stringify(formData),
@@ -331,7 +329,6 @@ export const useIdeas = () => {
       const res = await fetch(`${HOST}/ideas`, {
         method: "POST",
         headers: {
-          ...getAuthHeader(),
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -348,7 +345,7 @@ export const useIdeas = () => {
         throw new Error("Failed to create Idea");
       }
 
-      history.push(`/proplot/${data.id}`);
+      Router.push(`/proplot/${data.id}`);
     } catch (e: any) {
       const error = {
         message: e.message || "Failed to submit your idea!",
@@ -364,9 +361,6 @@ export const useIdeas = () => {
   ) => {
     const response = await fetch(`${HOST}/comment/${commentId}`, {
       method: "DELETE",
-      headers: {
-        ...getAuthHeader(),
-      },
     });
     if (!response.ok) throw new Error("Failed to delete comment");
 
@@ -382,9 +376,6 @@ export const useIdeas = () => {
         async () => {
           const response = await fetch(`${HOST}/comment/${commentId}`, {
             method: "DELETE",
-            headers: {
-              ...getAuthHeader(),
-            },
           });
           if (!response.ok) throw new Error("Failed to delete comment");
 
@@ -427,9 +418,6 @@ export const useIdeas = () => {
     try {
       const response = await fetch(`${HOST}/idea/${id}`, {
         method: "DELETE",
-        headers: {
-          ...getAuthHeader(),
-        },
       });
       if (!response.ok) throw new Error("Failed to delete idea");
       const idea = await response.json();
@@ -446,7 +434,7 @@ export const useIdeas = () => {
 
   return {
     voteOnIdeaList: async (formData: VoteFormData) => {
-      if (!isLoggedIn()) {
+      if (!isLoggedIn) {
         try {
           await triggerSignIn();
           voteOnIdeaList(formData);
@@ -456,7 +444,7 @@ export const useIdeas = () => {
       }
     },
     voteOnIdea: async (formData: VoteFormData) => {
-      if (!isLoggedIn()) {
+      if (!isLoggedIn) {
         try {
           await triggerSignIn();
           voteOnIdea(formData);
@@ -471,7 +459,7 @@ export const useIdeas = () => {
       description: string;
       tags: string[];
     }) => {
-      if (!isLoggedIn()) {
+      if (!isLoggedIn) {
         try {
           await triggerSignIn();
           submitIdea(data);
@@ -481,7 +469,7 @@ export const useIdeas = () => {
       }
     },
     commentOnIdea: async (formData: CommentFormData) => {
-      if (!isLoggedIn()) {
+      if (!isLoggedIn) {
         try {
           await triggerSignIn();
           commentOnIdea(formData);
@@ -494,7 +482,7 @@ export const useIdeas = () => {
       ideaId: number,
       commentId: number
     ) => {
-      if (!isLoggedIn()) {
+      if (!isLoggedIn) {
         try {
           await triggerSignIn();
           await deleteCommentWithoutReValidation(ideaId, commentId);
@@ -504,7 +492,7 @@ export const useIdeas = () => {
       }
     },
     deleteComment: async (ideaId: number, commentId: number) => {
-      if (!isLoggedIn()) {
+      if (!isLoggedIn) {
         try {
           await triggerSignIn();
           await deleteComment(ideaId, commentId);
@@ -514,7 +502,7 @@ export const useIdeas = () => {
       }
     },
     deleteIdea: async (ideaId: number) => {
-      if (!isLoggedIn()) {
+      if (!isLoggedIn) {
         try {
           await triggerSignIn();
           await deleteIdea(ideaId);
