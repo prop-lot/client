@@ -36,3 +36,20 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+## GraphQL Changes
+
+When making changes to the GraphQL schema you will want to auto generate the types for use in the code. There are two commands to generate types, one for the API code and one for the client queries.
+
+The commands are:
+
+```
+npm run generate-server-graph
+
+npm run generate-client-graph
+```
+
+You'll want to make your schema changes on the API and run `npm run generate-server-graph` first, then you can build/update your client side queries in `./graphql/queries`. Once you've updated these you can run `npm run generate-client-graph` to generate the types to use on the client code.
+
+All generated types are stored in `./graphql/types/__generated__`. The API specific types are in the `apiTypes.ts` file.
