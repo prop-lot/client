@@ -1,17 +1,21 @@
 import Router from 'next/router';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Row } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Nav from 'react-bootstrap/Nav';
 import { useAccount } from "wagmi";
-import { useIdeas } from '@/hooks/useIdeas';
+import { useMutation } from "@apollo/client";
 // import { useAccountVotes } from '../../../wrappers/nounToken';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { SUBMIT_IDEA_MUTATION } from '@/graphql/queries/propLotMutations';
+import { TagType } from '@/graphql/types/__generated__/apiTypes';
+import { submitIdea } from '@/graphql/types/__generated__/submitIdea';
+import { useApiError } from '@/hooks/useApiError';
+import { useAuth } from '@/hooks/useAuth';
 
 enum FORM_VALIDATION {
   TITLE_MAX = 50,
@@ -82,13 +86,28 @@ const MarkdownModalExample = ({ showMarkdownModal, handleCloseMarkdownModal }: {
 
 const CreateIdeaPage = () => {
   const { address, isConnecting, isDisconnected } = useAccount();
-  const { submitIdea } = useIdeas();
+  const { setError, error: errorModalVisible } = useApiError();
+  const { isLoggedIn, triggerSignIn } = useAuth();
+
   const [submitIdeaMutation, { error, loading, data }] =
   useMutation<submitIdea>(SUBMIT_IDEA_MUTATION, {
     context: {
       clientName: "PropLot",
     },
   });
+
+  useEffect(() => {
+    if (error && !errorModalVisible) {
+      setError({ message: error?.message || "Failed to create idea", status: 500 });
+    }
+  }, [error, errorModalVisible, setError]);
+
+  useEffect(() => {
+    if (data?.submitIdea?.id) {
+      Router.push(`/idea/${data.submitIdea.id}`)
+    }
+  }, [data])
+
   const nounBalance = 2 // TODO: hook up to contract - useAccountVotes(account || undefined) ?? 0;
 
   const [title, setTitle] = useState<string>('');
@@ -128,32 +147,32 @@ const CreateIdeaPage = () => {
   const tags = [
     {
       label: 'Suggestion',
-      value: 'SUGGESTION',
+      value: TagType.Suggestion,
       requiredTokens: 1,
     },
     {
       label: 'Governance',
-      value: 'GOVERNANCE',
+      value: TagType.Governance,
       requiredTokens: 1,
     },
     {
       label: 'Community',
-      value: 'COMMUNITY',
+      value: TagType.Community,
       requiredTokens: 1,
     },
     {
       label: 'Request',
-      value: 'REQUEST',
+      value: TagType.Request,
       requiredTokens: 1,
     },
     {
       label: 'Other',
-      value: 'OTHER',
+      value: TagType.Other,
       requiredTokens: 1,
     },
     {
       label: 'Nouns DAO Prop',
-      value: 'NOUNS',
+      value: TagType.Nouns,
       requiredTokens: 8,
     },
   ];
@@ -176,17 +195,17 @@ const CreateIdeaPage = () => {
           </p>
           <form
             id="submit-form"
-            onSubmit={event => {
+            onSubmit={async (event) => {
               event.preventDefault();
               const target = event.target as HTMLFormElement; // quiets TS
               const data = new FormData(target);
-              const tags = data.getAll('tags') as string[];
+              const tags = data.getAll('tags') as TagType[];
 
-              if (!formValid) {
+              if (!formValid || loading) {
                 return;
               }
 
-              submitIdeaMutation({
+              const getIdeaVariables = () => ({
                 variables: {
                   options: {
                     title,
@@ -194,8 +213,21 @@ const CreateIdeaPage = () => {
                     description,
                     tags,
                   },
-                },
+                }
               })
+
+              if (!isLoggedIn) {
+                try {
+                  const { success } = await triggerSignIn();
+                  if (success) {
+                    submitIdeaMutation(getIdeaVariables());
+                  }
+                } catch (e) {
+                  console.log(e)
+                }
+              } else {
+                submitIdeaMutation(getIdeaVariables());
+              }
             }}
           >
             <p className="lodrina font-bold text-2xl mb-2">Tags</p>
