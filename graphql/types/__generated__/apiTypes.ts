@@ -197,7 +197,7 @@ export enum Sort_Type {
 
 export type SubmitIdeaInputOptions = {
   description: Scalars['String'];
-  tags?: InputMaybe<Array<Scalars['String']>>;
+  tags?: InputMaybe<Array<TagType>>;
   title: Scalars['String'];
   tldr: Scalars['String'];
 };

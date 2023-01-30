@@ -5,13 +5,12 @@ import {
   QueryGetIdeaArgs,
   QueryGetIdeasArgs,
   MutationSubmitIdeaVoteArgs,
+  MutationSubmitIdeaArgs,
   Idea,
   Vote,
-  TagType,
-} from "../generated";
-import {
-  MutationSubmitIdeaArgs
-} from "../server/generated";
+} from "@/graphql/types/__generated__/apiTypes";
+import { TagType } from "@prisma/client";
+
 import { VirtualTags } from "@/utils/virtual";
 
 const resolvers: IResolvers = {
@@ -55,7 +54,7 @@ const resolvers: IResolvers = {
       context
     ): Promise<Idea> => {
       if (!context.authScope.isAuthorized) {
-        throw new Error("Failed to save vote: unauthorized");
+        throw new Error("Failed to create idea: unauthorized");
       }
 
       const idea: Idea = await IdeasService.createIdea(
@@ -63,7 +62,7 @@ const resolvers: IResolvers = {
           title: args.options.title,
           description: args.options.description,
           tldr: args.options.tldr,
-          tags: [], // args.options.tags as TagType[]
+          tags: args.options.tags as TagType[] || []
         },
         context.authScope.user
       );

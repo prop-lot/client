@@ -35,7 +35,7 @@ input SubmitIdeaInputOptions {
   title: String!
   tldr: String!
   description: String!
-  tags: [String!]
+  tags: [TagType!]
 }
 
 input PropLotInputOptions {

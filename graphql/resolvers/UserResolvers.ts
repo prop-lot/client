@@ -1,7 +1,7 @@
 import UserService from "../../services/user";
 
 import { IResolvers } from "@graphql-tools/utils";
-import { QueryGetUserArgs, User, Vote } from "../generated";
+import { QueryGetUserArgs, User, Vote } from "@/graphql/types/__generated__/apiTypes";
 
 type UserWithAggregations = User & { userAggregations?: any };
 

@@ -15,7 +15,7 @@ import {
   PropLotListItemsResolvers,
   PropLotFilter,
   FilterType,
-} from "../generated";
+} from "@/graphql/types/__generated__/apiTypes";
 
 import { resolveSortFilters } from "./PropLotListResolvers";
 
