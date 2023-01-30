@@ -1,0 +1,8 @@
+# Used to generate API graphql types
+overwrite: true
+schema: "./graphql/schemas/schema.graphql"
+generates:
+  ./graphql/types/__generated__/apiTypes.ts:
+    plugins:
+      - "typescript"
+      - "typescript-resolvers"

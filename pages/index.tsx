@@ -1,9 +1,7 @@
+import Router from 'next/router';
+
 import { useEffect } from "react";
-import Image from "next/image";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { v4 } from "uuid";
-import Head from "next/head";
-import { ConnectKitButton } from "connectkit";
 import { useAccount } from "wagmi";
 import { useLazyQuery } from "@apollo/client";
 import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
@@ -50,7 +48,7 @@ export default function Home() {
         },
       },
     });
-  }, []);
+  }, [getPropLotQuery]);
 
   const handleRefresh = () => {
     refetch({ options: { requestUUID: v4(), filters: appliedFilters } });
@@ -74,74 +72,58 @@ export default function Home() {
   const nounBalance = 5; // todo: replace
 
   return (
-    <>
-      <Head>
-        <title>Prop Lot</title>
-        <meta name="description" content="Vote on nounish ideas." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-        {/* REPLACE! NEED TO FIX TAILWIND BUILD STEP */}
-        <script src="https://cdn.tailwindcss.com"></script>
-      </Head>
-      <main className="pt-8">
-        <section className=" max-w-screen-xl mx-auto">
-          <nav className="flex justify-between">
-            <Image
-              src="/logo.svg"
-              alt="PropLot logo, which is a car noun with text spelling prop lot."
-              width="140"
-              height="120"
-            />
-            <ConnectKitButton />
-          </nav>
-          <div className="my-12 flex flex-row space-x-4 items-center">
-            <span className="w-52 h-52 border bg-gray-200 block rounded-lg"></span>
-            <h3 className="text-3xl font-bold">Nouns PropLot</h3>
+    <main className="pt-8">
+      <section className="max-w-screen-xl mx-auto">
+        <div className="my-12 flex flex-row space-x-4 items-center">
+          <span className="w-52 h-52 border bg-gray-200 block rounded-lg"></span>
+          <h3 className="text-3xl font-bold">Nouns PropLot</h3>
+        </div>
+        <div className="flex justify-between mb-4 items-center">
+          <div className="flex flex-row space-x-4">
+            {data?.propLot?.sortFilter && (
+              <UIFilter
+                filter={data.propLot.sortFilter}
+                updateFilters={handleUpdateFilters}
+              />
+            )}
+            {data?.propLot?.tagFilter && (
+              <UIFilter
+                filter={data.propLot.tagFilter}
+                updateFilters={handleUpdateFilters}
+              />
+            )}
+            {data?.propLot?.dateFilter && (
+              <UIFilter
+                filter={data.propLot.dateFilter}
+                updateFilters={handleUpdateFilters}
+              />
+            )}
           </div>
-          <div className="flex justify-between mb-4 items-center">
-            <div className="flex flex-row space-x-4">
-              {data?.propLot?.sortFilter && (
-                <UIFilter
-                  filter={data.propLot.sortFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-              {data?.propLot?.tagFilter && (
-                <UIFilter
-                  filter={data.propLot.tagFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-              {data?.propLot?.dateFilter && (
-                <UIFilter
-                  filter={data.propLot.dateFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-            </div>
-            <button className="bg-gray-700 text-white rounded-lg px-3 py-2">
-              New Submission
-            </button>
-          </div>
-        </section>
+          <button className="bg-gray-700 text-white rounded-lg px-3 py-2" onClick={() => {
+            // TODO: Check user has enough tokens
+            Router.push('/idea/new');
+          }}>
+            New Submission
+          </button>
+        </div>
+      </section>
 
-        <section className="border-t bg-gray-100 pb-8">
-          <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
-            {data?.propLot?.ideas?.map((idea: any, idx: number) => {
-              return (
-                <IdeaRow
-                  key={`idea-${idx}`}
-                  idea={idea}
-                  nounBalance={nounBalance}
-                  refetch={() => {
-                    handleRefresh();
-                  }}
-                />
-              );
-            })}
-          </div>
-        </section>
-      </main>
-    </>
+      <section className="border-t bg-gray-100 pb-8">
+        <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
+          {data?.propLot?.ideas?.map((idea: any, idx: number) => {
+            return (
+              <IdeaRow
+                key={`idea-${idx}`}
+                idea={idea}
+                nounBalance={nounBalance}
+                refetch={() => {
+                  handleRefresh();
+                }}
+              />
+            );
+          })}
+        </div>
+      </section>
+    </main>
   );
 }

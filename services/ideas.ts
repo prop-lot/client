@@ -70,19 +70,6 @@ export const calculateConsensus = (idea: Idea, voteCount: number) => {
 class IdeasService {
   static async all({ sortBy }: { sortBy?: string }) {
     try {
-      // Investigate issue with votecount db triggers
-
-      // const ideas = await prisma.idea.findMany({
-      //   include: {
-      //     votes: {
-      //       include: {
-      //         voter: true,
-      //       },
-      //     },
-      //   },
-      //   orderBy: SORT_BY[sortBy || 'VOTES_DESC'],
-      // });
-
       const ideas = await prisma.idea.findMany({
         where: {
           deleted: false,
@@ -236,7 +223,7 @@ class IdeasService {
         throw new Error("Failed to save idea: missing user details");
       }
 
-      // const totalSupply = await nounsTotalSupply();
+      // TODO: const totalSupply = await nounsTotalSupply();
       const totalSupply = 1000;
 
       if (!totalSupply) {
@@ -250,7 +237,6 @@ class IdeasService {
           tldr: data.tldr,
           description: data.description,
           creatorId: user.wallet,
-          votecount: 0,
           tokenSupplyOnCreate: totalSupply,
           votes: {
             create: {

@@ -1,4 +1,3 @@
-export const typeDefs = `
 scalar Date
 
 type Query {
@@ -14,6 +13,7 @@ type Query {
 
 type Mutation {
   submitIdeaVote(options: SubmitVoteInputOptions!): Vote!
+  submitIdea(options: SubmitIdeaInputOptions!): Idea!
 }
 
 # Query input types
@@ -29,6 +29,13 @@ input IdeaInputOptions {
 input SubmitVoteInputOptions {
   direction: Int!
   ideaId: Int!
+}
+
+input SubmitIdeaInputOptions {
+  title: String!
+  tldr: String!
+  description: String!
+  tags: [TagType!]
 }
 
 input PropLotInputOptions {
@@ -196,4 +203,4 @@ enum TagType {
   CONSENSUS
   CLOSED
   NOUNS
-}`;
+}

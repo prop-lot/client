@@ -7,7 +7,7 @@ import {
   Idea,
   PropLotFilter,
   FilterType,
-} from "../generated";
+} from "@/graphql/types/__generated__/apiTypes";
 
 import { FILTER_IDS, DATE_FILTERS } from "../utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
