@@ -1,4 +1,3 @@
-import Router from 'next/router';
 
 import useSWR, { useSWRConfig, Fetcher } from "swr";
 import { useEffect, useState } from "react";
@@ -313,48 +312,6 @@ export const useIdeas = () => {
     }
   };
 
-  // Use to submit an idea
-  const submitIdea = async ({
-    title,
-    tldr,
-    description,
-    tags,
-  }: {
-    title: string;
-    tldr: string;
-    description: string;
-    tags?: string[];
-  }) => {
-    try {
-      const res = await fetch(`${HOST}/ideas`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          tldr,
-          description,
-          tags,
-        }),
-      });
-
-      const { data } = await res.json();
-
-      if (!res.ok) {
-        throw new Error("Failed to create Idea");
-      }
-
-      Router.push(`/proplot/${data.id}`);
-    } catch (e: any) {
-      const error = {
-        message: e.message || "Failed to submit your idea!",
-        status: e.status || 500,
-      };
-      setError(error);
-    }
-  };
-
   const deleteCommentWithoutReValidation = async (
     ideaId: number,
     commentId: number
@@ -451,21 +408,6 @@ export const useIdeas = () => {
         } catch (e) {}
       } else {
         voteOnIdea(formData);
-      }
-    },
-    submitIdea: async (data: {
-      title: string;
-      tldr: string;
-      description: string;
-      tags: string[];
-    }) => {
-      if (!isLoggedIn) {
-        try {
-          await triggerSignIn();
-          submitIdea(data);
-        } catch (e) {}
-      } else {
-        submitIdea(data);
       }
     },
     commentOnIdea: async (formData: CommentFormData) => {
