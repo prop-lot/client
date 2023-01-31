@@ -1,7 +1,32 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloLink,
+  InMemoryCache,
+  HttpLink,
+} from "@apollo/client";
 
-// we might actually be able to just do something like /api/graphql and it will pickup on the host
+const defaultLink = new HttpLink({
+  uri: "/api/graphql",
+});
+
+const nounsDAOLink = new HttpLink({
+  uri: 'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph',
+});
+
+const lilNounsDAOLink = new HttpLink({
+  uri: 'https://api.thegraph.com/subgraphs/name/lilnounsdao/lil-nouns-subgraph',
+});
+
+//pass them to apollo-client config
 export const client = new ApolloClient({
-  uri: `/api/graphql`,
+  link: ApolloLink.split(
+    operation => operation.getContext().clientName === 'NounsDAO',
+    nounsDAOLink, //if above
+    ApolloLink.split(
+      operation => operation.getContext().clientName === 'LilNouns',
+      lilNounsDAOLink,
+      defaultLink,
+    ),
+  ),
   cache: new InMemoryCache(),
 });
