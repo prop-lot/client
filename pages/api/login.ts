@@ -3,19 +3,33 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { SiweMessage } from 'siwe'
 import { ironOptions } from '@/lib/config'
 import AuthService from '@/services/auth'
+import { NOUNS_BY_OWNER_SUB } from '@/graphql/subgraph'
+import { nounsGraphqlClient, lilNounsGraphqlClient } from '@/graphql/clients/nouns-graphql-client'
 
-// TODO: Potential implementation to scale to other DAOS?
-
-// const SupportedTokenGetterMap = {
-//   lilnouns: {
-//     type: 'LIL_NOUNS',
-//     getTokenCount: (address) => lilNounTokenCount(address)
-//   },
-//   nouns: {
-//     type: 'NOUNS',
-//     getTokenCount: (address) => nounTokenCount(address)
-//   }
-// }
+const SupportedTokenGetterMap = {
+  lilnouns: {
+    type: 'LIL_NOUNS',
+    getTokenCount: async (address: string) => {
+      try {
+        const data: any = await lilNounsGraphqlClient.query(NOUNS_BY_OWNER_SUB, { id: address.toLowerCase() }).toPromise()
+        return data?.data?.account?.nouns?.length
+      } catch(e) {
+        throw new Error('Failed to fetch token count from subgraph')
+      }
+    }
+  },
+  nouns: {
+    type: 'NOUNS',
+    getTokenCount: async (address: string) => {
+      try {
+        const data: any = await nounsGraphqlClient.query(NOUNS_BY_OWNER_SUB, { id: address.toLowerCase() }).toPromise()
+        return data?.data?.account?.nouns?.length
+      } catch(e) {
+        throw new Error('Failed to fetch token count from subgraph')
+      }
+    }
+  }
+}
  
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req
@@ -33,40 +47,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         // TODO: Check a header or host name here to determine if this is nouns vs lilnouns and make contract call? How do we make
         // this more scaleable? Something like below:
 
-        /*
-          const supportedToken = SupportedTokenGetterMap['PROPLOT_DAO_HEADER']
+        const supportedToken = SupportedTokenGetterMap['lilnouns']
 
-          if (supportedToken) {
-            const tokenCount = supportedToken.getTokenCount(fields.address)
-
-            if (!(tokenCount > 0)) {
-              throw new Error(`User does not have a token`);
-            }
-
-            const userData = await AuthService.login({ wallet: fields.address, token: { type: supportedToken.type, count: tokenCount } });
-            req.session.siwe = fields
-            req.session.user = userData
-            await req.session.save()
-            res.json({ ok: true })
-          } else {
-            throw new Error(`DAO does not exist in proplot`);
+        if (supportedToken) {
+          const tokenCount: number = await supportedToken.getTokenCount(fields.address)
+          console.log(tokenCount)
+          if (!(tokenCount > 0)) {
+            throw new Error(`User does not have a token`);
           }
-        */
 
-        const lilnounCount = 10 // TODO: Hook up to contract call - await nounTokenCount(fields.address);
-
-        if (!(lilnounCount > 0)) {
-          throw new Error(`User does not have a lil noun`);
+          const userData = await AuthService.login({ wallet: fields.address, lilnounCount: tokenCount });
+          req.session.siwe = fields
+          req.session.user = userData
+          await req.session.save()
+          res.json({ ok: true })
+        } else {
+          throw new Error(`DAO does not exist in proplot`);
         }
-
-        // We save the count of the tokens against the user for easy calculations. Do we need to add a new property to the user for nouns token counts?
-        // How do we keep these in sync with
-        const userData = await AuthService.login({ wallet: fields.address, lilnounCount });
- 
-        req.session.siwe = fields
-        req.session.user = userData
-        await req.session.save()
-        res.json({ ok: true })
       } catch (_error) {
         res.json({ ok: false })
       }
