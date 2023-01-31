@@ -7,8 +7,6 @@ import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
-import getConfig from "next/config";
-const { publicRuntimeConfig } = getConfig();
 
 export default function Home() {
   const { address } = useAccount();
