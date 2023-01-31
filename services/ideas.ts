@@ -224,6 +224,7 @@ class IdeasService {
       }
 
       // TODO: const totalSupply = await nounsTotalSupply();
+      // NOT sure how to grab this data from the subgraph queries or if it's possible?
       const totalSupply = 1000;
 
       if (!totalSupply) {

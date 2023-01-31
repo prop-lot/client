@@ -4,10 +4,13 @@ import { v4 } from "uuid";
 import { useAccount } from "wagmi";
 import { useLazyQuery } from "@apollo/client";
 import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
+import { NOUNS_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
 
 export default function Home() {
+  const { address } = useAccount();
+
   const [getPropLotQuery, { data, refetch, error }] = useLazyQuery(
     GET_PROPLOT_QUERY,
     {
@@ -19,6 +22,25 @@ export default function Home() {
       },
     }
   );
+
+  const [getNounsByOwnerQuerySub, { data: getNounsByOwnerDataSub }] = useLazyQuery(
+    NOUNS_BY_OWNER_SUB,
+    {
+      context: {
+        clientName: 'LilNouns', // change to 'NounsDAO' to query the nouns subgraph
+      },
+    },
+  );
+
+  useEffect(() => {
+    if (address) {
+      getNounsByOwnerQuerySub({
+        variables: {
+          id: address.toLowerCase(),
+        },
+      });
+    }
+  }, [address, getNounsByOwnerQuerySub]);
 
   /*
     Filters that are applied to the current response.
@@ -66,7 +88,7 @@ export default function Home() {
     refetch({ options: { requestUUID: v4(), filters: selectedfilters } });
   };
 
-  const nounBalance = 5; // todo: replace
+  const nounBalance = getNounsByOwnerDataSub?.account?.nouns?.length || 0; // todo: replace
 
   return (
     <main className="pt-8">
@@ -96,13 +118,11 @@ export default function Home() {
               />
             )}
           </div>
-          <button
-            className="bg-gray-700 text-white rounded-lg px-3 py-2"
-            onClick={() => {
-              // TODO: Check user has enough tokens
-              Router.push("/idea/new");
-            }}
-          >
+          <button className={`${ nounBalance > 0 ? 'bg-gray-700 text-white' : '!bg-[#F4F4F8] !text-[#E2E3E8]' } rounded-lg px-3 py-2`} onClick={() => {
+            if (nounBalance > 0) {
+              Router.push('/idea/new');
+            }
+          }}>
             New Submission
           </button>
         </div>
