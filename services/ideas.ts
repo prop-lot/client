@@ -260,7 +260,7 @@ class IdeasService {
         },
       });
 
-      return { ...idea, closed: false };
+      return { ...idea, closed: false, votecount: 0 };
     } catch (e) {
       throw e;
     }

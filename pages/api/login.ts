@@ -20,12 +20,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         // TODO: Check a header or host name here to determine if this is nouns vs lilnouns and make contract call? How do we make
         // this more scaleable? Something like below:
-
         const supportedToken = SupportedTokenGetterMap['lilnouns']
 
         if (supportedToken) {
           const tokenCount: number = await supportedToken.getUserTokenCount(fields.address)
-          console.log(tokenCount)
+
           if (!(tokenCount > 0)) {
             throw new Error(`User does not have a token`);
           }
