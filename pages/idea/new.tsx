@@ -9,7 +9,7 @@ import { useMutation, useLazyQuery } from "@apollo/client";
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { SUBMIT_IDEA_MUTATION } from '@/graphql/queries/propLotMutations';
-import { NOUNS_BY_OWNER_SUB } from "@/graphql/subgraph";
+import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 
 import { TagType } from '@/graphql/types/__generated__/apiTypes';
 import { submitIdea } from '@/graphql/types/__generated__/submitIdea';
@@ -94,8 +94,8 @@ const CreateIdeaPage = () => {
   const { setError, error: errorModalVisible } = useApiError();
   const { isLoggedIn, triggerSignIn } = useAuth();
 
-  const [getNounsByOwnerQuerySub, { data: getNounsByOwnerDataSub }] = useLazyQuery(
-    NOUNS_BY_OWNER_SUB,
+  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
+    DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
         clientName: 'LilNouns', // change to 'NounsDAO' to query the nouns subgraph
@@ -105,13 +105,13 @@ const CreateIdeaPage = () => {
 
   useEffect(() => {
     if (address) {
-      getNounsByOwnerQuerySub({
+      getDelegatedVotes({
         variables: {
           id: address.toLowerCase(),
         },
       });
     }
-  }, [address, getNounsByOwnerQuerySub]);
+  }, [address, getDelegatedVotes]);
 
 
   const [submitIdeaMutation, { error, loading, data }] =
@@ -136,7 +136,7 @@ const CreateIdeaPage = () => {
     }
   }, [data]);
 
-  const nounBalance = getNounsByOwnerDataSub?.account?.nouns?.length || 0; // todo: replace
+  const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
 
   const [title, setTitle] = useState<string>("");
   const [tldr, setTldr] = useState<string>("");

@@ -4,7 +4,7 @@ import { v4 } from "uuid";
 import { useAccount } from "wagmi";
 import { useLazyQuery } from "@apollo/client";
 import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
-import { NOUNS_BY_OWNER_SUB } from "@/graphql/subgraph";
+import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
 
@@ -23,8 +23,8 @@ export default function Home() {
     }
   );
 
-  const [getNounsByOwnerQuerySub, { data: getNounsByOwnerDataSub }] = useLazyQuery(
-    NOUNS_BY_OWNER_SUB,
+  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
+    DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
         clientName: 'LilNouns', // change to 'NounsDAO' to query the nouns subgraph
@@ -34,13 +34,13 @@ export default function Home() {
 
   useEffect(() => {
     if (address) {
-      getNounsByOwnerQuerySub({
+      getDelegatedVotes({
         variables: {
           id: address.toLowerCase(),
         },
       });
     }
-  }, [address, getNounsByOwnerQuerySub]);
+  }, [address, getDelegatedVotes]);
 
   /*
     Filters that are applied to the current response.
@@ -88,7 +88,7 @@ export default function Home() {
     refetch({ options: { requestUUID: v4(), filters: selectedfilters } });
   };
 
-  const nounBalance = getNounsByOwnerDataSub?.account?.nouns?.length || 0; // todo: replace
+  const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
 
   return (
     <main className="pt-8">

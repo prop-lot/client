@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { DATE_FILTERS, getIsClosed } from "../graphql/utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
 // import { nounsTotalSupply } from "../utils/utils";
+import { SupportedTokenGetterMap } from "@/utils/supportedTokenUtils";
 
 const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
@@ -223,9 +224,13 @@ class IdeasService {
         throw new Error("Failed to save idea: missing user details");
       }
 
-      // TODO: const totalSupply = await nounsTotalSupply();
-      // NOT sure how to grab this data from the subgraph queries or if it's possible?
-      const totalSupply = 1000;
+      const supportedToken = SupportedTokenGetterMap['lilnouns'] // TODO: Parse header/domain to use `lilnouns` or `nouns` here.
+
+      if (!supportedToken?.getTotalSupply) {
+        throw new Error("Failed to save idea: token unsupported");
+      }
+
+      const totalSupply = await supportedToken.getTotalSupply();
 
       if (!totalSupply) {
         throw new Error("Failed to save idea: couldn't fetch token supply");
