@@ -82,7 +82,7 @@ const IdeaVoteControls = ({
       const voteResponse = data?.submitIdeaVote;
       setCalculatedVoteCount(
         calculatedVoteCount +
-          voteResponse?.direction * 2 * (voteResponse?.voter.lilnounCount || 0)
+          voteResponse?.direction * 2 * (voteResponse?.voterWeight || 0)
       );
     }
   }, [data]);
