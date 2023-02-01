@@ -32,6 +32,7 @@ export interface getPropLot_propLot_ideas_votes {
   voterId: string;
   ideaId: number;
   direction: number;
+  voterWeight: number;
   voter: getPropLot_propLot_ideas_votes_voter;
 }
 

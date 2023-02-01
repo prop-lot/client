@@ -7,6 +7,7 @@ export const SUBMIT_VOTE_MUTATION = gql`
       voterId
       ideaId
       direction
+      voterWeight
       voter {
         wallet
         lilnounCount

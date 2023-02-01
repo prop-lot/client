@@ -59,6 +59,7 @@ export type Idea = {
   comments?: Maybe<Array<Comment>>;
   consensus?: Maybe<Scalars['Float']>;
   createdAt: Scalars['Date'];
+  createdAtBlock: Scalars['Int'];
   creatorId: Scalars['String'];
   deleted: Scalars['Boolean'];
   description: Scalars['String'];
@@ -253,6 +254,7 @@ export type Vote = {
   ideaId: Scalars['Int'];
   voter: User;
   voterId: Scalars['String'];
+  voterWeight: Scalars['Int'];
 };
 
 
@@ -430,6 +432,7 @@ export type IdeaResolvers<ContextType = any, ParentType extends ResolversParentT
   comments?: Resolver<Maybe<Array<ResolversTypes['Comment']>>, ParentType, ContextType>;
   consensus?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  createdAtBlock?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -534,6 +537,7 @@ export type VoteResolvers<ContextType = any, ParentType extends ResolversParentT
   ideaId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   voter?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   voterId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  voterWeight?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

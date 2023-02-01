@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const DELEGATED_VOTES_BY_OWNER_SUB = gql`
-  query delegate($id: String! ) {
+  query delegate($id: String!) {
     delegate(id: $id) {
       delegatedVotes
     }
@@ -9,8 +9,8 @@ export const DELEGATED_VOTES_BY_OWNER_SUB = gql`
 `;
 
 export const DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK = gql`
-  query delegate($id: String!, $block: Number! ) {
-    delegate(id: $id, block: { number: $block }) {
+  query delegate($id: String!, $block: Block_height ) {
+    delegate(id: $id, block: $block) {
       delegatedVotes
     }
   }

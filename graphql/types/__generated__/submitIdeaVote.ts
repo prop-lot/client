@@ -21,6 +21,7 @@ export interface submitIdeaVote_submitIdeaVote {
   voterId: string;
   ideaId: number;
   direction: number;
+  voterWeight: number;
   voter: submitIdeaVote_submitIdeaVote_voter;
 }
 
