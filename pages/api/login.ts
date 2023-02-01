@@ -24,7 +24,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (supportedToken) {
           const tokenCount: number = await supportedToken.getUserTokenCount(fields.address)
-
           if (!(tokenCount > 0)) {
             throw new Error(`User does not have a token`);
           }
