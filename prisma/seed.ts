@@ -5,9 +5,8 @@ const prisma = new PrismaClient();
 const chance = new Chance();
 
 async function seed() {
-  const user: { wallet: string; ens: string; lilnounCount: number } = {
+  const user: { wallet: string; ens: string; } = {
     ens: "test.eth",
-    lilnounCount: 3,
     wallet: "",
   };
 
