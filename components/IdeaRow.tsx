@@ -22,7 +22,7 @@ const IdeaRow = ({
   disableControls?: boolean;
   refetch: () => void;
 }) => {
-  const { address: account, isConnecting, isDisconnected } = useAccount();
+  const { address: account } = useAccount();
   const breakpoint = useBreakpoint();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const {
@@ -41,8 +41,8 @@ const IdeaRow = ({
   const ens = "ENS.eth"; // TODO: replace
   // const ens = useReverseENSLookUp(creatorId);
   const shortAddress = useShortAddress(creatorId);
-  const creatorLilNoun = votes?.find((vote: any) => vote.voterId === creatorId)
-    ?.voter?.lilnounCount;
+  const creatorTokenWeight = votes?.find((vote: any) => vote.voterId === creatorId)
+    ?.voterWeight;
   const { deleteIdea } = useIdeas();
 
   const mobileHeading = (
@@ -74,7 +74,7 @@ const IdeaRow = ({
           {tags.map((tag: any, idx) => {
             return (
               <span
-                key={`tag-${idx}`}
+                key={tag.type}
                 className={`${
                   virtualTagColorMap[tag.type] || "text-blue-500 bg-blue-200"
                 } text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex`}
@@ -112,7 +112,7 @@ const IdeaRow = ({
             {tags.map((tag: any, idx) => {
               return (
                 <span
-                  key={`tag-2-${idx}`}
+                  key={tag.type}
                   className={`${
                     virtualTagColorMap[tag.type] ||
                     "text-[#2B83F6] bg-[#2B83F6] bg-opacity-10"
@@ -173,9 +173,9 @@ const IdeaRow = ({
                     {ens || shortAddress}
                   </a>{" "}
                   {` | ${
-                    creatorLilNoun === 1
-                      ? `${creatorLilNoun} lil noun`
-                      : `${creatorLilNoun} lil nouns`
+                    creatorTokenWeight === 1
+                      ? `${creatorTokenWeight} lil noun`
+                      : `${creatorTokenWeight} lil nouns`
                   } | ${moment(createdAt).format("MMM Do YYYY")}`}
                   {account &&
                     account.toLowerCase() === idea.creatorId.toLowerCase() && (

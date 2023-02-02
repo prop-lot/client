@@ -1,5 +1,6 @@
 import { useEthers } from "@usedapp/core";
 // import Davatar from "@davatar/react";
+import { useAccount } from "wagmi";
 import { useApiError } from "@/hooks/useApiError";
 import { useMutation } from "@apollo/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,7 +24,8 @@ const IdeaVoteControls = ({
   disableControls?: boolean;
 }) => {
   const { id, votecount: voteCount, closed, votes } = idea;
-  const { account, library: provider } = useEthers();
+  const { address: account } = useAccount();
+
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
   // Store voteCount in state that we can mutate for optimistic updates
@@ -33,9 +35,7 @@ const IdeaVoteControls = ({
 
   const [submitVoteMutation, { error, loading, data }] =
     useMutation<submitIdeaVote>(SUBMIT_VOTE_MUTATION, {
-      context: {
-        clientName: "PropLot",
-      },
+      fetchPolicy: 'no-cache',
       refetchQueries: refetchPropLotOnVote ? ["getPropLot"] : [],
     });
 
@@ -80,9 +80,11 @@ const IdeaVoteControls = ({
   useEffect(() => {
     if (data?.submitIdeaVote.ideaId === id) {
       const voteResponse = data?.submitIdeaVote;
+      const multiplier = usersVote ? 2 : 1
+
       setCalculatedVoteCount(
         calculatedVoteCount +
-          voteResponse?.direction * 2 * (voteResponse?.voterWeight || 0)
+        voteResponse?.direction * multiplier * (voteResponse?.voterWeight || 0)
       );
     }
   }, [data]);
@@ -102,10 +104,7 @@ const IdeaVoteControls = ({
       {withAvatars && (
         <span className="flex self-center justify-end pl-2 mr-2">
           {avatarVotes.map((vote, i) => (
-            <span
-              key={`vote-${i}`}
-              className={i < avatarVotes.length - 1 ? "-mr-2" : ""}
-            >
+            <span key={vote.id} className={i < avatarVotes.length - 1 ? "-mr-2" : ""}>
               {/* <Davatar
                 size={40}
                 address={vote.voterId}
