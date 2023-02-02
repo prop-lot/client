@@ -12,7 +12,6 @@ import { SubmitVoteInputOptions } from "./globalTypes";
 export interface submitIdeaVote_submitIdeaVote_voter {
   __typename: "User";
   wallet: string;
-  lilnounCount: number;
 }
 
 export interface submitIdeaVote_submitIdeaVote {

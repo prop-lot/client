@@ -226,7 +226,6 @@ export enum TagType {
 
 export type User = {
   __typename?: 'User';
-  lilnounCount: Scalars['Int'];
   userStats?: Maybe<UserStats>;
   wallet: Scalars['String'];
 };
@@ -513,7 +512,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  lilnounCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   userStats?: Resolver<Maybe<ResolversTypes['UserStats']>, ParentType, ContextType>;
   wallet?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

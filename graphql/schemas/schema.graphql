@@ -123,7 +123,6 @@ type UserStats {
 
 type User {
   wallet: String!
-  lilnounCount: Int!
   userStats: UserStats
 }
 

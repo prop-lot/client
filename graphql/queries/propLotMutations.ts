@@ -10,7 +10,6 @@ export const SUBMIT_VOTE_MUTATION = gql`
       voterWeight
       voter {
         wallet
-        lilnounCount
       }
     }
   }

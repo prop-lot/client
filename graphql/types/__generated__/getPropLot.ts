@@ -23,7 +23,6 @@ export interface getPropLot_propLot_ideas_tags {
 export interface getPropLot_propLot_ideas_votes_voter {
   __typename: "User";
   wallet: string;
-  lilnounCount: number;
 }
 
 export interface getPropLot_propLot_ideas_votes {

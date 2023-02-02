@@ -29,7 +29,6 @@ export const GET_PROPLOT_QUERY = gql`
           voterWeight
           voter {
             wallet
-            lilnounCount
           }
         }
       }
