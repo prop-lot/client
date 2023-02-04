@@ -8,7 +8,7 @@ import { ConnectKitProvider, getDefaultClient } from "connectkit";
 import { ApolloProvider } from "@apollo/client";
 import { client as ApolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/hooks/useAuth";
-import NavBar from "@/components/NavBar";
+import NavBar from "@/components/Navbar";
 
 const alchemyId = process.env.ALCHEMY_ID;
 
