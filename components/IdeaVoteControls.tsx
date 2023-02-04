@@ -57,7 +57,7 @@ const IdeaVoteControls = ({
           submitVoteMutation(getVoteMutationArgs(direction));
         }
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     } else {
       submitVoteMutation(getVoteMutationArgs(direction));
@@ -98,7 +98,7 @@ const IdeaVoteControls = ({
   const avatarVotes = withAvatars ? votes?.slice(0, 3) || [] : [];
 
   return (
-    <>
+    <div className="flex flex-row items-center">
       {withAvatars && (
         <span className="flex self-center justify-end pl-2 mr-2">
           {avatarVotes.map((vote, i) => (
@@ -165,7 +165,7 @@ const IdeaVoteControls = ({
           </svg>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

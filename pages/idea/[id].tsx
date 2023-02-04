@@ -107,8 +107,9 @@ const IdeaPage = () => {
   };
 
   // loading
+  // todo: skeleton loading for better experience
   if (!data?.getIdea) {
-    return <div>loading</div>;
+    return <></>;
   }
 
   const tokenBalance = 10; // todo: replace
@@ -125,7 +126,7 @@ const IdeaPage = () => {
             <div>
               <a
                 className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
-                href="/proplot"
+                href="/"
               >
                 <FontAwesomeIcon
                   icon={faArrowAltCircleLeft}
@@ -134,9 +135,11 @@ const IdeaPage = () => {
                 <span className="text-lg lodrina">Back</span>
               </a>
             </div>
-            <div className="flex flex-col mb-12">
+            <div className="flex flex-col mb-4">
               <div className="flex flex-row justify-between items-center">
-                <h1 className="mb-0 lodrina">{data.getIdea.title}</h1>
+                <h1 className="mb-0 lodrina text-5xl self-end">
+                  {data.getIdea.title}
+                </h1>
                 <div className="flex flex-row justify-end">
                   <IdeaVoteControls
                     idea={data.getIdea}
