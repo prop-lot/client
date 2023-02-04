@@ -8,6 +8,7 @@ import {
   MutationSubmitIdeaArgs,
   Idea,
   Vote,
+  Comment,
 } from "@/graphql/types/__generated__/apiTypes";
 import { TagType } from "@prisma/client";
 
@@ -30,6 +31,24 @@ const resolvers: IResolvers = {
     },
   },
   Mutation: {
+    submitIdeaComment: async (
+      _parent: any,
+      args: any,
+      context
+    ): Promise<Comment> => {
+      if (!context.authScope.isAuthorized) {
+        throw new Error("Failed to save comment: unauthorized");
+      }
+      const comment: Comment = await IdeasService.commentOnIdea(
+        {
+          ideaId: args.options.ideaId,
+          body: args.options.body,
+          parentId: args.options.parentId,
+        },
+        context.authScope.user
+      );
+      return comment;
+    },
     submitIdeaVote: async (
       _parent: any,
       args: MutationSubmitIdeaVoteArgs,
@@ -62,7 +81,7 @@ const resolvers: IResolvers = {
           title: args.options.title,
           description: args.options.description,
           tldr: args.options.tldr,
-          tags: args.options.tags as TagType[] || []
+          tags: (args.options.tags as TagType[]) || [],
         },
         context.authScope.user
       );

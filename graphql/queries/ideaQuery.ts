@@ -20,6 +20,9 @@ export const GET_IDEA_QUERY = gql`
         type
         label
       }
+      comments {
+        body
+      }
       votes {
         id
         voterId

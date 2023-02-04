@@ -131,7 +131,7 @@ const buildCommentState = (
 };
 
 export const useIdeas = () => {
-  const HOST = process.env.API_HOST;
+  const HOST = process.env.NEXT_PUBLIC_API_HOST;
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
   const router = useRouter();

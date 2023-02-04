@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Col, Row, Container } from "react-bootstrap";
-import { useParams } from "react-router-dom";
-import { useEthers } from "@usedapp/core";
+import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowAltCircleLeft } from "@fortawesome/free-solid-svg-icons";
 // import { useReverseENSLookUp } from "@/utils/ensLookup";
@@ -19,6 +18,10 @@ import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import IdeaVoteControls from "@/components/IdeaVoteControls";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
+import { useMutation } from "@apollo/client";
+import { useAuth } from "@/hooks/useAuth";
+import { SUBMIT_COMMENT_MUTATION } from "@/graphql/queries/propLotMutations";
+import { submitIdeaComment } from "@/graphql/types/__generated__/submitIdeaComment";
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -40,10 +43,9 @@ marked.setOptions({
 });
 
 const IdeaPage = () => {
-  const { id } = useParams() as { id: string };
-  const { account } = useEthers();
-  const { getComments, commentOnIdea } = useIdeas();
-  const { comments, error } = getComments(id);
+  const router = useRouter();
+  const { id } = router.query as { id: string };
+  const { isLoggedIn, triggerSignIn } = useAuth();
   const [comment, setComment] = useState<string>("");
 
   const [getIdeaQuery, { data, error: _getIdeaError }] = useLazyQuery<getIdea>(
@@ -63,15 +65,44 @@ const IdeaPage = () => {
   const shortAddress = useShortAddress(data?.getIdea?.creatorId || "");
 
   useEffect(() => {
-    getIdeaQuery({ variables: { ideaId: parseInt(id) } });
-  }, []);
+    if (id) {
+      getIdeaQuery({ variables: { ideaId: parseInt(id) } });
+    }
+  }, [id]);
 
-  const submitComment = async () => {
-    await commentOnIdea({
-      body: comment,
-      ideaId: parseInt(id),
-      authorId: account,
-    } as CommentFormData);
+  const [submitCommentMutation, { error, loading, data: commentMutationData }] =
+    useMutation<submitIdeaComment>(SUBMIT_COMMENT_MUTATION, {
+      context: {
+        clientName: "PropLot",
+      },
+      refetchQueries: ["getIdeaQuery"],
+    });
+
+  const getCommentMutationArgs = (body: string, parentId: number) => ({
+    context: {},
+    variables: {
+      options: {
+        ideaId: id,
+        body,
+        parentId,
+      },
+    },
+  });
+
+  const submitComment = async (body: string, parentId: number) => {
+    if (!isLoggedIn) {
+      try {
+        const { success } = await triggerSignIn();
+        if (success) {
+          await submitCommentMutation(getCommentMutationArgs(body, parentId));
+        }
+      } catch (e) {
+        console.log(e);
+        return;
+      }
+    } else {
+      await submitCommentMutation(getCommentMutationArgs(body, parentId));
+    }
     setComment("");
   };
 
@@ -87,7 +118,7 @@ const IdeaPage = () => {
   )?.voter?.lilnounCount;
 
   return (
-    <Container fluid={"lg"}>
+    <Container fluid={"lg"} className="mt-8">
       <Row className="align-items-center">
         <Col lg={10} className="mx-auto">
           <Row>
@@ -173,44 +204,37 @@ const IdeaPage = () => {
 
           <div className="mt-2 mb-2">
             <h3 className="text-2xl lodrina font-bold">
-              {comments.filter((c: any) => !!c.deleted)?.length}{" "}
-              {comments.filter((c: any) => !!c.deleted)?.length === 1
+              {data?.getIdea?.comments?.filter((c: any) => !!c.deleted)?.length}{" "}
+              {data?.getIdea?.comments?.filter((c: any) => !!c.deleted)
+                ?.length === 1
                 ? "comment"
                 : "comments"}
             </h3>
           </div>
 
-          {error ? (
-            <div className="mt-12 mb-2">
-              <h3 className="text-2xl lodrina font-bold">
-                Failed to load commments
-              </h3>
+          <>
+            {!data.getIdea.closed && (
+              <CommentInput
+                value={comment}
+                setValue={setComment}
+                hasTokens={hasTokens}
+                onSubmit={submitComment}
+              />
+            )}
+            <div className="mt-12 space-y-8">
+              {data?.getIdea?.comments?.map((comment) => {
+                return (
+                  <Comment
+                    comment={comment}
+                    key={`comment-${comment.id}`}
+                    hasTokens={hasTokens}
+                    level={1}
+                    isIdeaClosed={!!data.getIdea?.closed}
+                  />
+                );
+              })}
             </div>
-          ) : (
-            <>
-              {!data.getIdea.closed && (
-                <CommentInput
-                  value={comment}
-                  setValue={setComment}
-                  hasTokens={hasTokens}
-                  onSubmit={submitComment}
-                />
-              )}
-              <div className="mt-12 space-y-8">
-                {comments?.map((comment) => {
-                  return (
-                    <Comment
-                      comment={comment}
-                      key={`comment-${comment.id}`}
-                      hasTokens={hasTokens}
-                      level={1}
-                      isIdeaClosed={!!data.getIdea?.closed}
-                    />
-                  );
-                })}
-              </div>
-            </>
-          )}
+          </>
         </Col>
       </Row>
     </Container>
