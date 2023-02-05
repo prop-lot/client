@@ -182,7 +182,7 @@ const IdeaPage = ({ community }: { community: Community }) => {
               className="text-[#2B83F6] underline cursor-pointer"
               href={
                 data.getIdea?.creatorId &&
-                `/proplot/profile/${data.getIdea.creatorId}`
+                `/profile/${data.getIdea.creatorId}`
               }
             >
               {creatorEns || shortAddress}

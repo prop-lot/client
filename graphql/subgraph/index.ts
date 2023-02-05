@@ -16,6 +16,18 @@ export const DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK = gql`
   }
 `;
 
+export const TOKEN_BALANCES_BY_OWNER_SUB = gql`
+  query tokenBalances($id: String!) {
+    delegate(id: $id) {
+      delegatedVotes
+    }
+
+    account(id: $id) {
+      tokenBalance
+    }
+  }
+`;
+
 // delegatedVotes is equal to the number of votes available to participate in voting.
 // this count will exclude burnt tokens.
 export const TOTAL_NOUNS_CREATED = gql`

@@ -205,7 +205,7 @@ const IdeaRow = ({
                 <span className="flex flex-1 text-[#8c8d92] whitespace-pre sm:self-end">
                   <a
                     className="text-[#2B83F6] underline cursor-pointer"
-                    href={`/proplot/profile/${idea.creatorId}`}
+                    href={`/profile/${idea.creatorId}`}
                   >
                     {creatorEns || shortAddress}
                   </a>{" "}
