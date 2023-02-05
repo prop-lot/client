@@ -103,6 +103,12 @@ export interface getPropLot_propLot_tagFilter {
   options: getPropLot_propLot_tagFilter_options[];
 }
 
+export interface getPropLot_propLot_appliedFilterTags {
+  __typename: "AppliedFilter";
+  param: string;
+  displayName: string;
+}
+
 export interface getPropLot_propLot_metadata {
   __typename: "PropLotResponseMetadata";
   requestUUID: string;
@@ -115,6 +121,7 @@ export interface getPropLot_propLot {
   sortFilter: getPropLot_propLot_sortFilter | null;
   dateFilter: getPropLot_propLot_dateFilter | null;
   tagFilter: getPropLot_propLot_tagFilter | null;
+  appliedFilterTags: getPropLot_propLot_appliedFilterTags[] | null;
   metadata: getPropLot_propLot_metadata;
 }
 

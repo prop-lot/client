@@ -75,6 +75,29 @@ export const DATE_FILTERS: { [key: string]: any } = {
   },
 };
 
+export const SORT_FILTERS: { [key: string]: any } = {
+  LATEST: {
+    value: buildFilterParam(FILTER_IDS.SORT, "LATEST"),
+    displayName: "Latest",
+    icon: "ARROW_UP",
+  },
+  OLDEST: {
+    value: buildFilterParam(FILTER_IDS.SORT, "OLDEST"),
+    displayName: "Oldest",
+    icon: "ARROW_DOWN",
+  },
+  VOTES_DESC: {
+    value: buildFilterParam(FILTER_IDS.SORT, "VOTES_DESC"),
+    displayName: "Votes Desc",
+    icon: "ARROW_UP",
+  },
+  VOTES_ASC: {
+    value: buildFilterParam(FILTER_IDS.SORT, "VOTES_ASC"),
+    displayName: "Votes Asc",
+    icon: "ARROW_DOWN",
+  },
+};
+
 export const getIsClosed = (idea: any) => {
   return moment(idea.createdAt).isBefore(
     moment().subtract(7, "days").toISOString()
