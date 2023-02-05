@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useEthers } from "@usedapp/core";
+import { useAccount, useEnsName } from "wagmi";
 import { useParams } from "react-router-dom";
-// import { useReverseENSLookUp } from "@/utils/ensLookup";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import moment from "moment";
 import CommentInput from "@/components/CommentInput";
@@ -23,9 +22,11 @@ const Comment = ({
   const router = useRouter();
   const [isReply, setIsReply] = useState<boolean>(false);
   const [showReplies, setShowReplies] = useState<boolean>(level > 1);
-  const { account, library: provider } = useEthers();
-  // const ens = useReverseENSLookUp(comment.authorId);
-  const ens = "ens.eth";
+  const { address: account } = useAccount();
+  const { data: creatorEns } = useEnsName({
+    address: comment.authorId as `0x${string}`,
+    cacheTime: 6_000,
+  });
   const shortAddress = useShortAddress(comment.authorId);
   const { deleteComment } = useIdeas();
 
@@ -46,7 +47,7 @@ const Comment = ({
                   router.replace(`/proplot/profile/${comment.authorId}`);
                 }}
               >
-                {ens || shortAddress}
+                {creatorEns || shortAddress}
               </span>
               <span className="text-[#8C8D92] text-base pl-2">
                 {moment(comment.createdAt).fromNow()}

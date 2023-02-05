@@ -1,6 +1,6 @@
 import { useState } from "react";
 import moment from "moment";
-import { useAccount } from "wagmi";
+import { useAccount, useEnsName } from "wagmi";
 import { createBreakpoint } from "react-use";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import IdeaVoteControls from "./IdeaVoteControls";
@@ -38,8 +38,10 @@ const IdeaRow = ({
   } = idea;
   const isMobile = breakpoint === "S";
 
-  const ens = "ENS.eth"; // TODO: replace
-  // const ens = useReverseENSLookUp(creatorId);
+  const { data: creatorEns } = useEnsName({
+    address: creatorId as `0x${string}`,
+    cacheTime: 6_000,
+  });
   const shortAddress = useShortAddress(creatorId);
   const creatorTokenWeight = votes?.find((vote: any) => vote.voterId === creatorId)
     ?.voterWeight;
@@ -51,7 +53,7 @@ const IdeaRow = ({
         <span className="flex flex-col sm:flex-row text-[#8C8D92] overflow-hidden">
           <span className="flex flex-row flex-1 justify-content-start align-items-start">
             <span className="mr-4">{id}</span>
-            <span className="truncate">{ens || shortAddress}</span>
+            <span className="truncate">{creatorEns || shortAddress}</span>
           </span>
           <div className="flex flex-row flex-1 justify-content-start align-items-start pt-[16px]">
             <span className="font-bold text-[18px] text-[#212529] flex flex-1">
@@ -102,7 +104,7 @@ const IdeaRow = ({
           <span className="flex text-[#8C8D92] overflow-hidden">
             <span className="mr-[8px] w-[48px]">{id}</span>
             <span className="truncate mr-[8px] w-[134px]">
-              {ens || shortAddress}
+              {creatorEns || shortAddress}
             </span>
           </span>
           <span className="text-[#212529] flex flex-1">{title}</span>
@@ -170,7 +172,7 @@ const IdeaRow = ({
                     className="text-[#2B83F6] underline cursor-pointer"
                     href={`/proplot/profile/${idea.creatorId}`}
                   >
-                    {ens || shortAddress}
+                    {creatorEns || shortAddress}
                   </a>{" "}
                   {` | ${
                     creatorTokenWeight === 1
