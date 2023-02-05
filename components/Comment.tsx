@@ -1,19 +1,12 @@
 import { useState } from "react";
-
 import { useRouter } from "next/router";
-
 import { useEthers } from "@usedapp/core";
 import { useParams } from "react-router-dom";
 // import { useReverseENSLookUp } from "@/utils/ensLookup";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import moment from "moment";
 import CommentInput from "@/components/CommentInput";
-
-import {
-  useIdeas,
-  CommentFormData,
-  Comment as CommentType,
-} from "@/hooks/useIdeas";
+import { useIdeas, Comment as CommentType } from "@/hooks/useIdeas";
 
 const Comment = ({
   comment,
@@ -29,24 +22,12 @@ const Comment = ({
   const { id } = useParams() as { id: string };
   const router = useRouter();
   const [isReply, setIsReply] = useState<boolean>(false);
-  const [reply, setReply] = useState<string>("");
   const [showReplies, setShowReplies] = useState<boolean>(level > 1);
   const { account, library: provider } = useEthers();
   // const ens = useReverseENSLookUp(comment.authorId);
   const ens = "ens.eth";
   const shortAddress = useShortAddress(comment.authorId);
-  const { deleteComment, commentOnIdea } = useIdeas();
-
-  const submitReply = async () => {
-    await commentOnIdea({
-      body: reply,
-      ideaId: parseInt(id),
-      parentId: comment.id,
-      authorId: account,
-    } as CommentFormData);
-    setReply("");
-    setIsReply(false);
-  };
+  const { deleteComment } = useIdeas();
 
   return (
     <div key={comment.id}>
@@ -92,7 +73,7 @@ const Comment = ({
 
             {/* Future addition: Add view more button to move deeper into the thread? */}
           </div>
-          <p className="text-[#212529] text-lg whitespace-pre-wrap">
+          <p className="text-[#212529] text ml-2 whitespace-pre-wrap">
             {comment.body}
           </p>
         </>
@@ -130,11 +111,10 @@ const Comment = ({
 
       {isReply && !isIdeaClosed && (
         <CommentInput
-          value={reply}
-          setValue={setReply}
+          parentId={comment.id}
+          ideaId={comment.ideaId}
           hideInput={(isHidden: boolean) => setIsReply(!isHidden)}
           hasTokens={hasTokens}
-          onSubmit={submitReply}
         />
       )}
     </div>

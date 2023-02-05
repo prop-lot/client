@@ -22,6 +22,9 @@ export const GET_IDEA_QUERY = gql`
       }
       comments {
         body
+        id
+        parentId
+        ideaId
       }
       votes {
         id

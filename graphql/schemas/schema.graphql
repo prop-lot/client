@@ -41,8 +41,8 @@ input SubmitIdeaInputOptions {
 
 input SubmitCommentInputOptions {
   ideaId: Int!
-  parentId: Int!
   body: String!
+  parentId: Int
 }
 
 input PropLotInputOptions {
