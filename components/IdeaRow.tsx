@@ -71,9 +71,10 @@ const IdeaRow = ({
       </div>
       {tags && tags.length > 0 && (
         <div className="flex flex-row items-center flex-wrap gap-[8px] mt-[16px]">
-          {tags.map((tag: any) => {
+          {tags.map((tag: any, idx) => {
             return (
               <span
+                key={`tag-${idx}`}
                 className={`${
                   virtualTagColorMap[tag.type] || "text-blue-500 bg-blue-200"
                 } text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex`}
@@ -108,9 +109,10 @@ const IdeaRow = ({
         </div>
         {tags && tags.length > 0 && (
           <div className="flex flex-row items-center flex-wrap gap-[8px] mt-[16px]">
-            {tags.map((tag: any) => {
+            {tags.map((tag: any, idx) => {
               return (
                 <span
+                  key={`tag-2-${idx}`}
                   className={`${
                     virtualTagColorMap[tag.type] ||
                     "text-[#2B83F6] bg-[#2B83F6] bg-opacity-10"
