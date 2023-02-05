@@ -93,10 +93,10 @@ const Comment = ({
       )}
 
       {showReplies && (
-        <div className={`${level === 1 && "pt-4"}`}>
+        <div>
           {comment.replies?.map((reply) => {
             return (
-              <div className="ml-8" key={`replies-${reply.id}`}>
+              <div className="ml-8 mt-2" key={`replies-${reply.id}`}>
                 <Comment
                   comment={reply}
                   hasTokens={hasTokens}

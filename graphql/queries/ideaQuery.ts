@@ -25,6 +25,18 @@ export const GET_IDEA_QUERY = gql`
         id
         parentId
         ideaId
+        replies {
+          body
+          id
+          parentId
+          ideaId
+          replies {
+            body
+            id
+            parentId
+            ideaId
+          }
+        }
       }
       votes {
         id

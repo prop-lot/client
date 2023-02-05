@@ -31,7 +31,7 @@ const CommentInput = ({
       context: {
         clientName: "PropLot",
       },
-      refetchQueries: ["getIdeaQuery"],
+      refetchQueries: ["getIdea"],
     }
   );
 
