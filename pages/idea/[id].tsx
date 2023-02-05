@@ -65,7 +65,6 @@ const IdeaPage = () => {
     address: data?.getIdea?.creatorId as `0x${string}`,
     cacheTime: 6_000,
   });
-
   const shortAddress = useShortAddress(data?.getIdea?.creatorId || "");
 
   useEffect(() => {
