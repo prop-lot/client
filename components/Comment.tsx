@@ -73,7 +73,7 @@ const Comment = ({
               <span
                 className="lodrina pl-2 text-[#2B83F6] underline cursor-pointer"
                 onClick={() => {
-                  router.replace(`/proplot/profile/${commentData.authorId}`);
+                  router.replace(`/profile/${commentData.authorId}`);
                 }}
               >
                 {creatorEns || shortAddress}
