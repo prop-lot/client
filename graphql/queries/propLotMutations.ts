@@ -22,3 +22,16 @@ export const SUBMIT_IDEA_MUTATION = gql`
     }
   }
 `;
+
+export const SUBMIT_COMMENT_MUTATION = gql`
+  mutation submitIdeaComment($options: SubmitCommentInputOptions!) {
+    submitIdeaComment(options: $options) {
+      id
+      body
+      parent {
+        id
+        body
+      }
+    }
+  }
+`;

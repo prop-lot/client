@@ -25,6 +25,7 @@
     "@heroicons/react": "^2.0.14",
     "@next/font": "13.1.4",
     "@prisma/client": "^4.9.0",
+    "@types/marked": "^4.0.8",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "@usedapp/core": "^1.2.2",

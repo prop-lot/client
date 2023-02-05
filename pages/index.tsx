@@ -1,5 +1,4 @@
-import Router from 'next/router';
-
+import Router from "next/router";
 import { useEffect } from "react";
 import { v4 } from "uuid";
 import { useAccount } from "wagmi";
@@ -99,10 +98,13 @@ export default function Home() {
               />
             )}
           </div>
-          <button className="bg-gray-700 text-white rounded-lg px-3 py-2" onClick={() => {
-            // TODO: Check user has enough tokens
-            Router.push('/idea/new');
-          }}>
+          <button
+            className="bg-gray-700 text-white rounded-lg px-3 py-2"
+            onClick={() => {
+              // TODO: Check user has enough tokens
+              Router.push("/idea/new");
+            }}
+          >
             New Submission
           </button>
         </div>

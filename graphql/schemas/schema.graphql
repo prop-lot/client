@@ -14,6 +14,7 @@ type Query {
 type Mutation {
   submitIdeaVote(options: SubmitVoteInputOptions!): Vote!
   submitIdea(options: SubmitIdeaInputOptions!): Idea!
+  submitIdeaComment(options: SubmitCommentInputOptions!): Comment!
 }
 
 # Query input types
@@ -36,6 +37,12 @@ input SubmitIdeaInputOptions {
   tldr: String!
   description: String!
   tags: [TagType!]
+}
+
+input SubmitCommentInputOptions {
+  ideaId: Int!
+  body: String!
+  parentId: Int
 }
 
 input PropLotInputOptions {

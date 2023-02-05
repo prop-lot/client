@@ -1,8 +1,8 @@
-
 import useSWR, { useSWRConfig, Fetcher } from "swr";
 import { useEffect, useState } from "react";
 import { useAuth } from "./useAuth";
 import { useApiError } from "./useApiError";
+import { useRouter } from "next/router";
 
 export interface VoteFormData {
   id: number;
@@ -131,9 +131,10 @@ const buildCommentState = (
 };
 
 export const useIdeas = () => {
-  const HOST = process.env.API_HOST;
+  const HOST = process.env.NEXT_PUBLIC_API_HOST;
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
+  const router = useRouter();
   const { mutate } = useSWRConfig();
   const [sortBy, setSortBy] = useState(undefined);
 
