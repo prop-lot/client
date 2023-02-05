@@ -13,12 +13,6 @@ export interface VoteFormData {
   };
 }
 
-export interface CommentFormData {
-  body: string;
-  ideaId: number;
-  parentId?: number;
-}
-
 export interface Vote {
   id: number;
   voterId: string;
@@ -134,7 +128,6 @@ export const useIdeas = () => {
   const HOST = process.env.NEXT_PUBLIC_API_HOST;
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
-  const router = useRouter();
   const { mutate } = useSWRConfig();
   const [sortBy, setSortBy] = useState(undefined);
 
@@ -178,12 +171,6 @@ export const useIdeas = () => {
     return data?.data as Idea;
   };
 
-  const getComments = (id: string) => {
-    const { data, error }: any = useSWR(`${HOST}/idea/${id}/comments`, fetcher);
-
-    return { comments: data?.data as Comment[], error };
-  };
-
   const castVote = async (formData: VoteFormData) => {
     const response = await fetch(`${HOST}/idea/vote`, {
       method: "POST",
@@ -221,65 +208,6 @@ export const useIdeas = () => {
     } catch (e: any) {
       const error = {
         message: e.message || "Failed to submit your vote!",
-        status: e.status || 500,
-      };
-      setError(error);
-    }
-  };
-
-  // Use to comment and reply with optimistic updates and revalidation
-  const commentOnIdea = (formData: any) => {
-    try {
-      mutate(
-        `${HOST}/idea/${formData.ideaId}/comments`,
-        async () => {
-          const response = await fetch(
-            `${HOST}/idea/${formData.ideaId}/comments`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(formData),
-            }
-          );
-          if (!response.ok) throw new Error("Failed to add comment");
-          return response.json();
-        },
-        {
-          optimisticData: ({ data }: { data: Comment[] }) => {
-            const comments = buildCommentState(
-              data,
-              {
-                ...formData,
-                replies: [],
-                createdAt: "Now",
-                id: 0,
-                timestamp: new Date(),
-              },
-              formData.parentId
-            );
-
-            return { data: comments };
-          },
-          rollbackOnError: true,
-          populateCache: (
-            { data }: { data: Comment },
-            currentData: { data: Comment[] }
-          ) => {
-            const comments = buildCommentState(
-              currentData.data,
-              data,
-              formData.parentId
-            );
-            return { data: comments.filter((comment) => comment.id !== 0) };
-          },
-          revalidate: true,
-        }
-      );
-    } catch (e: any) {
-      const error = {
-        message: e.message || "Failed to submit your comment!",
         status: e.status || 500,
       };
       setError(error);
@@ -411,16 +339,6 @@ export const useIdeas = () => {
         voteOnIdea(formData);
       }
     },
-    commentOnIdea: async (formData: CommentFormData) => {
-      if (!isLoggedIn) {
-        try {
-          await triggerSignIn();
-          commentOnIdea(formData);
-        } catch (e) {}
-      } else {
-        commentOnIdea(formData);
-      }
-    },
     deleteCommentWithoutReValidation: async (
       ideaId: number,
       commentId: number
@@ -456,7 +374,6 @@ export const useIdeas = () => {
     },
     getIdeas,
     getIdea,
-    getComments,
     setSortBy,
   };
 };
