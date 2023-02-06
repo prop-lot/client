@@ -102,7 +102,10 @@ const IdeaVoteControls = ({
       {withAvatars && (
         <span className="flex self-center justify-end pl-2 mr-2">
           {avatarVotes.map((vote, i) => (
-            <span className={i < avatarVotes.length - 1 ? "-mr-2" : ""}>
+            <span
+              key={`vote-${i}`}
+              className={i < avatarVotes.length - 1 ? "-mr-2" : ""}
+            >
               {/* <Davatar
                 size={40}
                 address={vote.voterId}
