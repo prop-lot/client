@@ -1,11 +1,6 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  gql,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export const client = new ApolloClient({
-  uri: "http://localhost:3000/api/graphql", // replace with env variables
+  uri: `${process.env.NEXT_PUBLIC_API_HOST}/api/graphql`,
   cache: new InMemoryCache(),
 });
