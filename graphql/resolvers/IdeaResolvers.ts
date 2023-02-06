@@ -67,16 +67,12 @@ const resolvers: IResolvers = {
       );
       return vote;
     },
-    submitIdea: async (
-      _parent: any,
-      args: MutationSubmitIdeaArgs,
-      context
-    ): Promise<Idea> => {
+    submitIdea: async (_parent: any, args: MutationSubmitIdeaArgs, context) => {
       if (!context.authScope.isAuthorized) {
         throw new Error("Failed to create idea: unauthorized");
       }
 
-      const idea: Idea = await IdeasService.createIdea(
+      const idea = await IdeasService.createIdea(
         {
           title: args.options.title,
           description: args.options.description,

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { PropLotProfileInputOptions, TagType, FilterType } from "./globalTypes";
+import { TagType, FilterType } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: getPropLotProfile
@@ -107,7 +107,9 @@ export interface getPropLotProfile_propLotProfile_list_Idea {
   votes: getPropLotProfile_propLotProfile_list_Idea_votes[] | null;
 }
 
-export type getPropLotProfile_propLotProfile_list = getPropLotProfile_propLotProfile_list_Comment | getPropLotProfile_propLotProfile_list_Idea;
+export type getPropLotProfile_propLotProfile_list =
+  | getPropLotProfile_propLotProfile_list_Comment
+  | getPropLotProfile_propLotProfile_list_Idea;
 
 export interface getPropLotProfile_propLotProfile_sortFilter_options {
   __typename: "FilterOption";
@@ -162,6 +164,6 @@ export interface getPropLotProfile {
   propLotProfile: getPropLotProfile_propLotProfile;
 }
 
-export interface getPropLotProfileVariables {
-  options: PropLotProfileInputOptions;
-}
+// export interface getPropLotProfileVariables {
+//   options: PropLotProfileInputOptions;
+// }

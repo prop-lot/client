@@ -1,13 +1,5 @@
 import { useEffect, useState, forwardRef } from "react";
 import {
-  faCaretDown,
-  faArrowUp,
-  faArrowDown,
-  IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import {
   getPropLot_propLot_tagFilter as TagFilter,
   getPropLot_propLot_tagFilter_options as TagFilterOptions,
   getPropLot_propLot_sortFilter as SortFilter,
@@ -25,15 +17,6 @@ import {
 
 type Filter = TagFilter | SortFilter | DateFilter;
 type FilterOptions = TagFilterOptions | SortFilterOptions | DateFilterOptions;
-
-interface IconMap {
-  [key: string]: IconDefinition;
-}
-
-const SUPPORTED_ICONS: IconMap = {
-  ARROW_UP: faArrowUp,
-  ARROW_DOWN: faArrowDown,
-};
 
 type CustomToggleProps = {
   children?: React.ReactNode;
@@ -94,7 +77,18 @@ const UIFilter = ({
     <Dropdown className="flex flex-1 sm:block sm:flex-none">
       <Dropdown.Toggle as={CustomToggle} id={`dropdown-${filter.id}`}>
         <span className="pr-2">{filter.label}</span>
-        <FontAwesomeIcon icon={faCaretDown} />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className="w-6 h-6"
+        >
+          <path
+            fillRule="evenodd"
+            d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+            clipRule="evenodd"
+          />
+        </svg>
       </Dropdown.Toggle>
 
       <Dropdown.Menu className="!min-w-[220px] !p-[8px] !mt-[8px] !bg-[#F4F4F8] !border !border-[#E2E3E8] !rounded-[10px]">
@@ -141,14 +135,6 @@ const UIFilter = ({
                   >
                     {opt.label}
                   </span>
-                  {SUPPORTED_ICONS[opt.icon || ""] && (
-                    <FontAwesomeIcon
-                      icon={SUPPORTED_ICONS[opt.icon as string]}
-                      className={`${
-                        isSelected ? "text-[#231F20]" : "text-[#8C8D92]"
-                      } font-semibold w-[14px]`}
-                    />
-                  )}
                 </span>
               </div>
             </Dropdown.Item>
@@ -159,4 +145,5 @@ const UIFilter = ({
   );
 };
 
+CustomToggle.displayName = "CustomToggle";
 export default UIFilter;

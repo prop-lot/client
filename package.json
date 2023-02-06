@@ -7,8 +7,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "npx prisma generate && next build",
+    "start": "next start -p 8080",
     "lint": "next lint",
     "generate-server-graph": "graphql-codegen --config codegen.yml",
     "generate-client-graph": "npx apollo codegen:generate --localSchemaFile=./graphql/schemas/schema.graphql ./graphql/types/__generated__/ --outputFlat --globalTypesFile=./graphql/types/__generated__/globalTypes.ts --includes=./graphql/queries/**/*.ts --target=typescript --tagName=gql"
@@ -17,8 +17,6 @@
     "@apollo/client": "^3.7.4",
     "@apollo/server": "^4.3.1",
     "@as-integrations/next": "^1.2.0",
-    "@fortawesome/free-solid-svg-icons": "^6.2.1",
-    "@fortawesome/react-fontawesome": "^0.2.0",
     "@graphql-tools/schema": "^9.0.13",
     "@graphql-tools/utils": "^9.1.4",
     "@headlessui/react": "^1.7.8",
