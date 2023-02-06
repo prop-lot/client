@@ -20,8 +20,6 @@ export default function Home() {
     }
   );
 
-  console.log("process.env", process.env.NODE_ENV);
-
   /*
     Filters that are applied to the current response.
     These can be parsed to update the local state after each request to ensure the client + API are in sync.

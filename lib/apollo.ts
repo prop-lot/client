@@ -1,9 +1,7 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
+// we might actually be able to just do something like /api/graphql and it will pickup on the host
 export const client = new ApolloClient({
-  uri:
-    process.env.NODE_ENV === "development"
-      ? `http://localhost:3000/api/graphql`
-      : `https://proplot-client-staging.fly.dev/api/graphql`,
+  uri: `/api/graphql`,
   cache: new InMemoryCache(),
 });
