@@ -59,6 +59,7 @@ export type Idea = {
   comments?: Maybe<Array<Comment>>;
   consensus?: Maybe<Scalars['Float']>;
   createdAt: Scalars['Date'];
+  createdAtBlock: Scalars['Int'];
   creatorId: Scalars['String'];
   deleted: Scalars['Boolean'];
   description: Scalars['String'];
@@ -90,12 +91,18 @@ export type IdeaTags = {
 export type Mutation = {
   __typename?: 'Mutation';
   submitIdea: Idea;
+  submitIdeaComment: Comment;
   submitIdeaVote: Vote;
 };
 
 
 export type MutationSubmitIdeaArgs = {
   options: SubmitIdeaInputOptions;
+};
+
+
+export type MutationSubmitIdeaCommentArgs = {
+  options: SubmitCommentInputOptions;
 };
 
 
@@ -195,6 +202,12 @@ export enum Sort_Type {
   VotesDesc = 'VOTES_DESC'
 }
 
+export type SubmitCommentInputOptions = {
+  body: Scalars['String'];
+  ideaId: Scalars['Int'];
+  parentId?: InputMaybe<Scalars['Int']>;
+};
+
 export type SubmitIdeaInputOptions = {
   description: Scalars['String'];
   tags?: InputMaybe<Array<TagType>>;
@@ -225,7 +238,6 @@ export enum TagType {
 
 export type User = {
   __typename?: 'User';
-  lilnounCount: Scalars['Int'];
   userStats?: Maybe<UserStats>;
   wallet: Scalars['String'];
 };
@@ -253,6 +265,7 @@ export type Vote = {
   ideaId: Scalars['Int'];
   voter: User;
   voterId: Scalars['String'];
+  voterWeight: Scalars['Int'];
 };
 
 
@@ -348,6 +361,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   SORT_TYPE: Sort_Type;
   String: ResolverTypeWrapper<Scalars['String']>;
+  SubmitCommentInputOptions: SubmitCommentInputOptions;
   SubmitIdeaInputOptions: SubmitIdeaInputOptions;
   SubmitVoteInputOptions: SubmitVoteInputOptions;
   TagType: TagType;
@@ -381,6 +395,7 @@ export type ResolversParentTypes = {
   PropLotUserProfile: PropLotUserProfile;
   Query: {};
   String: Scalars['String'];
+  SubmitCommentInputOptions: SubmitCommentInputOptions;
   SubmitIdeaInputOptions: SubmitIdeaInputOptions;
   SubmitVoteInputOptions: SubmitVoteInputOptions;
   User: User;
@@ -430,6 +445,7 @@ export type IdeaResolvers<ContextType = any, ParentType extends ResolversParentT
   comments?: Resolver<Maybe<Array<ResolversTypes['Comment']>>, ParentType, ContextType>;
   consensus?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  createdAtBlock?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   deleted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -456,6 +472,7 @@ export type IdeaTagsResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   submitIdea?: Resolver<ResolversTypes['Idea'], ParentType, ContextType, RequireFields<MutationSubmitIdeaArgs, 'options'>>;
+  submitIdeaComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationSubmitIdeaCommentArgs, 'options'>>;
   submitIdeaVote?: Resolver<ResolversTypes['Vote'], ParentType, ContextType, RequireFields<MutationSubmitIdeaVoteArgs, 'options'>>;
 };
 
@@ -510,7 +527,6 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  lilnounCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   userStats?: Resolver<Maybe<ResolversTypes['UserStats']>, ParentType, ContextType>;
   wallet?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -534,6 +550,7 @@ export type VoteResolvers<ContextType = any, ParentType extends ResolversParentT
   ideaId?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   voter?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   voterId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  voterWeight?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

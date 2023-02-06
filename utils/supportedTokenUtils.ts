@@ -1,4 +1,4 @@
-import { DELEGATED_VOTES_BY_OWNER_SUB, TOTAL_NOUNS_CREATED } from '@/graphql/subgraph'
+import { DELEGATED_VOTES_BY_OWNER_SUB, DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK, TOTAL_NOUNS_CREATED } from '@/graphql/subgraph'
 import { nounsGraphqlClient, lilNounsGraphqlClient } from '@/graphql/clients/nouns-graphql-client'
 
 export const SupportedTokenGetterMap = {
@@ -20,6 +20,14 @@ export const SupportedTokenGetterMap = {
         throw new Error('Failed to fetch token supply from subgraph')
       }
     },
+    getUserVoteWeightAtBlock: async (address: string, blockNumber: number) => {
+      try {
+        const data: any = await lilNounsGraphqlClient.query(DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK, { id: address.toLowerCase(), block: { number: blockNumber } }).toPromise()
+        return parseInt(data?.data?.delegate?.delegatedVotes) || 0
+      } catch(e) {
+        throw new Error('Failed to fetch token count from subgraph')
+      }
+    }
   },
   nouns: {
     type: 'NOUNS',
@@ -39,5 +47,13 @@ export const SupportedTokenGetterMap = {
         throw new Error('Failed to fetch token supply from subgraph')
       }
     },
+    getUserVoteWeightAtBlock: async (address: string, blockNumber: number) => {
+      try {
+        const data: any = await nounsGraphqlClient.query(DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK, { id: address.toLowerCase(), block: { number: blockNumber } }).toPromise()
+        return parseInt(data?.data?.delegate?.delegatedVotes) || 0
+      } catch(e) {
+        throw new Error('Failed to fetch token count from subgraph')
+      }
+    }
   }
 }

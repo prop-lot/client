@@ -5,9 +5,8 @@ const prisma = new PrismaClient();
 const chance = new Chance();
 
 async function seed() {
-  const user: { wallet: string; ens: string; lilnounCount: number } = {
+  const user: { wallet: string; ens: string; } = {
     ens: "test.eth",
-    lilnounCount: 3,
     wallet: "",
   };
 
@@ -50,6 +49,7 @@ async function seed() {
         description: chance.sentence({ words: 10 }),
         creatorId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9${i}`,
         tokenSupplyOnCreate: 7 * i,
+        createdAtBlock: 16534162,
       },
     });
 
@@ -59,6 +59,7 @@ async function seed() {
           ideaId: idea.id,
           voterId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9${i}`,
           direction: 1,
+          voterWeight: (i * 3) + 1 
         },
       });
     }

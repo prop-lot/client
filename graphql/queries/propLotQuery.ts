@@ -26,9 +26,9 @@ export const GET_PROPLOT_QUERY = gql`
           voterId
           ideaId
           direction
+          voterWeight
           voter {
             wallet
-            lilnounCount
           }
         }
       }

@@ -24,12 +24,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (supportedToken) {
           const tokenCount: number = await supportedToken.getUserTokenCount(fields.address)
-
           if (!(tokenCount > 0)) {
             throw new Error(`User does not have a token`);
           }
 
-          const userData = await AuthService.login({ wallet: fields.address, lilnounCount: tokenCount });
+          const userData = await AuthService.login({ wallet: fields.address });
           req.session.siwe = fields
           req.session.user = userData
           await req.session.save()
