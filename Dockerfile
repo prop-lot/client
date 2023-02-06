@@ -8,6 +8,9 @@ RUN npm install --legacy-peer-deps
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
+RUN --mount=type=secret,id=NEXT_PUBLIC_API_KEY \
+    NEXT_PUBLIC_API_KEY="https://proplot-client.fly.dev/api/graphql"
+
 # Add `ARG` instructions below if you need `NEXT_PUBLIC_` variables
 # then put the value on your fly.toml
 # Example:

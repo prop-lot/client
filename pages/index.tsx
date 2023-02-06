@@ -20,17 +20,7 @@ export default function Home() {
     }
   );
 
-  console.log(
-    "graphql endpoint",
-    `${process.env.NEXT_PUBLIC_API_HOST}/api/graphql`
-  );
-
-  console.log(
-    "test new endpoint",
-    `https://${process.env.FLY_APP_NAME}.fly.dev/api/graphql`
-  );
-
-  console.log("process.env", process.env);
+  console.log("process.env", process.env.NODE_ENV);
 
   /*
     Filters that are applied to the current response.
