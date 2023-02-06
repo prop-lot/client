@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Col, Row, Container } from "react-bootstrap";
 import { useRouter } from "next/router";
+import { useAccount } from "wagmi";
 // import { useReverseENSLookUp } from "@/utils/ensLookup";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 // import { useAuth } from "../../../hooks/useAuth";
@@ -16,6 +17,7 @@ import IdeaVoteControls from "@/components/IdeaVoteControls";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
 import Link from "next/link";
+import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -39,6 +41,7 @@ marked.setOptions({
 const IdeaPage = () => {
   const router = useRouter();
   const { id } = router.query as { id: string };
+  const { address } = useAccount();
 
   const [getIdeaQuery, { data, error: _getIdeaError }] = useLazyQuery<getIdea>(
     GET_IDEA_QUERY,
@@ -52,9 +55,28 @@ const IdeaPage = () => {
     }
   );
 
+  const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
+    DELEGATED_VOTES_BY_OWNER_SUB,
+    {
+      context: {
+        clientName: 'LilNouns', // change to 'NounsDAO' to query the nouns subgraph
+      },
+    },
+  );
+
   // const ens = useReverseENSLookUp(data?.getIdea?.creatorId || "");
   const ens = "ens.eth";
   const shortAddress = useShortAddress(data?.getIdea?.creatorId || "");
+
+  useEffect(() => {
+    if (address) {
+      getDelegatedVotes({
+        variables: {
+          id: address.toLowerCase(),
+        },
+      });
+    }
+  }, [address, getDelegatedVotes]);
 
   useEffect(() => {
     if (id) {
@@ -68,11 +90,10 @@ const IdeaPage = () => {
     return <></>;
   }
 
-  const tokenBalance = 10; // todo: replace
+  const tokenBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
   const hasTokens = tokenBalance > 0;
-  const creatorLilNoun = data.getIdea.votes?.find((vote) =>
-    data.getIdea ? vote.voterId === data.getIdea.creatorId : false
-  )?.voter?.lilnounCount;
+  const creatorTokenWeight = data.getIdea.votes?.find((vote) => vote.voterId === data.getIdea?.creatorId)
+    ?.voterWeight;
 
   return (
     <Container fluid={"lg"} className="mt-8 mb-12">
@@ -163,9 +184,9 @@ const IdeaPage = () => {
               {ens || shortAddress}
             </a>
             {` | ${
-              creatorLilNoun === 1
-                ? `${creatorLilNoun} lil noun`
-                : `${creatorLilNoun} lil nouns`
+              creatorTokenWeight === 1
+                ? `${creatorTokenWeight} token`
+                : `${creatorTokenWeight} tokens`
             } | ${moment(data.getIdea.createdAt).format("MMM Do YYYY")} ${
               data.getIdea.closed ? "| closed" : ""
             }`}

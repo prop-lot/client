@@ -91,12 +91,18 @@ export type IdeaTags = {
 export type Mutation = {
   __typename?: 'Mutation';
   submitIdea: Idea;
+  submitIdeaComment: Comment;
   submitIdeaVote: Vote;
 };
 
 
 export type MutationSubmitIdeaArgs = {
   options: SubmitIdeaInputOptions;
+};
+
+
+export type MutationSubmitIdeaCommentArgs = {
+  options: SubmitCommentInputOptions;
 };
 
 
@@ -195,6 +201,12 @@ export enum Sort_Type {
   VotesAsc = 'VOTES_ASC',
   VotesDesc = 'VOTES_DESC'
 }
+
+export type SubmitCommentInputOptions = {
+  body: Scalars['String'];
+  ideaId: Scalars['Int'];
+  parentId?: InputMaybe<Scalars['Int']>;
+};
 
 export type SubmitIdeaInputOptions = {
   description: Scalars['String'];
@@ -349,6 +361,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   SORT_TYPE: Sort_Type;
   String: ResolverTypeWrapper<Scalars['String']>;
+  SubmitCommentInputOptions: SubmitCommentInputOptions;
   SubmitIdeaInputOptions: SubmitIdeaInputOptions;
   SubmitVoteInputOptions: SubmitVoteInputOptions;
   TagType: TagType;
@@ -382,6 +395,7 @@ export type ResolversParentTypes = {
   PropLotUserProfile: PropLotUserProfile;
   Query: {};
   String: Scalars['String'];
+  SubmitCommentInputOptions: SubmitCommentInputOptions;
   SubmitIdeaInputOptions: SubmitIdeaInputOptions;
   SubmitVoteInputOptions: SubmitVoteInputOptions;
   User: User;
@@ -458,6 +472,7 @@ export type IdeaTagsResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   submitIdea?: Resolver<ResolversTypes['Idea'], ParentType, ContextType, RequireFields<MutationSubmitIdeaArgs, 'options'>>;
+  submitIdeaComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationSubmitIdeaCommentArgs, 'options'>>;
   submitIdeaVote?: Resolver<ResolversTypes['Vote'], ParentType, ContextType, RequireFields<MutationSubmitIdeaVoteArgs, 'options'>>;
 };
 
