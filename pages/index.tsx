@@ -25,6 +25,13 @@ export default function Home() {
     `${process.env.NEXT_PUBLIC_API_HOST}/api/graphql`
   );
 
+  console.log(
+    "test new endpoint",
+    `https://${process.env.FLY_APP_NAME}.fly.dev/api/graphql`
+  );
+
+  console.log("process.env", process.env);
+
   /*
     Filters that are applied to the current response.
     These can be parsed to update the local state after each request to ensure the client + API are in sync.
