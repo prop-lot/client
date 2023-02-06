@@ -6,8 +6,12 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
+import useDelegateCount from "@/hooks/useDelegateCount";
 
 export default function Home() {
+  const { address } = useAccount();
+  const { data: tokenCount } = useDelegateCount(address);
+
   const [getPropLotQuery, { data, refetch, error }] = useLazyQuery(
     GET_PROPLOT_QUERY,
     {
@@ -66,7 +70,7 @@ export default function Home() {
     refetch({ options: { requestUUID: v4(), filters: selectedfilters } });
   };
 
-  const nounBalance = 5; // todo: replace
+  const nounBalance = tokenCount ? tokenCount.toNumber() : 0;
 
   return (
     <main className="pt-8">
