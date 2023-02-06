@@ -8,8 +8,6 @@ import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
 
 export default function Home() {
-  const { address, isConnecting, isDisconnected } = useAccount();
-
   const [getPropLotQuery, { data, refetch, error }] = useLazyQuery(
     GET_PROPLOT_QUERY,
     {
