@@ -7,8 +7,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "npx prisma generate && next build",
+    "start": "next start -p 8080",
     "lint": "next lint",
     "generate-server-graph": "graphql-codegen --config codegen.yml",
     "generate-client-graph": "npx apollo codegen:generate --localSchemaFile=./graphql/schemas/schema.graphql ./graphql/types/__generated__/ --outputFlat --globalTypesFile=./graphql/types/__generated__/globalTypes.ts --includes=./graphql/queries/**/*.ts --target=typescript --tagName=gql"

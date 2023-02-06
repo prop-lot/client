@@ -6,9 +6,6 @@ WORKDIR /app
 COPY . .
 RUN npm install --legacy-peer-deps
 
-# If using npm with a `package-lock.json` comment out above and use below instead
-# RUN npm ci
-
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Add `ARG` instructions below if you need `NEXT_PUBLIC_` variables
@@ -17,9 +14,6 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # ARG NEXT_PUBLIC_EXAMPLE="value here"
 
 RUN npm run build
-
-# If using npm comment out above and use below instead
-# RUN npm run build
 
 # Production image, copy all the files and run next
 FROM node:16-alpine AS runner
