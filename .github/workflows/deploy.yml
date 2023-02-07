@@ -8,8 +8,6 @@ on:
   pull_request: {}
 env:
   NEXT_PUBLIC_TEST_SECRET: "dogss"
-  SECRET_AUTH_PASSWORD: ""
-  JSON_RPC_CLIENT: ""
 permissions:
   actions: write
   contents: read
@@ -57,7 +55,10 @@ jobs:
             registry.fly.io/${{ steps.app_name.outputs.value }}:${{ github.ref_name
             }}-${{ github.sha }}
           build-args: |
-            COMMIT_SHA=${{ github.sha }},NEXT_PUBLIC_TEST_SECRET="dogs",JSON_RPC_CLIENT="https://mainnet.infura.io/v3/4ab8992a9fc64db2b3f81bdd5d043f41",SECRET_AUTH_PASSWORD="complex_password_at_least_32_characters_long"
+            COMMIT_SHA=${{ github.sha }}
+            NEXT_PUBLIC_TEST_SECRET="dogs"
+            JSON_RPC_CLIENT="https://mainnet.infura.io/v3/4ab8992a9fc64db2b3f81bdd5d043f41"
+            SECRET_AUTH_PASSWORD="complex_password_at_least_32_characters_long"
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
       - name: 🚚 Move cache
@@ -89,7 +90,7 @@ jobs:
         with:
           args: deploy --app ${{ steps.app_name.outputs.value }}-staging --image
             registry.fly.io/${{ steps.app_name.outputs.value }}:${{
-            github.ref_name }}-${{ github.sha }} --build-arg NEXT_PUBLIC_TEST_SECRET="dogs" --build-arg NEXT_PUBLIC_API_HOST=${{ secrets.NEXT_PUBLIC_API_HOST }} --build-arg SECRET_AUTH_PASSWORD="complex_password_at_least_32_characters_long" --build-arg JSON_RPC_CLIENT="https://mainnet.infura.io/v3/4ab8992a9fc64db2b3f81bdd5d043f41"
+            github.ref_name }}-${{ github.sha }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           NEXT_PUBLIC_TEST_SECRET: "dogs"
