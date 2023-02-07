@@ -13,7 +13,12 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Example:
 # ARG NEXT_PUBLIC_EXAMPLE="value here"
 
-ENV NEXT_PUBLIC_TEST_SECRET=${NEXT_PUBLIC_TEST_SECRET}
+RUN --mount=type=secret,id=SECRET_AUTH_PASSWORD \
+    SECRET_AUTH_PASSWORD="$(cat /run/secrets/SECRET_AUTH_PASSWORD)"
+RUN --mount=type=secret,id=JSON_RPC_CLIENT \
+    JSON_RPC_CLIENT="$(cat /run/secrets/JSON_RPC_CLIENT)"
+RUN --mount=type=secret,id=NEXT_PUBLIC_TEST_SECRET \
+    NEXT_PUBLIC_TEST_SECRET="$(cat /run/secrets/NEXT_PUBLIC_TEST_SECRET)"
 
 RUN npm run build
 
