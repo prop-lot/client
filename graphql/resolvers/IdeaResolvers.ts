@@ -41,11 +41,7 @@ const resolvers: IResolvers = {
         throw new Error("Failed to delete comment: unauthorized");
       }
 
-      const foundComment = await prisma.comment.findUnique({
-        where: {
-          id: args.id,
-        },
-      });
+      const foundComment = await IdeasService.getComment(args.id);
 
       if (context.authScope.user.wallet !== foundComment?.authorId) {
         throw new Error("Failed to delete comment: you are not the author");
