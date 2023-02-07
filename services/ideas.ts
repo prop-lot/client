@@ -497,6 +497,20 @@ class IdeasService {
     }
   }
 
+  static async getComment(id: number) {
+    try {
+      const comment = await prisma.comment.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      return comment;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   static async deleteComment(id: number) {
     try {
       const comment = await prisma.comment.update({
