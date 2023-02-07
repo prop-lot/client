@@ -54,9 +54,7 @@ jobs:
             }}-${{ github.sha }}
           build-args: |
             COMMIT_SHA=${{ github.sha }}
-            NEXT_PUBLIC_TEST_SECRET="dogs"
-            JSON_RPC_CLIENT="https://mainnet.infura.io/v3/4ab8992a9fc64db2b3f81bdd5d043f41"
-            SECRET_AUTH_PASSWORD="complex_password_at_least_32_characters_long"
+            NEXT_PUBLIC_TEST_SECRET="cats"
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
       - name: 🚚 Move cache
@@ -97,6 +95,6 @@ jobs:
         with:
           args:
             deploy --image registry.fly.io/${{ steps.app_name.outputs.value }}:${{
-            github.ref_name }}-${{ github.sha }} --build-arg NEXT_PUBLIC_TEST_SECRET=${{ secrets.NEXT_PUBLIC_TEST_SECRET }}
+            github.ref_name }}-${{ github.sha }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
