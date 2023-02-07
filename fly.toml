@@ -7,6 +7,11 @@ processes = []
 
 [env]
 
+[build.args]
+  SECRET_AUTH_PASSWORD=""
+  JSON_RPC_CLIENT=""
+  NEXT_PUBLIC_TEST_SECRET=""
+
 [experimental]
   auto_rollback = true
 
