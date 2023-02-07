@@ -1,3 +1,4 @@
+console.log('SERVER ENV', process.env)
 export const ironOptions = {
   cookieName: "proplot-auth",
   password: process.env.SECRET_AUTH_PASSWORD || '',
