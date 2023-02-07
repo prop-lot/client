@@ -15,6 +15,7 @@ type Mutation {
   submitIdeaVote(options: SubmitVoteInputOptions!): Vote!
   submitIdea(options: SubmitIdeaInputOptions!): Idea!
   submitIdeaComment(options: SubmitCommentInputOptions!): Comment!
+  deleteIdeaComment(id: Int!): Comment!
 }
 
 # Query input types
