@@ -7,7 +7,7 @@ on:
       - dev
   pull_request: {}
 env:
-  NEXT_PUBLIC_TEST_SECRET: "dogs"
+  NEXT_PUBLIC_TEST_SECRET: "dogss"
 permissions:
   actions: write
   contents: read
