@@ -8,9 +8,9 @@ processes = []
 [env]
 
 [build.args]
-  SECRET_AUTH_PASSWORD=""
-  JSON_RPC_CLIENT=""
-  NEXT_PUBLIC_TEST_SECRET=""
+  SECRET_AUTH_PASSWORD="fly.toml"
+  JSON_RPC_CLIENT="fly.toml"
+  NEXT_PUBLIC_TEST_SECRET="fly.toml"
 
 [experimental]
   auto_rollback = true
