@@ -68,7 +68,7 @@ export default function Home() {
 
   const nounBalance = 5; // todo: replace
 
-  console.log(process.env.NEXT_PUBLIC_TEST_SECRET);
+  console.log("testing", process.env.NEXT_PUBLIC_TEST_SECRET);
 
   return (
     <main className="pt-8">
