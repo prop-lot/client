@@ -10,9 +10,7 @@ const nextConfig = {
 
     return config;
   },
-  publicRuntimeConfig: {
-    NEXT_PUBLIC_TEST_SECRET: process.env.NEXT_PUBLIC_TEST_SECRET,
-  },
+  publicRuntimeConfig: {},
   serverRuntimeConfig: {
     SECRET_AUTH_PASSWORD: process.env.SECRET_AUTH_PASSWORD,
     JSON_RPC_CLIENT: process.env.JSON_RPC_CLIENT,

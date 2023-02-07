@@ -92,11 +92,6 @@ export default function Home() {
 
   const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
 
-  console.log(
-    "The new environment variable is:",
-    publicRuntimeConfig.NEXT_PUBLIC_TEST_SECRET
-  );
-
   return (
     <main className="pt-8">
       <section className="max-w-screen-xl mx-auto">
