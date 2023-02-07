@@ -5,7 +5,6 @@ import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
 import { useAccount } from "wagmi";
 import { useMutation, useLazyQuery } from "@apollo/client";
-// import { useAccountVotes } from '../../../wrappers/nounToken';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { SUBMIT_IDEA_MUTATION } from '@/graphql/queries/propLotMutations';
