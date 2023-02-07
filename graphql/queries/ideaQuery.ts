@@ -24,17 +24,26 @@ export const GET_IDEA_QUERY = gql`
         body
         id
         parentId
+        deleted
         ideaId
+        createdAt
+        authorId
         replies {
           body
           id
+          deleted
           parentId
           ideaId
+          createdAt
+          authorId
           replies {
             body
             id
+            deleted
             parentId
             ideaId
+            createdAt
+            authorId
           }
         }
       }

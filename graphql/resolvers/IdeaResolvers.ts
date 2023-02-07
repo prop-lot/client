@@ -6,6 +6,7 @@ import {
   QueryGetIdeasArgs,
   MutationSubmitIdeaVoteArgs,
   MutationSubmitIdeaArgs,
+  MutationDeleteIdeaCommentArgs,
   Idea,
   Vote,
   Comment,
@@ -31,6 +32,28 @@ const resolvers: IResolvers = {
     },
   },
   Mutation: {
+    deleteIdeaComment: async (
+      _parent: any,
+      args: MutationDeleteIdeaCommentArgs,
+      context
+    ): Promise<Comment> =>  {
+      if (!context.authScope.isAuthorized) {
+        throw new Error("Failed to delete comment: unauthorized");
+      }
+
+      const foundComment = await prisma.comment.findUnique({
+        where: {
+          id: args.id,
+        },
+      });
+
+      if (context.authScope.user.wallet !== foundComment?.authorId) {
+        throw new Error("Failed to delete comment: you are not the author");
+      }
+
+      const comment: Comment = await IdeasService.deleteComment(args.id);
+      return comment;
+    },
     submitIdeaComment: async (
       _parent: any,
       args: any,
