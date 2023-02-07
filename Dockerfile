@@ -18,10 +18,14 @@ ARG JSON_RPC_CLIENT
 ARG NEXT_PUBLIC_TEST_SECRET
 
 ENV NODE_ENV production
-ENV SECRET_AUTH_PASSWORD=${SECRET_AUTH_PASSWORD}
-ENV JSON_RPC_CLIENT=${JSON_RPC_CLIENT}
-ENV NEXT_PUBLIC_TEST_SECRET=${NEXT_PUBLIC_TEST_SECRET}
+ENV SECRET_AUTH_PASSWORD=$SECRET_AUTH_PASSWORD
+ENV JSON_RPC_CLIENT=$JSON_RPC_CLIENT
+ENV NEXT_PUBLIC_TEST_SECRET=$NEXT_PUBLIC_TEST_SECRET
 ENV NEXT_TELEMETRY_DISABLED 1
+
+
+RUN echo "${SECRET_AUTH_PASSWORD}"
+RUN echo "${JSON_RPC_CLIENT}"
 
 RUN npm run build
 
@@ -33,7 +37,11 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app ./
+COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
 
 USER nextjs
 
