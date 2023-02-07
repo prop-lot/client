@@ -7,8 +7,8 @@ import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
-import getConfig from "next/config";
-const { publicRuntimeConfig } = getConfig();
+import useSyncURLParams from "@/hooks/useSyncURLParams";
+import EmptyState from "@/components/EmptyState";
 
 export default function Home() {
   const { address } = useAccount();
@@ -49,6 +49,8 @@ export default function Home() {
     These can be parsed to update the local state after each request to ensure the client + API are in sync.
   */
   const appliedFilters = data?.propLot?.metadata?.appliedFilters || [];
+
+  useSyncURLParams(appliedFilters, data?.propLot?.metadata?.requestUUID);
 
   /*
     Parse the query params from the url on page load and send them as filters in the initial
@@ -120,7 +122,7 @@ export default function Home() {
               />
             )}
           </div>
-          <button className={`${ nounBalance > 0 ? 'bg-gray-700 text-white' : '!bg-[#F4F4F8] !text-[#E2E3E8]' } rounded-lg px-3 py-2`} onClick={() => {
+          <button className={`${ nounBalance > 0 ? '!bg-[#2B83F6] !text-white' : '!bg-[#F4F4F8] !text-[#E2E3E8]' } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`} onClick={() => {
             if (nounBalance > 0) {
               Router.push('/idea/new');
             }
@@ -144,6 +146,13 @@ export default function Home() {
               />
             );
           })}
+          {
+            data?.propLot?.ideas?.length === 0 && (
+              <EmptyState appliedFilters={appliedFilters} error={error} clearFilters={() => {
+                refetch({ options: { requestUUID: v4(), filters: [] } });
+              }} />
+            )
+          }
         </div>
       </section>
     </main>

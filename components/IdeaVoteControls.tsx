@@ -1,4 +1,3 @@
-import { useEthers } from "@usedapp/core";
 // import Davatar from "@davatar/react";
 import { useAccount } from "wagmi";
 import { useApiError } from "@/hooks/useApiError";

@@ -1,11 +1,8 @@
 import { useEffect } from "react";
 import { Col, Row, Container } from "react-bootstrap";
 import { useRouter } from "next/router";
-import { useAccount } from "wagmi";
-// import { useReverseENSLookUp } from "@/utils/ensLookup";
+import { useAccount, useEnsName } from "wagmi";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
-// import { useAuth } from "../../../hooks/useAuth";
-// import { useAccountVotes } from "../../../wrappers/nounToken";
 import moment from "moment";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
@@ -64,8 +61,11 @@ const IdeaPage = () => {
     },
   );
 
-  // const ens = useReverseENSLookUp(data?.getIdea?.creatorId || "");
-  const ens = "ens.eth";
+  const { data: creatorEns } = useEnsName({
+    address: data?.getIdea?.creatorId as `0x${string}`,
+    cacheTime: 6_000,
+  });
+
   const shortAddress = useShortAddress(data?.getIdea?.creatorId || "");
 
   useEffect(() => {
@@ -139,7 +139,7 @@ const IdeaPage = () => {
                   {data.getIdea.tags.map((tag, idx) => {
                     return (
                       <span
-                        key={`tag-${idx}`}
+                        key={tag.label}
                         className={`${
                           virtualTagColorMap[tag.type] ||
                           "text-blue-500 bg-blue-200"
@@ -181,7 +181,7 @@ const IdeaPage = () => {
                 `/proplot/profile/${data.getIdea.creatorId}`
               }
             >
-              {ens || shortAddress}
+              {creatorEns || shortAddress}
             </a>
             {` | ${
               creatorTokenWeight === 1
