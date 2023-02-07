@@ -6,8 +6,6 @@ on:
       - main
       - dev
   pull_request: {}
-env:
-  NEXT_PUBLIC_TEST_SECRET: "dogss"
 permissions:
   actions: write
   contents: read
@@ -93,9 +91,6 @@ jobs:
             github.ref_name }}-${{ github.sha }}
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-          NEXT_PUBLIC_TEST_SECRET: "dogs"
-          SECRET_AUTH_PASSWORD: "complex_password_at_least_32_characters_long"
-          JSON_RPC_CLIENT: "https://mainnet.infura.io/v3/4ab8992a9fc64db2b3f81bdd5d043f41"
       - name: 🚀 Deploy Production
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: superfly/flyctl-actions@1.3
