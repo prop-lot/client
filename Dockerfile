@@ -11,7 +11,10 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Add `ARG` instructions below if you need `NEXT_PUBLIC_` variables
 # then put the value on your fly.toml
 # Example:
-ARG NEXT_PUBLIC_TEST_SECRET=${NEXT_PUBLIC_TEST_SECRET}
+# ARG NEXT_PUBLIC_EXAMPLE="value here"
+
+ARG NEXT_PUBLIC_TEST_SECRET
+ENV NEXT_PUBLIC_TEST_SECRET=${NEXT_PUBLIC_TEST_SECRET}
 
 RUN npm run build
 
