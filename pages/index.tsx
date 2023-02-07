@@ -6,6 +6,8 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
+import getConfig from "next/config";
+const { publicRuntimeConfig } = getConfig();
 
 export default function Home() {
   const [getPropLotQuery, { data, refetch, error }] = useLazyQuery(
@@ -70,7 +72,7 @@ export default function Home() {
 
   console.log(
     "The new environment variable is:",
-    process.env.NEXT_PUBLIC_TEST_SECRET
+    publicRuntimeConfig.NEXT_PUBLIC_TEST_SECRET
   );
 
   return (
