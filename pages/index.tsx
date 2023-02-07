@@ -7,6 +7,7 @@ import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
+import useSyncURLParams from "@/hooks/useSyncURLParams";
 
 export default function Home() {
   const { address } = useAccount();
@@ -47,6 +48,8 @@ export default function Home() {
     These can be parsed to update the local state after each request to ensure the client + API are in sync.
   */
   const appliedFilters = data?.propLot?.metadata?.appliedFilters || [];
+
+  useSyncURLParams(appliedFilters, data?.propLot?.metadata?.requestUUID);
 
   /*
     Parse the query params from the url on page load and send them as filters in the initial
