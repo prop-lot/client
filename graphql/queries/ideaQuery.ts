@@ -43,9 +43,9 @@ export const GET_IDEA_QUERY = gql`
         voterId
         ideaId
         direction
+        voterWeight
         voter {
           wallet
-          lilnounCount
         }
       }
     }

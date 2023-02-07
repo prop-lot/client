@@ -8,7 +8,7 @@ const calculateAllVotes = (votes: any) => {
   let upvotes = 0;
   let downvotes = 0;
   const calc = (acc: number, vote: any) =>
-    acc + vote.direction * vote.voter.lilnounCount;
+    acc + vote.direction * vote.voterWeight;
   votes.forEach((vote: any) => {
     if (vote.direction === 1) {
       upvotes = calc(upvotes, vote);

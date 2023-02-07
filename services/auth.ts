@@ -13,7 +13,7 @@ class AuthService {
     }
   }
 
-  static async update(data: { wallet: string; lilnounCount: number }) {
+  static async update(data: { wallet: string }) {
     const { wallet } = data;
     try {
       const user = await prisma.user.update({
@@ -29,7 +29,7 @@ class AuthService {
     }
   }
 
-  static async login(data: { wallet: string; lilnounCount: number }) {
+  static async login(data: { wallet: string }) {
     const { wallet } = data;
     try {
       let user = await prisma.user.findUnique({
@@ -40,8 +40,6 @@ class AuthService {
 
       if (!user) {
         user = await this.register(data);
-      } else {
-        user = await this.update(data);
       }
 
       return { ...user };
@@ -52,42 +50,6 @@ class AuthService {
   static async all() {
     const allUsers = await prisma.user.findMany();
     return allUsers;
-  }
-
-  static async syncUserTokenCounts(data: { to: string; from: string }) {
-    try {
-      const toUser = await prisma.user.findUnique({
-        where: {
-          wallet: data.to,
-        },
-      });
-
-      const fromUser = await prisma.user.findUnique({
-        where: {
-          wallet: data.from,
-        },
-      });
-
-      if (!fromUser && !toUser) {
-        throw new Error("No users to update");
-      }
-
-      if (toUser) {
-        await this.update({
-          wallet: data.to,
-          lilnounCount: toUser.lilnounCount + 1,
-        });
-      }
-
-      if (fromUser) {
-        await this.update({
-          wallet: data.from,
-          lilnounCount: fromUser.lilnounCount - 1,
-        });
-      }
-    } catch (e: any) {
-      throw e;
-    }
   }
 }
 

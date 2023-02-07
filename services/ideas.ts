@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import { DATE_FILTERS, getIsClosed } from "../graphql/utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
 // import { nounsTotalSupply } from "../utils/utils";
+import { SupportedTokenGetterMap } from "@/utils/supportedTokenUtils";
+import { getBlock } from "@/utils/ethers";
 
 const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
@@ -52,7 +54,7 @@ const PROFILE_TAB_FILTERS: { [key: string]: any } = {
 export const calculateVotes = (votes: any) => {
   let count = 0;
   votes.forEach((vote: any) => {
-    count = count + vote.direction * vote.voter.lilnounCount;
+    count = count + vote.direction * vote.voterWeight;
   });
 
   return count;
@@ -223,11 +225,16 @@ class IdeasService {
         throw new Error("Failed to save idea: missing user details");
       }
 
-      // TODO: const totalSupply = await nounsTotalSupply();
-      const totalSupply = 1000;
+      const supportedToken = SupportedTokenGetterMap['lilnouns'] // TODO: Parse header/domain to use `lilnouns` or `nouns` here.
 
-      if (!totalSupply) {
-        throw new Error("Failed to save idea: couldn't fetch token supply");
+      if (!supportedToken?.getTotalSupply) {
+        throw new Error("Failed to save idea: token unsupported");
+      }
+
+      const [totalSupply, currentBlock, authorTokenCount] = await Promise.all([supportedToken.getTotalSupply(), getBlock(), supportedToken.getUserTokenCount(user.wallet)])
+
+      if (!totalSupply || !currentBlock || !authorTokenCount) {
+        throw new Error("Failed to save idea: couldn't fetch required data");
       }
 
       const idea = await prisma.idea.create({
@@ -238,10 +245,12 @@ class IdeasService {
           description: data.description,
           creatorId: user.wallet,
           tokenSupplyOnCreate: totalSupply,
+          createdAtBlock: currentBlock,
           votes: {
             create: {
               direction: 1,
               voterId: user.wallet,
+              voterWeight: authorTokenCount,
             },
           },
           tags: {
@@ -254,7 +263,7 @@ class IdeasService {
         },
       });
 
-      return { ...idea, closed: false };
+      return { ...idea, closed: false, votecount: 0 };
     } catch (e) {
       throw e;
     }
@@ -265,6 +274,13 @@ class IdeasService {
       if (!user) {
         throw new Error("Failed to save vote: missing user details");
       }
+
+      const supportedToken = SupportedTokenGetterMap['lilnouns'] // TODO: Parse header/domain to use `lilnouns` or `nouns` here.
+
+      if (!supportedToken?.getUserVoteWeightAtBlock) {
+        throw new Error("Failed to save idea: token unsupported");
+      }
+
       const direction = Math.min(Math.max(parseInt(data.direction), -1), 1);
 
       if (isNaN(direction) || direction === 0) {
@@ -272,11 +288,6 @@ class IdeasService {
         throw new Error("Failed to save vote: direction is not valid");
       }
 
-      const isClosed = await this.isIdeaClosed(data.ideaId);
-
-      if (isClosed) {
-        throw new Error("Idea has been closed");
-      }
 
       const idea = await prisma.idea.findUnique({
         where: {
@@ -284,9 +295,49 @@ class IdeasService {
         },
       });
 
+      if (!idea) {
+        throw new Error("Idea could not be found");
+      }
+
       if (idea?.deleted) {
         throw new Error("Idea has been deleted");
       }
+
+      const isClosed = getIsClosed(idea)
+
+      if (isClosed) {
+        throw new Error("Idea has been closed");
+      }
+
+      const existingVote = await prisma.vote.findUnique({
+        where: {
+          ideaId_voterId: {
+            voterId: user.wallet,
+            ideaId: data.ideaId,
+          },
+        },
+      });
+
+      let userDelegatedVotesAtBlock = undefined;
+      // let currentUserVotes = undefined;
+
+      if (!existingVote) {
+        userDelegatedVotesAtBlock = await supportedToken.getUserVoteWeightAtBlock(user.wallet, idea?.createdAtBlock);
+
+        if (!userDelegatedVotesAtBlock || userDelegatedVotesAtBlock === 0) {
+          throw new Error("Failed to get user vote weight");
+        }
+      }
+
+      // On vote change we could check the users token count to see if it's changed i.e
+      // if they've bought more or sold tokens. This means their vote weight will be accurate
+      // while the idea is open. If we don't do this someone may sell their tokens and still be 
+      // able to alter their votes until the idea is closed.
+      // Might be overkill so leaving commented out for now.
+
+      // if (existingVote?.voterWeight) {
+      //   currentUserVotes = await supportedToken.getUserTokenCount(user.wallet);
+      // }
 
       const vote = prisma.vote.upsert({
         where: {
@@ -297,11 +348,13 @@ class IdeasService {
         },
         update: {
           direction,
+          // voterWeight: currentUserVotes,
         },
         create: {
           direction,
           voterId: user.wallet,
           ideaId: data.ideaId,
+          voterWeight: userDelegatedVotesAtBlock,
         },
         include: {
           voter: true,

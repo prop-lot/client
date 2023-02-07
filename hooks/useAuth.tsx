@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const res = await fetch('/api/current-user')
         const json = await res.json()
-        console.log('CURRENT USER', json.address)
+
         setState((x) => ({ ...x, currentUser: json.address }))
       } catch (_error) {}
     }

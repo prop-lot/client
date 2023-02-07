@@ -1,12 +1,12 @@
 import getConfig from "next/config";
 const { serverRuntimeConfig } = getConfig();
 
-console.log(serverRuntimeConfig)
-console.log(process.env)
+console.log('SERVER CONFIG', serverRuntimeConfig)
+console.log('ENV', process.env.SECRET_AUTH_PASSWORD)
 
 export const ironOptions = {
   cookieName: "proplot-auth",
-  password: process.env.SECRET_AUTH_PASSWORD || serverRuntimeConfig.SECRET_AUTH_PASSWORD || 'test', // TODO: Replace with env var. Must be a 32 char long private key.
+  password: process.env.SECRET_AUTH_PASSWORD || serverRuntimeConfig.SECRET_AUTH_PASSWORD || '',
   cookieOptions: {
     secure: process.env.NODE_ENV === 'production',
   },
