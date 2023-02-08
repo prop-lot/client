@@ -73,7 +73,7 @@ const IdeaVoteControls = ({
     if (error && !errorModalVisible) {
       setError({ message: error?.message || "Failed to vote", status: 500 });
     }
-  }, [error]);
+  }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Optimistic update of the voteCount for quick user feedback.
   useEffect(() => {
@@ -86,7 +86,7 @@ const IdeaVoteControls = ({
         voteResponse?.direction * multiplier * (voteResponse?.voterWeight || 0)
       );
     }
-  }, [data]);
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // // If optimistic updates become out of sync with the voteCount prop then reset
   // // to the prop value which comes from the latest API response.
@@ -94,7 +94,7 @@ const IdeaVoteControls = ({
     if (calculatedVoteCount !== voteCount) {
       setCalculatedVoteCount(voteCount);
     }
-  }, [voteCount]);
+  }, [voteCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const avatarVotes = withAvatars ? votes?.slice(0, 3) || [] : [];
 

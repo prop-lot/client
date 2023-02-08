@@ -4,5 +4,5 @@ export const ironOptions = {
   cookieOptions: {
     secure: process.env.NODE_ENV === 'production',
   },
-  ttl: 60 * 60,
+  ttl: 60 * 30,
 };

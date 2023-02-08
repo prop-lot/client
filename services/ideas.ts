@@ -491,6 +491,34 @@ class IdeasService {
         },
       });
 
+      return { id: idea.id, success: true };
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static async getComment(id: number) {
+    try {
+      const comment = await prisma.comment.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      return comment;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static async getIdeaRaw(id: number) {
+    try {
+      const idea = await prisma.idea.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
       return idea;
     } catch (e) {
       throw e;

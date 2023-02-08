@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 import { useAccount, useEnsName } from "wagmi";
 import { createBreakpoint } from "react-use";
@@ -6,8 +6,11 @@ import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import IdeaVoteControls from "./IdeaVoteControls";
 import { getPropLot_propLot_ideas as Idea } from "@/graphql/types/__generated__/getPropLot";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
-import { useIdeas } from "@/hooks/useIdeas";
-// import { useReverseENSLookUp } from "@/utils/ensLookup";
+import { DELETE_IDEA__MUTATION } from "@/graphql/queries/propLotMutations";
+import { deleteIdea } from "@/graphql/types/__generated__/deleteIdea";
+import { useMutation } from "@apollo/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useApiError } from "@/hooks/useApiError";
 
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
@@ -23,6 +26,8 @@ const IdeaRow = ({
   refetch: () => void;
 }) => {
   const { address: account } = useAccount();
+  const { isLoggedIn, triggerSignIn } = useAuth();
+  const { setError, error: errorModalVisible } = useApiError();
   const breakpoint = useBreakpoint();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const {
@@ -45,7 +50,37 @@ const IdeaRow = ({
   const shortAddress = useShortAddress(creatorId);
   const creatorTokenWeight = votes?.find((vote: any) => vote.voterId === creatorId)
     ?.voterWeight;
-  const { deleteIdea } = useIdeas();
+
+  const [deleteIdeaMutation, { error, loading: isDeleting }] =
+  useMutation<deleteIdea>(DELETE_IDEA__MUTATION, {
+    onCompleted: () => {
+      refetch();
+    },
+  });
+
+  const deleteIdea = async () => {
+    if (!isLoggedIn) {
+      try {
+        const { success } = await triggerSignIn();
+        if (success) {
+          deleteIdeaMutation({ variables: { id }});
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      deleteIdeaMutation({ variables: { id }});
+    }
+  };
+
+  useEffect(() => {
+    if (error && !errorModalVisible) {
+      setError({
+        message: error?.message || "Failed to delete idea",
+        status: 500,
+      });
+    }
+  }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const mobileHeading = (
     <>
@@ -185,8 +220,10 @@ const IdeaRow = ({
                         onClick={async (event) => {
                           // stop propagation to prevent the card from closing
                           event.stopPropagation();
-                          await deleteIdea(idea.id);
-                          refetch();
+                          if (isDeleting) {
+                            return undefined;
+                          }
+                          await deleteIdea();
                         }}
                         className="text-red-500 self-end font-bold ml-2"
                       >

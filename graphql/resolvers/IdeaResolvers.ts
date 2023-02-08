@@ -10,6 +10,8 @@ import {
   Idea,
   Vote,
   Comment,
+  MutationDeleteIdeaArgs,
+  DeleteDataResponse,
 } from "@/graphql/types/__generated__/apiTypes";
 import { TagType } from "@prisma/client";
 
@@ -49,6 +51,24 @@ const resolvers: IResolvers = {
 
       const comment: Comment = await IdeasService.deleteComment(args.id);
       return comment;
+    },
+    deleteIdea: async (
+      _parent: any,
+      args: MutationDeleteIdeaArgs,
+      context
+    ): Promise<DeleteDataResponse> =>  {
+      if (!context.authScope.isAuthorized) {
+        throw new Error("Failed to delete idea: unauthorized");
+      }
+
+      const foundIdea = await IdeasService.getIdeaRaw(args.id);
+
+      if (context.authScope.user.wallet !== foundIdea?.creatorId) {
+        throw new Error("Failed to delete idea: you are not the author");
+      }
+
+      const result: { id: number, success: boolean } = await IdeasService.deleteIdea(args.id);
+      return result;
     },
     submitIdeaComment: async (
       _parent: any,
