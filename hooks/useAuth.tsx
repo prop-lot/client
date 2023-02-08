@@ -1,4 +1,4 @@
-import { useContext, createContext, ReactNode, useState, useEffect } from "react";
+import { useContext, createContext, ReactNode, useState, useEffect, useCallback } from "react";
 import { useAccount, useNetwork, useSignMessage } from 'wagmi'
 import { SiweMessage } from "siwe";
 
@@ -101,17 +101,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       setState((x) => ({ ...x, loading: false, nonce: undefined, error: error as Error }))
       fetchNonce()
+      return { success: false }
     }
   }
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
-      await fetch('/api/logout')
-      setState({})
+      if (state.currentUser) {
+        await fetch('/api/logout')
+        setState({})
+        fetchNonce()
+      }
     } catch (_error) {
       setState({})
     }
-  };
+  }, [state.currentUser]);
 
   return (
     <AuthContext.Provider
