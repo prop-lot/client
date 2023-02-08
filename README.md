@@ -51,3 +51,7 @@ npm run generate-client-graph
 You'll want to make your schema changes on the API and run `npm run generate-server-graph` first, then you can build/update your client side queries in `./graphql/queries`. Once you've updated these you can run `npm run generate-client-graph` to generate the types to use on the client code.
 
 All generated types are stored in `./graphql/types/__generated__`. The API specific types are in the `apiTypes.ts` file.
+
+## Setting Env Vars
+
+tbd.
