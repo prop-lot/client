@@ -8,6 +8,7 @@ import { ApolloProvider } from "@apollo/client";
 import { client as ApolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/hooks/useAuth";
 import NavBar from "@/components/Navbar";
+import { ErrorModalProvider } from "@/hooks/useApiError";
 
 const alchemyId = process.env.ALCHEMY_ID;
 
@@ -31,8 +32,10 @@ export default function App({ Component, pageProps }: AppProps) {
         <WagmiConfig client={client}>
           <ConnectKitProvider>
             <AuthProvider>
-              <NavBar />
-              <Component {...pageProps} />
+              <ErrorModalProvider>
+                <NavBar />
+                <Component {...pageProps} />
+              </ErrorModalProvider>
             </AuthProvider>
           </ConnectKitProvider>
         </WagmiConfig>
