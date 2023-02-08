@@ -35,3 +35,35 @@ export const SUBMIT_COMMENT_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_IDEA_COMMENT_MUTATION = gql`
+  mutation deleteIdeaComment($id: Int!) {
+    deleteIdeaComment(id: $id) {
+      body
+      authorId
+      deleted
+      id
+      parentId
+      ideaId
+      createdAt
+      replies {
+        body
+        id
+        deleted
+        authorId
+        parentId
+        ideaId
+        createdAt
+        replies {
+          body
+          id
+          deleted
+          authorId
+          parentId
+          ideaId
+          createdAt
+        }
+      }
+    }
+  }
+`;

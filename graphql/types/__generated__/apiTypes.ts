@@ -90,9 +90,15 @@ export type IdeaTags = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  deleteIdeaComment: Comment;
   submitIdea: Idea;
   submitIdeaComment: Comment;
   submitIdeaVote: Vote;
+};
+
+
+export type MutationDeleteIdeaCommentArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -471,6 +477,7 @@ export type IdeaTagsResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  deleteIdeaComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationDeleteIdeaCommentArgs, 'id'>>;
   submitIdea?: Resolver<ResolversTypes['Idea'], ParentType, ContextType, RequireFields<MutationSubmitIdeaArgs, 'options'>>;
   submitIdeaComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationSubmitIdeaCommentArgs, 'options'>>;
   submitIdeaVote?: Resolver<ResolversTypes['Vote'], ParentType, ContextType, RequireFields<MutationSubmitIdeaVoteArgs, 'options'>>;
