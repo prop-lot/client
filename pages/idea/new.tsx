@@ -15,6 +15,7 @@ import { submitIdea } from "@/graphql/types/__generated__/submitIdea";
 import { useApiError } from "@/hooks/useApiError";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import getCopyFor from "@/utils/copy";
 
 enum FORM_VALIDATION {
   TITLE_MAX = 50,
@@ -240,9 +241,11 @@ const CreateIdeaPage = () => {
               <h1 className="lodrina text-black text-[56px]">Submit an Idea</h1>
             </Row>
             <p className="mb-2">
-              You must hold at least one lil noun in order to submit an idea and
-              vote on others. There is no limit to the number of ideas you can
-              submit and vote on.
+              {`You must hold at least one ${getCopyFor(
+                "nouns",
+                "tokenName"
+              )} in order to submit an idea and vote on others. There is no limit
+              to the number of ideas you can submit and vote on.`}
             </p>
             <form
               id="submit-form"
