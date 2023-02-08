@@ -67,3 +67,12 @@ export const DELETE_IDEA_COMMENT_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_IDEA__MUTATION = gql`
+  mutation deleteIdea($id: Int!) {
+    deleteIdea(id: $id) {
+      id
+      success
+    }
+  }
+`;

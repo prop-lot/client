@@ -491,7 +491,7 @@ class IdeasService {
         },
       });
 
-      return idea;
+      return { id: idea.id, success: true };
     } catch (e) {
       throw e;
     }
@@ -506,6 +506,20 @@ class IdeasService {
       });
 
       return comment;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  static async getIdeaRaw(id: number) {
+    try {
+      const idea = await prisma.idea.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      return idea;
     } catch (e) {
       throw e;
     }
