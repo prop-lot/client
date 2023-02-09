@@ -2,12 +2,8 @@ import { Idea, TagType } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { DATE_FILTERS, getIsClosed } from "../graphql/utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
-// import { nounsTotalSupply } from "../utils/utils";
 import { SupportedTokenGetterMap } from "@/utils/supportedTokenUtils";
-<<<<<<< HEAD
 import { getBlock } from "@/utils/ethers";
-=======
->>>>>>> 7c8eb50 (Update subgraph api calls to fetch correct user votes and total supply count)
 
 const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
