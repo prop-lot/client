@@ -15,7 +15,7 @@ const Comment = ({
   level,
   isIdeaClosed,
 }: {
-  comment: Comment;
+  comment: Comment | Reply;
   hasTokens: boolean;
   level: number;
   isIdeaClosed: boolean;
@@ -131,7 +131,7 @@ const Comment = ({
             return (
               <div className="ml-8 mt-2" key={`replies-${reply.id}`}>
                 <Comment
-                  comment={reply as Comment}
+                  comment={reply as Reply}
                   hasTokens={hasTokens}
                   level={level + 1}
                   isIdeaClosed={isIdeaClosed}

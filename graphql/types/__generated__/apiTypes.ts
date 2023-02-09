@@ -39,6 +39,12 @@ export type CommentParent = {
   ideaId: Scalars['Int'];
 };
 
+export type DeleteDataResponse = {
+  __typename?: 'DeleteDataResponse';
+  id?: Maybe<Scalars['Int']>;
+  success?: Maybe<Scalars['Boolean']>;
+};
+
 export type FilterOption = {
   __typename?: 'FilterOption';
   icon?: Maybe<Scalars['String']>;
@@ -90,10 +96,16 @@ export type IdeaTags = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  deleteIdea: DeleteDataResponse;
   deleteIdeaComment: Comment;
   submitIdea: Idea;
   submitIdeaComment: Comment;
   submitIdeaVote: Vote;
+};
+
+
+export type MutationDeleteIdeaArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -347,6 +359,7 @@ export type ResolversTypes = {
   Comment: ResolverTypeWrapper<Comment>;
   CommentParent: ResolverTypeWrapper<CommentParent>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
+  DeleteDataResponse: ResolverTypeWrapper<DeleteDataResponse>;
   FilterOption: ResolverTypeWrapper<FilterOption>;
   FilterType: FilterType;
   Float: ResolverTypeWrapper<Scalars['Float']>;
@@ -383,6 +396,7 @@ export type ResolversParentTypes = {
   Comment: Comment;
   CommentParent: CommentParent;
   Date: Scalars['Date'];
+  DeleteDataResponse: DeleteDataResponse;
   FilterOption: FilterOption;
   Float: Scalars['Float'];
   Idea: Idea;
@@ -437,6 +451,12 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
+export type DeleteDataResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteDataResponse'] = ResolversParentTypes['DeleteDataResponse']> = {
+  id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  success?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type FilterOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['FilterOption'] = ResolversParentTypes['FilterOption']> = {
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -477,6 +497,7 @@ export type IdeaTagsResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  deleteIdea?: Resolver<ResolversTypes['DeleteDataResponse'], ParentType, ContextType, RequireFields<MutationDeleteIdeaArgs, 'id'>>;
   deleteIdeaComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationDeleteIdeaCommentArgs, 'id'>>;
   submitIdea?: Resolver<ResolversTypes['Idea'], ParentType, ContextType, RequireFields<MutationSubmitIdeaArgs, 'options'>>;
   submitIdeaComment?: Resolver<ResolversTypes['Comment'], ParentType, ContextType, RequireFields<MutationSubmitIdeaCommentArgs, 'options'>>;
@@ -565,6 +586,7 @@ export type Resolvers<ContextType = any> = {
   Comment?: CommentResolvers<ContextType>;
   CommentParent?: CommentParentResolvers<ContextType>;
   Date?: GraphQLScalarType;
+  DeleteDataResponse?: DeleteDataResponseResolvers<ContextType>;
   FilterOption?: FilterOptionResolvers<ContextType>;
   Idea?: IdeaResolvers<ContextType>;
   IdeaStats?: IdeaStatsResolvers<ContextType>;

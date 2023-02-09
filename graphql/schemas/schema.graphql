@@ -16,6 +16,7 @@ type Mutation {
   submitIdea(options: SubmitIdeaInputOptions!): Idea!
   submitIdeaComment(options: SubmitCommentInputOptions!): Comment!
   deleteIdeaComment(id: Int!): Comment!
+  deleteIdea(id: Int!): DeleteDataResponse!
 }
 
 # Query input types
@@ -73,6 +74,11 @@ type PropLotProfileResponse {
   sortFilter: PropLotFilter
   tabFilter: PropLotFilter
   metadata: PropLotResponseMetadata!
+}
+
+type DeleteDataResponse {
+  id: Int
+  success: Boolean
 }
 
 type PropLotUserProfile {

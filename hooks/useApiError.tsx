@@ -6,7 +6,7 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import Modal from "@/components/Modal";
+import ErrorModal from "@/components/ErrorModal";
 
 type ApiError =
   | {
@@ -38,7 +38,7 @@ export const ErrorModalProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {error && (
-        <Modal
+        <ErrorModal
           title="Something went wrong!"
           content={error.message}
           onDismiss={() => {
