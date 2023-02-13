@@ -19,11 +19,12 @@ import UIFilter from '@/components/UIFilter';
 import { useEnsName, useAccount } from "wagmi";
 import { useShortAddress } from '@/utils/addressAndENSDisplayUtils';
 // import useSyncURLParams from '@/utils/useSyncUrlParams';
-// import { StandaloneNounCircular } from '../../components/StandaloneNoun';
+import { StandaloneNounCircular } from '@/components/NounCircular';
 // import { GrayCircle } from '../../components/GrayCircle';
 import { TOKEN_BALANCES_BY_OWNER_SUB } from '@/graphql/subgraph';
 import ProfileCommentRow from '@/components/ProfileCommentRow';
 import { useRouter } from 'next/router';
+import { BigNumber } from 'ethers';
 // import ProfileGovernanceList from '@/components/ProfileGovernanceList';
 
 // import useProfileGovernanceData, { TabFilterOptionValues } from '@/hooks/useProfileGovernanceData';
@@ -47,30 +48,35 @@ const ProfileCard = (props: { title: string; count: number; isLoading?: boolean 
 
 const ProfileLilNounDisplay = ({
   tokensInWallet,
-  delegatedTokens
+  delegatedTokens,
+  tokenData,
 }: {
   tokensInWallet: number;
   delegatedTokens: number;
+  tokenData: any[];
 }) => {
   const { id } = useParams() as { id: string };
 
   return (
     <div className="flex flex-col justify-end gap-[16px]">
-      {/* {Boolean(lilNounData?.length) ? (
+      {Boolean(tokenData?.length) ? (
         <div className="flex flex-1 flex-row-reverse gap-[4px] justify-center sm:justify-start">
           <>
-            {lilNounData
-              .map((lilNoun: any) => {
+            {tokenData
+              .map((token: any) => {
                 return (
                   <StandaloneNounCircular
-                    key={lilNoun.id}
-                    nounId={EthersBN.from(lilNoun.id)}
-                    styleOverride="!w-[48px] !h-[48px]"
+                    key={token.id}
+                    seed={token.seed}
+                    nounId={BigNumber.from(token.id)}
+                    height={48}
+                    width={48}
+                    isBigNoun={false} // TODO: CHANGE BASED ON COMMUNITY ENVIRONMENT
                   />
                 );
               })
               .slice(0, 5)}
-            {lilNounData.length > 5 && (
+            {/* {lilNounData.length > 5 && (
               <GrayCircle
                 styleOverride="!w-[48px] !h-[48px]"
                 renderOverlay={() => {
@@ -81,12 +87,12 @@ const ProfileLilNounDisplay = ({
                   );
                 }}
               />
-            )}
+            )} */}
           </>
         </div>
       ) : (
         null // <Davatar size={32} address={id} provider={provider} />
-      )} */}
+      )}
       <div className="flex flex-1 text-[12px] text-[#8C8D92] font-semibold whitespace-pre justify-center">
         Tokens owned:<span className="text-[#212529]"> {tokensInWallet}</span>
         {` delegated:`}
@@ -190,24 +196,25 @@ const PropLotUserProfile = () => {
     PROP_LOT: {
       title: 'Prop Lot',
     },
-    GOVERNANCE: {
-      title: 'Governance',
-    },
+    // GOVERNANCE: {
+    //   title: 'Governance',
+    // },
   };
 
-  const delegatedTokens = tokenBalanceData?.tokenBalances?.delegate?.delegatedVotes || 0;
-  const tokensInWallet = tokenBalanceData?.tokenBalances?.account?.tokenBalance || 0;
+  const delegatedTokens = tokenBalanceData?.delegate?.delegatedVotes || 0;
+  const tokensInWallet = tokenBalanceData?.account?.tokenBalance || 0;
+  const tokenData = tokenBalanceData?.account?.tokens || [];
 
   const isAccountOwner = account !== undefined && account === id;
 
   const shortAddress = useShortAddress(id);
-  const calculateOnchainVotes = () => {
-    const yesVotes = categorisedProposals[TabFilterOptionValues.YES]?.length || 0;
-    const noVotes = categorisedProposals[TabFilterOptionValues.NO]?.length || 0;
-    const abstainedVotes = categorisedProposals[TabFilterOptionValues.ABSTAINED]?.length || 0;
+  // const calculateOnchainVotes = () => {
+  //   const yesVotes = categorisedProposals[TabFilterOptionValues.YES]?.length || 0;
+  //   const noVotes = categorisedProposals[TabFilterOptionValues.NO]?.length || 0;
+  //   const abstainedVotes = categorisedProposals[TabFilterOptionValues.ABSTAINED]?.length || 0;
 
-    return yesVotes + noVotes + abstainedVotes;
-  };
+  //   return yesVotes + noVotes + abstainedVotes;
+  // };
 
   const buildProfileCards = (userStats: UserStats) => {
     return (
@@ -250,6 +257,7 @@ const PropLotUserProfile = () => {
                 <ProfileLilNounDisplay
                   delegatedTokens={delegatedTokens}
                   tokensInWallet={tokensInWallet}
+                  tokenData={tokenData}
                 />
               </div>
             </div>
@@ -260,7 +268,7 @@ const PropLotUserProfile = () => {
                 buildProfileCards(data?.propLotProfile?.profile.user.userStats)}
             </div>
 
-            {listButtonActive === 'GOVERNANCE' && (
+            {/* {listButtonActive === 'GOVERNANCE' && (
               <>
                 <div className="mt-[48px] sm:mt-[81px] flex flex-1 items-center flex-col-reverse gap-[16px] sm:gap-[8px] sm:flex-row">
                   <h2 className="font-londrina text-[38px] text-[#212529] font-normal flex flex-1">
@@ -289,13 +297,13 @@ const PropLotUserProfile = () => {
                     })}
                   </div>
                 </div>
-                {/* <ProfileGovernanceList
+                <ProfileGovernanceList
                   isLoadingGovernance={isLoadingGovernance}
                   snapshotProposalData={snapshotProposalData}
                   categorisedProposals={categorisedProposals}
-                /> */}
+                />
               </>
-            )}
+            )} */}
 
             {listButtonActive === 'PROP_LOT' && (
               <>
@@ -304,7 +312,7 @@ const PropLotUserProfile = () => {
                     Prop Lot activity
                   </h2>
 
-                  <div
+                  {/* <div
                     className="flex flex-wrap justify-center !gap-[8px]"
                     role="btn-toolbar"
                     aria-label="Basic example"
@@ -325,7 +333,7 @@ const PropLotUserProfile = () => {
                         </Button>
                       );
                     })}
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="mt-[32px] mb-[24px] flex flex-col-reverse sm:flex-row">
