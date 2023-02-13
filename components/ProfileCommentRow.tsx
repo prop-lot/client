@@ -1,36 +1,69 @@
 import { useEffect } from 'react';
 import { useEnsName, useAccount } from "wagmi";
+import { useMutation } from "@apollo/client";
+import { useAuth } from "@/hooks/useAuth";
 
 import { useShortAddress } from '@/utils/addressAndENSDisplayUtils';
 import { getPropLotProfile_propLotProfile_list_Comment as Comment } from '@/graphql/types/__generated__/getPropLotProfile';
+import { DELETE_IDEA_COMMENT_MUTATION } from "@/graphql/queries/propLotMutations";
+import { deleteIdeaComment } from "@/graphql/types/__generated__/deleteIdeaComment";
+
 import Card from 'react-bootstrap/Card';
 import moment from 'moment';
 
 import { useLazyQuery } from '@apollo/client';
-// import { BigNumber as EthersBN } from 'ethers';
-// import { StandaloneNounCircular } from '../../../components/StandaloneNoun';
+import { BigNumber } from 'ethers';
 import { TOKEN_BALANCES_BY_OWNER_SUB } from '@/graphql/subgraph';
-import { useIdeas } from '@/hooks/useIdeas';
+import { StandaloneNounCircular } from '@/components/NounCircular';
 
 const ProfileCommentRow = ({ comment, refetch }: { comment: Comment; refetch: () => void }) => {
   const { idea, parent, parentId, createdAt, body, deleted } = comment;
+  const { isLoggedIn, triggerSignIn } = useAuth();
   const wallet = parentId && parent ? parent.authorId : idea?.creatorId;
   const { data: creatorEns } = useEnsName({
     address: wallet as `0x${string}`,
     cacheTime: 6_000,
   });
   const shortAddress = useShortAddress(wallet || '');
-  const { deleteCommentWithoutReValidation } = useIdeas();
   const { address: account } = useAccount();
 
   const [getTokenBalances, { data: tokenBalanceData }] = useLazyQuery(
     TOKEN_BALANCES_BY_OWNER_SUB,
     {
       context: {
-        clientName: 'LilNouns', // change to 'NounsDAO' to query the nouns subgraph
+        clientName: 'LilNouns', // TODO: change to 'NounsDAO' to query the nouns subgraph
       },
     },
   );
+
+  const [deleteCommentMutation, { error, loading, data: deletedComment }] =
+  useMutation<deleteIdeaComment>(DELETE_IDEA_COMMENT_MUTATION, {
+    onCompleted() {
+      refetch();
+    }
+  });
+
+  const getDeleteCommentMutationArgs = () => ({
+    context: {},
+    variables: {
+      id: comment.id
+    },
+  });
+
+  const deleteComment = async () => {
+    if (!isLoggedIn) {
+      try {
+        const { success } = await triggerSignIn();
+        if (success) {
+          deleteCommentMutation(getDeleteCommentMutationArgs());
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      deleteCommentMutation(getDeleteCommentMutationArgs());
+    }
+  };
 
   useEffect(() => {
     if (!!parent) {
@@ -42,7 +75,7 @@ const ProfileCommentRow = ({ comment, refetch }: { comment: Comment; refetch: ()
     }
   }, [parent]);
 
-  // const lilNounData = tokenBalanceData?.account?.tokenBalance || 0;
+  const tokenData = tokenBalanceData?.account?.tokens || [];
 
   const renderCommentCard = () => {
     const content = deleted ? (
@@ -52,14 +85,17 @@ const ProfileCommentRow = ({ comment, refetch }: { comment: Comment; refetch: ()
         <Card.Header className="bg-white font-semibold text-[#8C8D92] text-[12px] !rounded-[16px] !border-0">
           <div className="flex flex-1 flex-row items-center gap-[8px] border-solid !border-[#E2E3E8] border-b-1 border-l-0 border-r-0 border-t-0 pb-[8px]">
             <span className="flex text-[#8C8D92] overflow-hidden gap-[8px] items-center">
-              {/* {Boolean(lilNounData.length) ? (
+              {Boolean(tokenData.length) ? (
                 <StandaloneNounCircular
-                  nounId={EthersBN.from(lilNounData[0].id)}
-                  styleOverride="!w-[20px] !h-[20px]"
+                  nounId={BigNumber.from(tokenData[0].id)}
+                  seed={tokenData[0].seed}
+                  height={20}
+                  width={20}
+                  isBigNoun={false} // TODO: CHANGE BASED ON COMMUNITY ENVIRONMENT
                 />
-              ) : ( */}
+              ) : (
                 <span>{idea?.id}</span>
-              {/* )} */}
+              )}
               <span className="truncate">{creatorEns || shortAddress}</span>
             </span>
             <span className="text-[#212529] truncate">
@@ -77,8 +113,7 @@ const ProfileCommentRow = ({ comment, refetch }: { comment: Comment; refetch: ()
               <span
                 className="text-red-500 cursor-pointer ml-2"
                 onClick={async () => {
-                  await deleteCommentWithoutReValidation(Number(idea?.id) || 0, comment.id);
-                  await refetch();
+                  await deleteComment();
                 }}
               >
                 Delete
