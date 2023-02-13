@@ -6,7 +6,7 @@ import Router from "next/router";
 import { useState } from 'react';
 import { TabOption, TabWrapper } from '@/components/ProfileTabFilters';
 // import ProposalStatus from '../../../components/ProposalStatus';
-import { TabFilterOptions, TabFilterOptionValues } from '@/hooks/useProfileGovernanceData';
+// import { TabFilterOptions, TabFilterOptionValues } from '@/hooks/useProfileGovernanceData';
 
 import { createBreakpoint } from 'react-use';
 import UIFilter from '@/components/UIFilter';
@@ -124,13 +124,13 @@ const filterProposals = (proposals: any[], currentFilter: string) =>
 const ProfileGovernanceList = ({
   isLoadingGovernance,
   snapshotProposalData,
-  categorisedProposals,
+  // categorisedProposals,
 }: {
   isLoadingGovernance: boolean;
   snapshotProposalData: any;
-  categorisedProposals: { [key in TabFilterOptionValues]: any[] };
+  // categorisedProposals: { [key in TabFilterOptionValues]: any[] };
 }) => {
-  const [currentTab, setCurrentTab] = useState(TabFilterOptionValues.YES);
+  // const [currentTab, setCurrentTab] = useState(TabFilterOptionValues.YES);
   const [currentFilter, setFilter] = useState('ALL');
 
   if (isLoadingGovernance) {
@@ -141,14 +141,14 @@ const ProfileGovernanceList = ({
     );
   }
 
-  const sortedProposals = filterProposals(categorisedProposals[currentTab] || [], currentFilter);
+  // const sortedProposals = filterProposals(categorisedProposals[currentTab] || [], currentFilter);
 
   return (
     <>
       <div className="mt-[32px] mb-[24px] flex flex-col-reverse sm:flex-row">
         <div className="flex mb-[16px] sm:mt-0 mt-[16px] sm:mb-0">
           <TabWrapper>
-            {TabFilterOptions.map(({ id, label }: { id: TabFilterOptionValues; label: string }) => {
+            {/* {TabFilterOptions.map(({ id, label }: { id: TabFilterOptionValues; label: string }) => {
               return (
                 <TabOption
                   key={id}
@@ -167,7 +167,7 @@ const ProfileGovernanceList = ({
                   }).length || 0
                 }`}</TabOption>
               );
-            })}
+            })} */}
           </TabWrapper>
         </div>
         <div className="flex flex-1 justify-end">
@@ -179,7 +179,7 @@ const ProfileGovernanceList = ({
           />
         </div>
       </div>
-      {sortedProposals?.map(p => {
+      {/* {sortedProposals?.map(p => {
         if (p.type === 'LIL_NOUN') {
           return (
             <div className="mb-[16px] space-y-4" key={p.proposal.id}>
@@ -231,7 +231,7 @@ const ProfileGovernanceList = ({
           <Alert.Heading>No data found.</Alert.Heading>
           <p>We could not find any data for this user!</p>
         </Alert>
-      )}
+      )} */}
     </>
   );
 };
