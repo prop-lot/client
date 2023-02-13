@@ -24,6 +24,16 @@ export const TOKEN_BALANCES_BY_OWNER_SUB = gql`
 
     account(id: $id) {
       tokenBalance
+      tokens: nouns {
+        id
+        seed {
+          background
+          body
+          accessory
+          head
+          glasses
+        }
+      }
     }
   }
 `;
