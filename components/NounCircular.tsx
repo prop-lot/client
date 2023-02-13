@@ -67,7 +67,7 @@ const Noun: React.FC<{
     <div className={`relative pt-100% !h-${height ? `[${height}px]` : 0} !w-${width ? `[${width}px]` : 'full'}`} data-tip data-for="noun-traits">
       <Image
         className={`object-pixelated object-left-top w-full h-auto align-middle rounded-full`}
-        src={imgPath ? imgPath : (isBigNoun ? loadingBigNoun : loadingNoun)}
+        src={imgPath ? imgPath : (isBigNoun ? loadingBigNoun.src : loadingNoun.src)}
         alt={alt}
         fluid
       />
