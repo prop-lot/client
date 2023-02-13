@@ -1,11 +1,11 @@
 // import { Spinner, Alert } from 'react-bootstrap';
 // import Router from "next/router";
 
-// // import { ProposalState } from '../../../wrappers/nounsDao';
-// // import { bigNounsPropStatus } from '../../../components/Proposals';
-// import { useState } from 'react';
-// import { TabOption, TabWrapper } from '@/components/ProfileTabFilters';
-// // import ProposalStatus from '../../../components/ProposalStatus';
+// import { ProposalState } from '../../../wrappers/nounsDao';
+// import { bigNounsPropStatus } from '../../../components/Proposals';
+import { useState } from 'react';
+import { TabOption, TabWrapper } from '@/components/ProfileTabFilters';
+// import ProposalStatus from '../../../components/ProposalStatus';
 // import { TabFilterOptions, TabFilterOptionValues } from '@/hooks/useProfileGovernanceData';
 
 // import { createBreakpoint } from 'react-use';
@@ -121,17 +121,17 @@
 //     })
 //     .sort((a: any, b: any) => b.createdAt - a.createdAt) || [];
 
-// const ProfileGovernanceList = ({
-//   isLoadingGovernance,
-//   snapshotProposalData,
-//   categorisedProposals,
-// }: {
-//   isLoadingGovernance: boolean;
-//   snapshotProposalData: any;
-//   categorisedProposals: { [key in TabFilterOptionValues]: any[] };
-// }) => {
-//   const [currentTab, setCurrentTab] = useState(TabFilterOptionValues.YES);
-//   const [currentFilter, setFilter] = useState('ALL');
+const ProfileGovernanceList = ({
+  isLoadingGovernance,
+  snapshotProposalData,
+  // categorisedProposals,
+}: {
+  isLoadingGovernance: boolean;
+  snapshotProposalData: any;
+  // categorisedProposals: { [key in TabFilterOptionValues]: any[] };
+}) => {
+  // const [currentTab, setCurrentTab] = useState(TabFilterOptionValues.YES);
+  const [currentFilter, setFilter] = useState('ALL');
 
 //   if (isLoadingGovernance) {
 //     return (
@@ -141,64 +141,64 @@
 //     );
 //   }
 
-//   const sortedProposals = filterProposals(categorisedProposals[currentTab] || [], currentFilter);
+  // const sortedProposals = filterProposals(categorisedProposals[currentTab] || [], currentFilter);
 
-//   return (
-//     <>
-//       <div className="mt-[32px] mb-[24px] flex flex-col-reverse sm:flex-row">
-//         <div className="flex mb-[16px] sm:mt-0 mt-[16px] sm:mb-0">
-//           <TabWrapper>
-//             {TabFilterOptions.map(({ id, label }: { id: TabFilterOptionValues; label: string }) => {
-//               return (
-//                 <TabOption
-//                   key={id}
-//                   id={id}
-//                   isSelected={currentTab === id}
-//                   onClick={e => {
-//                     e.preventDefault();
-//                     setCurrentTab(id);
-//                   }}
-//                 >{`${label} ${
-//                   categorisedProposals[id]?.filter(proposal => {
-//                     if (currentFilter === 'ALL') {
-//                       return true;
-//                     }
-//                     return proposal.type === currentFilter;
-//                   }).length || 0
-//                 }`}</TabOption>
-//               );
-//             })}
-//           </TabWrapper>
-//         </div>
-//         <div className="flex flex-1 justify-end">
-//           <UIFilter
-//             filter={sortFilter}
-//             updateFilters={(filters: string[]) => {
-//               setFilter(filters[0]);
-//             }}
-//           />
-//         </div>
-//       </div>
-//       {sortedProposals?.map(p => {
-//         if (p.type === 'LIL_NOUN') {
-//           return (
-//             <div className="mb-[16px] space-y-4" key={p.proposal.id}>
-//               <ProposalWrapper
-//                 id={p.proposal.id}
-//                 title={p.proposal.title}
-//                 status={p.proposal.status}
-//                 type={p.type}
-//                 key={p.proposal.id}
-//               >
-//                 <div className="flex flex-row flex-1 justify-content-start align-items-center pt-[12px] pt-[12px]">
-//                   <span className="font-propLot text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1">
-//                     {p.reason || 'No reason given'}
-//                   </span>
-//                 </div>
-//               </ProposalWrapper>
-//             </div>
-//           );
-//         }
+  return (
+    <>
+      <div className="mt-[32px] mb-[24px] flex flex-col-reverse sm:flex-row">
+        <div className="flex mb-[16px] sm:mt-0 mt-[16px] sm:mb-0">
+          <TabWrapper>
+            {/* {TabFilterOptions.map(({ id, label }: { id: TabFilterOptionValues; label: string }) => {
+              return (
+                <TabOption
+                  key={id}
+                  id={id}
+                  isSelected={currentTab === id}
+                  onClick={e => {
+                    e.preventDefault();
+                    setCurrentTab(id);
+                  }}
+                >{`${label} ${
+                  categorisedProposals[id]?.filter(proposal => {
+                    if (currentFilter === 'ALL') {
+                      return true;
+                    }
+                    return proposal.type === currentFilter;
+                  }).length || 0
+                }`}</TabOption>
+              );
+            })} */}
+          </TabWrapper>
+        </div>
+        <div className="flex flex-1 justify-end">
+          {/* <UIFilter
+            filter={sortFilter}
+            updateFilters={(filters: string[]) => {
+              setFilter(filters[0]);
+            }}
+          /> */}
+        </div>
+      </div>
+      {/* {sortedProposals?.map(p => {
+        if (p.type === 'LIL_NOUN') {
+          return (
+            <div className="mb-[16px] space-y-4" key={p.proposal.id}>
+              <ProposalWrapper
+                id={p.proposal.id}
+                title={p.proposal.title}
+                status={p.proposal.status}
+                type={p.type}
+                key={p.proposal.id}
+              >
+                <div className="flex flex-row flex-1 justify-content-start align-items-center pt-[12px] pt-[12px]">
+                  <span className="font-propLot text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1">
+                    {p.reason || 'No reason given'}
+                  </span>
+                </div>
+              </ProposalWrapper>
+            </div>
+          );
+        }
 
 //         if (p.type === 'BIG_NOUN') {
 //           const snapshotVoteObject = snapshotProposalData.find((spi: any) =>
@@ -224,15 +224,15 @@
 //           );
 //         }
 
-//         return null;
-//       })}
-//       {!Boolean(sortedProposals.length) && (
-//         <Alert variant="secondary">
-//           <Alert.Heading>No data found.</Alert.Heading>
-//           <p>We could not find any data for this user!</p>
-//         </Alert>
-//       )}
-//     </>
-//   );
-// };
-// export default ProfileGovernanceList;
+        return null;
+      })}
+      {!Boolean(sortedProposals.length) && (
+        <Alert variant="secondary">
+          <Alert.Heading>No data found.</Alert.Heading>
+          <p>We could not find any data for this user!</p>
+        </Alert>
+      )} */}
+    </>
+  );
+};
+export default ProfileGovernanceList;
