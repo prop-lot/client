@@ -5,13 +5,14 @@ const prisma = new PrismaClient();
 const chance = new Chance();
 
 async function seed() {
-  const user: { wallet: string; ens: string; } = {
+  const user: { wallet: string; ens: string } = {
     ens: "test.eth",
     wallet: "",
   };
 
   const communityData = {
     name: "Nouns",
+    data: {},
   };
 
   const community = await prisma.community.create({
@@ -59,7 +60,7 @@ async function seed() {
           ideaId: idea.id,
           voterId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9${i}`,
           direction: 1,
-          voterWeight: (i * 3) + 1 
+          voterWeight: i * 3 + 1,
         },
       });
     }
