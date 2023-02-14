@@ -1,9 +1,14 @@
 import { DELEGATED_VOTES_BY_OWNER_SUB, DELEGATED_VOTES_BY_OWNER_SUB_AT_BLOCK, TOTAL_NOUNS_CREATED } from '@/graphql/subgraph'
 import { nounsGraphqlClient, lilNounsGraphqlClient } from '@/graphql/clients/nouns-graphql-client'
 
+// Extend this with subdomains for other DAOs that we want to integrate.
+export enum SUPPORTED_SUBDOMAINS {
+  LIL_NOUNS = 'lilnouns',
+  NOUNS = 'nouns'
+}
+
 export const SupportedTokenGetterMap = {
-  lilnouns: {
-    type: 'LIL_NOUNS',
+  [SUPPORTED_SUBDOMAINS.LIL_NOUNS]: {
     getUserTokenCount: async (address: string) => {
       try {
         const data: any = await lilNounsGraphqlClient.query(DELEGATED_VOTES_BY_OWNER_SUB, { id: address.toLowerCase() }).toPromise()
@@ -29,8 +34,7 @@ export const SupportedTokenGetterMap = {
       }
     }
   },
-  nouns: {
-    type: 'NOUNS',
+  [SUPPORTED_SUBDOMAINS.NOUNS]: {
     getUserTokenCount: async (address: string) => {
       try {
         const data: any = await nounsGraphqlClient.query(DELEGATED_VOTES_BY_OWNER_SUB, { id: address.toLowerCase() }).toPromise()
