@@ -2,6 +2,7 @@ import CommunityHome from "@/components/CommunityHome";
 import { GetServerSidePropsContext } from "next";
 import { Community } from "@prisma/client";
 import LandingPage from "@/components/LandingPage";
+import prisma from "@/lib/prisma";
 
 const DEFAULT_HOMEPAGE_MATCH = "__NONE__";
 
