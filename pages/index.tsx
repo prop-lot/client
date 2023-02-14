@@ -29,9 +29,9 @@ export default function Home() {
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
-        clientName: 'LilNouns', // change to 'NounsDAO' to query the nouns subgraph
+        clientName: "LilNouns", // change to 'NounsDAO' to query the nouns subgraph
       },
-    },
+    }
   );
 
   useEffect(() => {
@@ -96,12 +96,12 @@ export default function Home() {
 
   return (
     <main className="pt-8">
-      <section className="max-w-screen-xl mx-auto">
+      <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
         <div className="my-12 flex flex-row space-x-4 items-center">
           <span className="w-52 h-52 border bg-gray-200 block rounded-lg"></span>
           <h3 className="text-3xl font-bold">Nouns PropLot</h3>
         </div>
-        <div className="flex justify-between mb-4 items-center">
+        <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-start sm:items-center">
           <div className="flex flex-row space-x-4">
             {data?.propLot?.sortFilter && (
               <UIFilter
@@ -122,17 +122,24 @@ export default function Home() {
               />
             )}
           </div>
-          <button className={`${ nounBalance > 0 ? '!bg-[#2B83F6] !text-white' : '!bg-[#F4F4F8] !text-[#E2E3E8]' } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`} onClick={() => {
-            if (nounBalance > 0) {
-              Router.push('/idea/new');
-            }
-          }}>
+          <button
+            className={`${
+              nounBalance > 0
+                ? "!bg-[#2B83F6] !text-white"
+                : "!bg-[#F4F4F8] !text-[#E2E3E8]"
+            } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] mb-[8px] sm:mb-0`}
+            onClick={() => {
+              if (nounBalance > 0) {
+                Router.push("/idea/new");
+              }
+            }}
+          >
             New Submission
           </button>
         </div>
       </section>
 
-      <section className="border-t bg-gray-100 pb-8">
+      <section className="border-t bg-gray-100 pb-8 px-[20px] xl:px-0">
         <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
           {data?.propLot?.ideas?.map((idea: any, idx: number) => {
             return (
@@ -146,13 +153,15 @@ export default function Home() {
               />
             );
           })}
-          {
-            data?.propLot?.ideas?.length === 0 && (
-              <EmptyState appliedFilters={appliedFilters} error={error} clearFilters={() => {
+          {data?.propLot?.ideas?.length === 0 && (
+            <EmptyState
+              appliedFilters={appliedFilters}
+              error={error}
+              clearFilters={() => {
                 refetch({ options: { requestUUID: v4(), filters: [] } });
-              }} />
-            )
-          }
+              }}
+            />
+          )}
         </div>
       </section>
     </main>

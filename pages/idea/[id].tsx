@@ -100,27 +100,26 @@ const IdeaPage = () => {
       <Row className="align-items-center">
         <Col lg={10} className="mx-auto">
           <Row>
-            <div>
-              <Link
-                className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
-                href="/"
+            <Link
+              className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
+              href="/"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-6 h-6 mr-2 cursor-pointer"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-6 h-6 mr-2 cursor-pointer"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-4.28 9.22a.75.75 0 000 1.06l3 3a.75.75 0 101.06-1.06l-1.72-1.72h5.69a.75.75 0 000-1.5h-5.69l1.72-1.72a.75.75 0 00-1.06-1.06l-3 3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <path
+                  fillRule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-4.28 9.22a.75.75 0 000 1.06l3 3a.75.75 0 101.06-1.06l-1.72-1.72h5.69a.75.75 0 000-1.5h-5.69l1.72-1.72a.75.75 0 00-1.06-1.06l-3 3z"
+                  clipRule="evenodd"
+                />
+              </svg>
 
-                <span className="text-lg lodrina">Back</span>
-              </Link>
-            </div>
+              <span className="text-lg lodrina">Back</span>
+            </Link>
+
             <div className="flex flex-col mb-4">
               <div className="flex flex-row justify-between items-center">
                 <h1 className="mb-0 lodrina text-5xl self-end">
