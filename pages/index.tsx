@@ -35,13 +35,16 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     });
   }
 
+  // If there isn't a community then redirect to the landing page
+  const communityName = !community ? DEFAULT_HOMEPAGE_MATCH : communityDomain
+
   // 1. communityDomain and no community = __NONE__ show placeholder
   // 2. communityDomain and community = correct community to show
   // 3. communityDomain but no community = there was a subdomain, but it doesn't exist (probably can't happen)
 
   return {
     props: {
-      communityName: communityDomain || DEFAULT_HOMEPAGE_MATCH,
+      communityName,
       community: community ? JSON.parse(JSON.stringify(community)) : null,
     },
   };

@@ -7,7 +7,7 @@ const getCommunityByDomain = (req: any) => {
     ? host?.match(/(.*)\.localhost:3000/)
     : host?.match(/(.*)\.proplot\.wtf/);
 
-  const communityDomain = subdomain?.[1] || '';
+  const communityDomain = subdomain?.[1]?.toLowerCase() || '';
   const supportedTokenConfig = SupportedTokenGetterMap[communityDomain as SUPPORTED_SUBDOMAINS];
 
   return {

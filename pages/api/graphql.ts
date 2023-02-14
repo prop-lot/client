@@ -22,7 +22,7 @@ export default withIronSessionApiRoute(
       // correct.
       const community = await prisma.community.findFirst({
         where: {
-          uname: communityDomain.toLowerCase(),
+          uname: communityDomain,
         },
       });
 

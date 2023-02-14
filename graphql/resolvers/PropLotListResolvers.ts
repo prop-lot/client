@@ -99,7 +99,6 @@ const resolvers: IResolvers = {
   },
   PropLotResponse: {
     ideas: async (root): Promise<Idea[]> => {
-      console.log(root.communityId)
       const ideas: Idea[] = await IdeasService.findWhere({
         sortBy: parseFilterParam(root.sortParam)?.value,
         date: parseFilterParam(root.dateParam)?.value,

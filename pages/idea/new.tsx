@@ -103,7 +103,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
-        clientName: community.uname as SUPPORTED_SUBDOMAINS,
+        clientName: community?.uname as SUPPORTED_SUBDOMAINS,
       },
     }
   );
