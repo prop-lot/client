@@ -16,7 +16,7 @@ model Community {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   name        String    @unique
-  data        Json
+  data        Json      @default("{ \"pfp\": \"\" }")
   ideas       Idea[]
 }
 
