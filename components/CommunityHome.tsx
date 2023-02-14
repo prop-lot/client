@@ -9,8 +9,9 @@ import IdeaRow from "@/components/IdeaRow";
 import UIFilter from "@/components/UIFilter";
 import useSyncURLParams from "@/hooks/useSyncURLParams";
 import EmptyState from "@/components/EmptyState";
+import { Community } from "@prisma/client";
 
-export default function CommunityHome() {
+export default function CommunityHome({ community }: { community: Community }) {
   const { address } = useAccount();
 
   const [getPropLotQuery, { data, refetch, error }] = useLazyQuery(

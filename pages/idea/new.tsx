@@ -9,13 +9,15 @@ import { marked } from "marked";
 import DOMPurify from "dompurify";
 import { SUBMIT_IDEA_MUTATION } from "@/graphql/queries/propLotMutations";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
-
 import { TagType } from "@/graphql/types/__generated__/apiTypes";
 import { submitIdea } from "@/graphql/types/__generated__/submitIdea";
 import { useApiError } from "@/hooks/useApiError";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import getCopyFor from "@/utils/copy";
+import { GetServerSidePropsContext } from "next";
+import prisma from "@/lib/prisma";
+import { Community } from "@prisma/client";
 
 enum FORM_VALIDATION {
   TITLE_MAX = 50,
@@ -90,7 +92,7 @@ const MarkdownModalExample = ({
   </Modal>
 );
 
-const CreateIdeaPage = () => {
+const CreateIdeaPage = ({ community }: { community: Community }) => {
   const { address } = useAccount();
   const { setError, error: errorModalVisible } = useApiError();
   const { isLoggedIn, triggerSignIn } = useAuth();
@@ -449,5 +451,39 @@ const CreateIdeaPage = () => {
     </Container>
   );
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  let communityName;
+  let community;
+  const host = context.req.headers.host;
+  const subdomain =
+    process.env.NODE_ENV === "development"
+      ? host?.match(/(.*)\.localhost:3000/)
+      : host?.match(/(.*)\.proplot\.wtf/);
+
+  if (!subdomain) {
+    return {
+      notFound: true,
+    };
+  }
+  communityName = subdomain[1];
+  community = await prisma.community.findFirst({
+    where: {
+      name: communityName,
+    },
+  });
+
+  if (!community) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      community: JSON.parse(JSON.stringify(community)),
+    },
+  };
+}
 
 export default CreateIdeaPage;

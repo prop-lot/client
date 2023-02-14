@@ -15,6 +15,9 @@ import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
 import Link from "next/link";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
+import { GetServerSidePropsContext } from "next";
+import prisma from "@/lib/prisma";
+import { Community } from "@prisma/client";
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -35,7 +38,7 @@ marked.setOptions({
   renderer: renderer,
 });
 
-const IdeaPage = () => {
+const IdeaPage = ({ community }: { community: Community }) => {
   const router = useRouter();
   const { id } = router.query as { id: string };
   const { address } = useAccount();
@@ -56,9 +59,9 @@ const IdeaPage = () => {
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
-        clientName: 'LilNouns', // change to 'NounsDAO' to query the nouns subgraph
+        clientName: "LilNouns", // change to 'NounsDAO' to query the nouns subgraph
       },
-    },
+    }
   );
 
   const { data: creatorEns } = useEnsName({
@@ -92,8 +95,9 @@ const IdeaPage = () => {
 
   const tokenBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
   const hasTokens = tokenBalance > 0;
-  const creatorTokenWeight = data.getIdea.votes?.find((vote) => vote.voterId === data.getIdea?.creatorId)
-    ?.voterWeight;
+  const creatorTokenWeight = data.getIdea.votes?.find(
+    (vote) => vote.voterId === data.getIdea?.creatorId
+  )?.voterWeight;
 
   return (
     <Container fluid={"lg"} className="mt-8 mb-12">
@@ -237,5 +241,39 @@ const IdeaPage = () => {
     </Container>
   );
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  let communityName;
+  let community;
+  const host = context.req.headers.host;
+  const subdomain =
+    process.env.NODE_ENV === "development"
+      ? host?.match(/(.*)\.localhost:3000/)
+      : host?.match(/(.*)\.proplot\.wtf/);
+
+  if (!subdomain) {
+    return {
+      notFound: true,
+    };
+  }
+  communityName = subdomain[1];
+  community = await prisma.community.findFirst({
+    where: {
+      name: communityName,
+    },
+  });
+
+  if (!community) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      community: JSON.parse(JSON.stringify(community)),
+    },
+  };
+}
 
 export default IdeaPage;
