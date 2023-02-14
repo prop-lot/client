@@ -2,9 +2,6 @@ import { Idea, TagType } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { DATE_FILTERS, getIsClosed } from "../graphql/utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
-// import { nounsTotalSupply } from "../utils/utils";
-import { SupportedTokenGetterMap } from "@/utils/supportedTokenUtils";
-import { getBlock } from "@/utils/ethers";
 
 const sortFn: { [key: string]: any } = {
   LATEST: (a: any, b: any) => {
@@ -112,6 +109,7 @@ class IdeasService {
     wallet,
     tab,
     hideDeleted = true,
+    communityId,
   }: {
     sortBy?: string;
     tags?: TagType[];
@@ -119,6 +117,7 @@ class IdeasService {
     wallet?: string;
     tab?: string;
     hideDeleted?: boolean;
+    communityId: number;
   }) {
     try {
       const dateRange: any = DATE_FILTERS[date || "ALL_TIME"].filterFn();
@@ -131,6 +130,7 @@ class IdeasService {
             lte: dateRange.lte,
           },
           ...profileFilters,
+          communityId: communityId || 0,
         },
         include: {
           tags: true,
@@ -217,40 +217,32 @@ class IdeasService {
   }
 
   static async createIdea(
-    data: { title: string; tldr: string; description: string; tags: TagType[] },
-    user?: { wallet: string }
+    data: { title: string; tldr: string; description: string; tags: TagType[], communityId: number; totalSupply: number; currentBlock: number; authorTokenCount: number; },
+    user?: { wallet: string },
   ) {
     try {
       if (!user) {
         throw new Error("Failed to save idea: missing user details");
       }
 
-      const supportedToken = SupportedTokenGetterMap['lilnouns'] // TODO: Parse header/domain to use `lilnouns` or `nouns` here.
-
-      if (!supportedToken?.getTotalSupply) {
-        throw new Error("Failed to save idea: token unsupported");
-      }
-
-      const [totalSupply, currentBlock, authorTokenCount] = await Promise.all([supportedToken.getTotalSupply(), getBlock(), supportedToken.getUserTokenCount(user.wallet)])
-
-      if (!totalSupply || !currentBlock || !authorTokenCount) {
-        throw new Error("Failed to save idea: couldn't fetch required data");
+      if (!data.communityId) {
+        throw new Error("Failed to save idea: missing community ID");
       }
 
       const idea = await prisma.idea.create({
         data: {
-          communityId: 1,
+          communityId: data.communityId,
           title: data.title,
           tldr: data.tldr,
           description: data.description,
           creatorId: user.wallet,
-          tokenSupplyOnCreate: totalSupply,
-          createdAtBlock: currentBlock,
+          tokenSupplyOnCreate: data.totalSupply,
+          createdAtBlock: data.currentBlock,
           votes: {
             create: {
               direction: 1,
               voterId: user.wallet,
-              voterWeight: authorTokenCount,
+              voterWeight: data.authorTokenCount,
             },
           },
           tags: {
@@ -269,16 +261,10 @@ class IdeasService {
     }
   }
 
-  static async voteOnIdea(data: any, user?: { wallet: string }) {
+  static async voteOnIdea(data: any, getUserVoteWeightAtBlock: any, user?: { wallet: string }) {
     try {
       if (!user) {
         throw new Error("Failed to save vote: missing user details");
-      }
-
-      const supportedToken = SupportedTokenGetterMap['lilnouns'] // TODO: Parse header/domain to use `lilnouns` or `nouns` here.
-
-      if (!supportedToken?.getUserVoteWeightAtBlock) {
-        throw new Error("Failed to save idea: token unsupported");
       }
 
       const direction = Math.min(Math.max(parseInt(data.direction), -1), 1);
@@ -322,7 +308,7 @@ class IdeasService {
       // let currentUserVotes = undefined;
 
       if (!existingVote) {
-        userDelegatedVotesAtBlock = await supportedToken.getUserVoteWeightAtBlock(user.wallet, idea?.createdAtBlock);
+        userDelegatedVotesAtBlock = await getUserVoteWeightAtBlock(user.wallet, idea?.createdAtBlock);
 
         if (!userDelegatedVotesAtBlock || userDelegatedVotesAtBlock === 0) {
           throw new Error("Failed to get user vote weight");

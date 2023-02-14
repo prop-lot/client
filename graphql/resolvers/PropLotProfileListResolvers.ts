@@ -100,6 +100,7 @@ const resolvers: IResolvers = {
         wallet,
         user,
         userAggregations,
+        communityId: context.communityId,
       };
     },
   },
@@ -115,6 +116,7 @@ const resolvers: IResolvers = {
           wallet: root.wallet,
           tab,
           hideDeleted: false,
+          communityId: root.communityId,
         });
 
         listItems = [...ideas];
@@ -134,6 +136,7 @@ const resolvers: IResolvers = {
           sortBy: parseFilterParam(root.sortParam)?.value,
           wallet: root.wallet,
           tab,
+          communityId: root.communityId,
         });
         listItems = [...ideas];
       }

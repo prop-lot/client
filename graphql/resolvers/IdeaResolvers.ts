@@ -17,6 +17,8 @@ import { TagType } from "@prisma/client";
 
 import { VirtualTags } from "@/utils/virtual";
 
+import { getBlock } from "@/utils/ethers";
+
 const resolvers: IResolvers = {
   Query: {
     getIdea: async (_parent: any, args: QueryGetIdeaArgs) => {
@@ -97,11 +99,17 @@ const resolvers: IResolvers = {
         throw new Error("Failed to save vote: unauthorized");
       }
 
+
+      if (!context.communityTokenConfig?.getUserVoteWeightAtBlock) {
+        throw new Error("Failed to save idea: token unsupported");
+      }
+
       const vote: Vote = await IdeasService.voteOnIdea(
         {
           ideaId: args.options.ideaId,
           direction: args.options.direction,
         },
+        context.communityTokenConfig.getUserVoteWeightAtBlock,
         context.authScope.user
       );
       return vote;
@@ -111,12 +119,28 @@ const resolvers: IResolvers = {
         throw new Error("Failed to create idea: unauthorized");
       }
 
+      const communityTokenConfig = context.communityTokenConfig;
+
+      if (!communityTokenConfig?.getTotalSupply) {
+        throw new Error("Failed to save idea: token unsupported");
+      }
+
+      const [totalSupply, currentBlock, authorTokenCount] = await Promise.all([communityTokenConfig.getTotalSupply(), getBlock(), communityTokenConfig.getUserTokenCount(context.authScope.user.wallet)]);
+
+      if (!totalSupply || !currentBlock || !authorTokenCount) {
+        throw new Error("Failed to save idea: couldn't fetch required data");
+      }
+
       const idea = await IdeasService.createIdea(
         {
           title: args.options.title,
           description: args.options.description,
           tldr: args.options.tldr,
           tags: (args.options.tags as TagType[]) || [],
+          communityId: context.communityId,
+          totalSupply,
+          currentBlock,
+          authorTokenCount,
         },
         context.authScope.user
       );

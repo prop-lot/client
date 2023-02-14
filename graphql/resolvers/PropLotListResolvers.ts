@@ -93,15 +93,18 @@ const resolvers: IResolvers = {
         tagParams,
         requestUUID: args.options.requestUUID,
         timeZone: context.timeZone,
+        communityId: context.communityId,
       };
     },
   },
   PropLotResponse: {
     ideas: async (root): Promise<Idea[]> => {
+      console.log(root.communityId)
       const ideas: Idea[] = await IdeasService.findWhere({
         sortBy: parseFilterParam(root.sortParam)?.value,
         date: parseFilterParam(root.dateParam)?.value,
         tags: root.tagParams.map((tag: string) => parseFilterParam(tag)?.value),
+        communityId: root.communityId,
       });
 
       return ideas;
