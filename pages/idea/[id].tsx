@@ -18,6 +18,8 @@ import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import { GetServerSidePropsContext } from "next";
 import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
+import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
+import getCommunityByDomain from "@/utils/communityByDomain";
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -59,7 +61,7 @@ const IdeaPage = ({ community }: { community: Community }) => {
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
-        clientName: "LilNouns", // change to 'NounsDAO' to query the nouns subgraph
+        clientName: community.uname as SUPPORTED_SUBDOMAINS,
       },
     }
   );
@@ -243,23 +245,17 @@ const IdeaPage = ({ community }: { community: Community }) => {
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  let communityName;
-  let community;
-  const host = context.req.headers.host;
-  const subdomain =
-    process.env.NODE_ENV === "development"
-      ? host?.match(/(.*)\.localhost:3000/)
-      : host?.match(/(.*)\.proplot\.wtf/);
+  const { communityDomain } = getCommunityByDomain(context.req);
 
-  if (!subdomain) {
+  if (!communityDomain) {
     return {
       notFound: true,
     };
   }
-  communityName = subdomain[1];
-  community = await prisma.community.findFirst({
+
+  const community = await prisma.community.findFirst({
     where: {
-      name: communityName,
+      uname: communityDomain,
     },
   });
 
