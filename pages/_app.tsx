@@ -7,7 +7,6 @@ import { ConnectKitProvider, getDefaultClient } from "connectkit";
 import { ApolloProvider } from "@apollo/client";
 import { client as ApolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/hooks/useAuth";
-import NavBar from "@/components/Navbar";
 import { ErrorModalProvider } from "@/hooks/useApiError";
 
 const alchemyId = process.env.ALCHEMY_ID;
@@ -33,7 +32,6 @@ export default function App({ Component, pageProps }: AppProps) {
           <ConnectKitProvider>
             <AuthProvider>
               <ErrorModalProvider>
-                <NavBar />
                 <Component {...pageProps} />
               </ErrorModalProvider>
             </AuthProvider>
