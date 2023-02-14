@@ -11,7 +11,7 @@ async function seed() {
   };
 
   const communityData = {
-    name: "Nouns",
+    uname: "nouns",
     data: {},
   };
 
