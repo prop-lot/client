@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { SiweMessage } from 'siwe'
 import { ironOptions } from '@/lib/config'
 import AuthService from '@/services/auth'
-import { SupportedTokenGetterMap } from '@/utils/supportedTokenUtils'
+import getCommunityByDomain from '@/utils/communityByDomain'
  
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { method } = req
@@ -18,12 +18,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           return res.status(422).json({ message: 'Invalid nonce.' })
         }
 
-        // TODO: Check a header or host name here to determine if this is nouns vs lilnouns and make contract call? How do we make
-        // this more scaleable? Something like below:
-        const supportedToken = SupportedTokenGetterMap['lilnouns']
+        const { supportedTokenConfig } = getCommunityByDomain(req);
 
-        if (supportedToken) {
-          const tokenCount: number = await supportedToken.getUserTokenCount(fields.address)
+        if (supportedTokenConfig) {
+          const tokenCount: number = await supportedTokenConfig.getUserTokenCount(fields.address)
           if (!(tokenCount > 0)) {
             throw new Error(`User does not have a token`);
           }

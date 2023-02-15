@@ -1,3 +1,4 @@
+import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import {
   ApolloClient,
   ApolloLink,
@@ -20,10 +21,10 @@ const lilNounsDAOLink = new HttpLink({
 //pass them to apollo-client config
 export const client = new ApolloClient({
   link: ApolloLink.split(
-    operation => operation.getContext().clientName === 'NounsDAO',
+    operation => operation.getContext().clientName === SUPPORTED_SUBDOMAINS.NOUNS,
     nounsDAOLink, //if above
     ApolloLink.split(
-      operation => operation.getContext().clientName === 'LilNouns',
+      operation => operation.getContext().clientName === SUPPORTED_SUBDOMAINS.LIL_NOUNS,
       lilNounsDAOLink,
       defaultLink,
     ),

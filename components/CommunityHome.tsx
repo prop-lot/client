@@ -10,6 +10,7 @@ import UIFilter from "@/components/UIFilter";
 import useSyncURLParams from "@/hooks/useSyncURLParams";
 import EmptyState from "@/components/EmptyState";
 import { Community } from "@prisma/client";
+import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 
 export default function CommunityHome({ community }: { community: Community }) {
   const { address } = useAccount();
@@ -30,7 +31,7 @@ export default function CommunityHome({ community }: { community: Community }) {
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
-        clientName: "LilNouns", // change to 'NounsDAO' to query the nouns subgraph
+        clientName: community?.uname as SUPPORTED_SUBDOMAINS,
       },
     }
   );
