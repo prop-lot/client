@@ -15,8 +15,9 @@ import { useLazyQuery } from '@apollo/client';
 import { BigNumber } from 'ethers';
 import { TOKEN_BALANCES_BY_OWNER_SUB } from '@/graphql/subgraph';
 import { StandaloneNounCircular } from '@/components/NounCircular';
+import { SUPPORTED_SUBDOMAINS } from '@/utils/supportedTokenUtils';
 
-const ProfileCommentRow = ({ comment, refetch }: { comment: Comment; refetch: () => void }) => {
+const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comment; refetch: () => void; communityName: SUPPORTED_SUBDOMAINS; }) => {
   const { idea, parent, parentId, createdAt, body, deleted } = comment;
   const { isLoggedIn, triggerSignIn } = useAuth();
   const wallet = parentId && parent ? parent.authorId : idea?.creatorId;
@@ -31,12 +32,12 @@ const ProfileCommentRow = ({ comment, refetch }: { comment: Comment; refetch: ()
     TOKEN_BALANCES_BY_OWNER_SUB,
     {
       context: {
-        clientName: 'LilNouns', // TODO: change to 'NounsDAO' to query the nouns subgraph
+        clientName: communityName,
       },
     },
   );
 
-  const [deleteCommentMutation, { error, loading, data: deletedComment }] =
+  const [deleteCommentMutation, {}] =
   useMutation<deleteIdeaComment>(DELETE_IDEA_COMMENT_MUTATION, {
     onCompleted() {
       refetch();
@@ -91,7 +92,7 @@ const ProfileCommentRow = ({ comment, refetch }: { comment: Comment; refetch: ()
                   seed={tokenData[0].seed}
                   height={20}
                   width={20}
-                  isBigNoun={false} // TODO: CHANGE BASED ON COMMUNITY ENVIRONMENT
+                  isBigNoun={communityName === SUPPORTED_SUBDOMAINS.NOUNS}
                 />
               ) : (
                 <span>{idea?.id}</span>

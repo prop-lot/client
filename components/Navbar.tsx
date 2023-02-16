@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Router from "next/router";
 import { ConnectKitButton } from "connectkit";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
@@ -6,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const { isDisconnected } = useAccount();
-  const { isLoggedIn, logout } = useAuth();
+  const { logout } = useAuth();
 
   // Logout when a user changes their wallet in their browser extension
   useEffect(() => {
@@ -33,7 +34,7 @@ const Navbar = () => {
   }, [isDisconnected]); // eslint-disable-line
 
   return (
-    <main className="pt-8">
+    <main className="pt-8 px-[20px] xl:px-0">
       <section className="max-w-screen-xl mx-auto">
         <nav className="flex justify-between">
           <Image
@@ -41,6 +42,8 @@ const Navbar = () => {
             alt="PropLot logo, which is a car noun with text spelling prop lot."
             width="140"
             height="120"
+            onClick={() => Router.push('/')}
+            className="cursor-pointer"
           />
           <ConnectKitButton />
         </nav>

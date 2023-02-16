@@ -1,33 +1,38 @@
 import { Col, Row, Button, Spinner } from 'react-bootstrap';
 import { v4 } from 'uuid';
 import { Alert } from 'react-bootstrap';
-// import { BigNumber as EthersBN } from 'ethers';
-import { useParams } from 'react-router-dom';
-
-// import Davatar from '@davatar/react';
-
 import { useEffect, useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
+import { useRouter } from 'next/router';
+import { GetServerSidePropsContext } from 'next';
+import { BigNumber } from 'ethers';
+import prisma from "@/lib/prisma";
+import { Community } from "@prisma/client";
+import { useEnsName, useAccount } from "wagmi";
+
 import { GET_PROPLOT_PROFILE_QUERY } from '@/graphql/queries/propLotProfileQuery';
-import ProfileTabFilters from '@/components/ProfileTabFilters';
-import IdeaRow from '@/components/IdeaRow';
+import { TOKEN_BALANCES_BY_OWNER_SUB } from '@/graphql/subgraph';
 import {
   getPropLotProfile,
   getPropLotProfile_propLotProfile_profile_user_userStats as UserStats,
 } from '@/graphql/types/__generated__/getPropLotProfile';
-import UIFilter from '@/components/UIFilter';
-import { useEnsName, useAccount } from "wagmi";
-import { useShortAddress } from '@/utils/addressAndENSDisplayUtils';
-// import useSyncURLParams from '@/utils/useSyncUrlParams';
-import { StandaloneNounCircular } from '@/components/NounCircular';
-// import { GrayCircle } from '../../components/GrayCircle';
-import { TOKEN_BALANCES_BY_OWNER_SUB } from '@/graphql/subgraph';
-import ProfileCommentRow from '@/components/ProfileCommentRow';
-import { useRouter } from 'next/router';
-import { BigNumber } from 'ethers';
-// import ProfileGovernanceList from '@/components/ProfileGovernanceList';
 
+import ProfileTabFilters from '@/components/ProfileTabFilters';
+import IdeaRow from '@/components/IdeaRow';
+import UIFilter from '@/components/UIFilter';
+import ProfileCommentRow from '@/components/ProfileCommentRow';
+import { StandaloneNounCircular } from '@/components/NounCircular';
+
+import { SUPPORTED_SUBDOMAINS } from '@/utils/supportedTokenUtils';
+import { useShortAddress } from '@/utils/addressAndENSDisplayUtils';
+import getCommunityByDomain from '@/utils/communityByDomain';
+import useSyncURLParams from "@/hooks/useSyncURLParams";
+
+
+// import Davatar from '@davatar/react';
+// import ProfileGovernanceList from '@/components/ProfileGovernanceList';
 // import useProfileGovernanceData, { TabFilterOptionValues } from '@/hooks/useProfileGovernanceData';
+// import { GrayCircle } from '../../components/GrayCircle';
 
 const ProfileCard = (props: { title: string; count: number; isLoading?: boolean }) => {
   return (
@@ -46,17 +51,43 @@ const ProfileCard = (props: { title: string; count: number; isLoading?: boolean 
   );
 };
 
+const ProfileUserName = () => {
+  const router = useRouter();
+  const { id } = router.query as { id: string };
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const { data: creatorEns } = useEnsName({
+    address: id as `0x${string}`,
+    cacheTime: 6_000,
+    suspense: true,
+  });
+  const shortAddress = useShortAddress(id);
+
+  const profileName = creatorEns || shortAddress ;
+
+  return (
+    <h1 className="font-londrina text-[48px] sm:text-[56px] text-[#212529] font-normal">
+      {isMounted && profileName}
+    </h1>
+  )
+}
+
+
 const ProfileLilNounDisplay = ({
   tokensInWallet,
   delegatedTokens,
   tokenData,
+  communityName,
 }: {
   tokensInWallet: number;
   delegatedTokens: number;
   tokenData: any[];
+  communityName: SUPPORTED_SUBDOMAINS
 }) => {
-  const { id } = useParams() as { id: string };
-
   return (
     <div className="flex flex-col justify-end gap-[16px]">
       {Boolean(tokenData?.length) ? (
@@ -71,7 +102,7 @@ const ProfileLilNounDisplay = ({
                     nounId={BigNumber.from(token.id)}
                     height={48}
                     width={48}
-                    isBigNoun={false} // TODO: CHANGE BASED ON COMMUNITY ENVIRONMENT
+                    isBigNoun={communityName === SUPPORTED_SUBDOMAINS.NOUNS}
                   />
                 );
               })
@@ -102,7 +133,7 @@ const ProfileLilNounDisplay = ({
   );
 };
 
-const PropLotUserProfile = () => {
+const PropLotUserProfile = ({ community }: { community: Community }) => {
   const router = useRouter();
   const { id } = router.query as { id: string };
   const { address: account } = useAccount();
@@ -128,7 +159,7 @@ const PropLotUserProfile = () => {
     TOKEN_BALANCES_BY_OWNER_SUB,
     {
       context: {
-        clientName: 'LilNouns', // change to 'NounsDAO' to query the nouns subgraph
+        clientName: community?.uname as SUPPORTED_SUBDOMAINS,
       },
     },
   );
@@ -168,7 +199,7 @@ const PropLotUserProfile = () => {
     These can be parsed to update the local state after each request to ensure the client + API are in sync.
   */
   const appliedFilters = data?.propLotProfile?.metadata?.appliedFilters || [];
-  // useSyncURLParams(appliedFilters);
+  useSyncURLParams(appliedFilters, data?.propLotProfile?.metadata?.requestUUID);
 
   const handleUpdateFilters = (updatedFilters: string[], filterId: string) => {
     /*
@@ -185,21 +216,16 @@ const PropLotUserProfile = () => {
     refetch({ options: { wallet: id, requestUUID: v4(), filters: selectedfilters } });
   };
 
-  const { data: creatorEns } = useEnsName({
-    address: id as `0x${string}`,
-    cacheTime: 6_000,
-  });
-
   const [listButtonActive, setListButtonActive] = useState('PROP_LOT');
 
-  const lists: { [key: string]: any } = {
-    PROP_LOT: {
-      title: 'Prop Lot',
-    },
-    // GOVERNANCE: {
-    //   title: 'Governance',
-    // },
-  };
+  // const lists: { [key: string]: any } = {
+  //   PROP_LOT: {
+  //     title: 'Prop Lot',
+  //   },
+  //   // GOVERNANCE: {
+  //   //   title: 'Governance',
+  //   // },
+  // };
 
   const delegatedTokens = tokenBalanceData?.delegate?.delegatedVotes || 0;
   const tokensInWallet = tokenBalanceData?.account?.tokenBalance || 0;
@@ -207,7 +233,6 @@ const PropLotUserProfile = () => {
 
   const isAccountOwner = account !== undefined && account === id;
 
-  const shortAddress = useShortAddress(id);
   // const calculateOnchainVotes = () => {
   //   const yesVotes = categorisedProposals[TabFilterOptionValues.YES]?.length || 0;
   //   const noVotes = categorisedProposals[TabFilterOptionValues.NO]?.length || 0;
@@ -239,7 +264,7 @@ const PropLotUserProfile = () => {
 
   return (
     <main className="pt-8">
-      <section className="max-w-screen-xl mx-auto">
+      <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
         <Col lg={10} className="ml-auto mr-auto">
           <Row>
             <div>
@@ -250,14 +275,13 @@ const PropLotUserProfile = () => {
             <div className="flex flex-col mb-[48px]">
               <div className="flex flex-col sm:flex-row justify-between items-center">
                 <div className="flex flex-row justify-end">
-                  <h1 className="font-londrina text-[48px] sm:text-[56px] text-[#212529] font-normal">
-                    {creatorEns || shortAddress}
-                  </h1>
+                  <ProfileUserName />
                 </div>
                 <ProfileLilNounDisplay
                   delegatedTokens={delegatedTokens}
                   tokensInWallet={tokensInWallet}
                   tokenData={tokenData}
+                  communityName={community?.uname as SUPPORTED_SUBDOMAINS}
                 />
               </div>
             </div>
@@ -305,7 +329,7 @@ const PropLotUserProfile = () => {
               </>
             )} */}
 
-            {listButtonActive === 'PROP_LOT' && (
+            {/* {listButtonActive === 'PROP_LOT' && ( */}
               <>
                 <div className="mt-[48px] sm:mt-[81px] flex flex-1 items-center flex-col-reverse gap-[16px] sm:gap-[8px] sm:flex-row">
                   <h2 className="font-londrina text-[38px] text-[#212529] font-normal flex flex-1">
@@ -383,6 +407,7 @@ const PropLotUserProfile = () => {
                               options: { wallet: id, requestUUID: v4(), filters: appliedFilters },
                             })
                           }
+                          communityName={community?.uname as SUPPORTED_SUBDOMAINS}
                         />
                       </div>
                     );
@@ -397,12 +422,40 @@ const PropLotUserProfile = () => {
                   </Alert>
                 )}
               </>
-            )}
+            {/* )} */}
           </div>
         </Col>
       </section>
     </main>
   );
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { communityDomain } = getCommunityByDomain(context.req);
+
+  if (!communityDomain) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const community = await prisma.community.findFirst({
+    where: {
+      uname: communityDomain,
+    },
+  });
+
+  if (!community) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      community: JSON.parse(JSON.stringify(community)),
+    },
+  };
+}
 
 export default PropLotUserProfile;

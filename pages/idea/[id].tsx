@@ -15,6 +15,11 @@ import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
 import Link from "next/link";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
+import { GetServerSidePropsContext } from "next";
+import prisma from "@/lib/prisma";
+import { Community } from "@prisma/client";
+import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
+import getCommunityByDomain from "@/utils/communityByDomain";
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -35,7 +40,7 @@ marked.setOptions({
   renderer: renderer,
 });
 
-const IdeaPage = () => {
+const IdeaPage = ({ community }: { community: Community }) => {
   const router = useRouter();
   const { id } = router.query as { id: string };
   const { address } = useAccount();
@@ -56,9 +61,9 @@ const IdeaPage = () => {
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
       context: {
-        clientName: 'LilNouns', // change to 'NounsDAO' to query the nouns subgraph
+        clientName: community?.uname as SUPPORTED_SUBDOMAINS,
       },
-    },
+    }
   );
 
   const { data: creatorEns } = useEnsName({
@@ -91,35 +96,35 @@ const IdeaPage = () => {
 
   const tokenBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
   const hasTokens = tokenBalance > 0;
-  const creatorTokenWeight = data.getIdea.votes?.find((vote) => vote.voterId === data.getIdea?.creatorId)
-    ?.voterWeight;
+  const creatorTokenWeight = data.getIdea.votes?.find(
+    (vote) => vote.voterId === data.getIdea?.creatorId
+  )?.voterWeight;
 
   return (
     <Container fluid={"lg"} className="mt-8 mb-12">
       <Row className="align-items-center">
         <Col lg={10} className="mx-auto">
           <Row>
-            <div>
-              <Link
-                className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
-                href="/"
+            <Link
+              className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
+              href="/"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="w-6 h-6 mr-2 cursor-pointer"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="w-6 h-6 mr-2 cursor-pointer"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-4.28 9.22a.75.75 0 000 1.06l3 3a.75.75 0 101.06-1.06l-1.72-1.72h5.69a.75.75 0 000-1.5h-5.69l1.72-1.72a.75.75 0 00-1.06-1.06l-3 3z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <path
+                  fillRule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-4.28 9.22a.75.75 0 000 1.06l3 3a.75.75 0 101.06-1.06l-1.72-1.72h5.69a.75.75 0 000-1.5h-5.69l1.72-1.72a.75.75 0 00-1.06-1.06l-3 3z"
+                  clipRule="evenodd"
+                />
+              </svg>
 
-                <span className="text-lg lodrina">Back</span>
-              </Link>
-            </div>
+              <span className="text-lg lodrina">Back</span>
+            </Link>
+
             <div className="flex flex-col mb-4">
               <div className="flex flex-row justify-between items-center">
                 <h1 className="mb-0 lodrina text-5xl self-end">
@@ -237,5 +242,33 @@ const IdeaPage = () => {
     </Container>
   );
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { communityDomain } = getCommunityByDomain(context.req);
+
+  if (!communityDomain) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const community = await prisma.community.findFirst({
+    where: {
+      uname: communityDomain,
+    },
+  });
+
+  if (!community) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      community: JSON.parse(JSON.stringify(community)),
+    },
+  };
+}
 
 export default IdeaPage;

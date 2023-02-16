@@ -5,17 +5,27 @@ const prisma = new PrismaClient();
 const chance = new Chance();
 
 async function seed() {
-  const user: { wallet: string; ens: string; } = {
+  const user: { wallet: string; ens: string } = {
     ens: "test.eth",
     wallet: "",
   };
 
   const communityData = {
-    name: "Nouns",
+    uname: "nouns",
+    data: {},
   };
 
   const community = await prisma.community.create({
     data: communityData,
+  });
+
+  const communityData2 = {
+    uname: "lilnouns",
+    data: {},
+  };
+
+  const community2 = await prisma.community.create({
+    data: communityData2,
   });
 
   for (const type of [
@@ -43,7 +53,7 @@ async function seed() {
   for (let i = 0; i < 15; i++) {
     const idea = await prisma.idea.create({
       data: {
-        communityId: community.id,
+        communityId: i % 2 === 0 ? community.id : community2.id,
         title: chance.word({ length: 5 }),
         tldr: chance.sentence({ words: 5 }),
         description: chance.sentence({ words: 10 }),
@@ -59,7 +69,7 @@ async function seed() {
           ideaId: idea.id,
           voterId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9${i}`,
           direction: 1,
-          voterWeight: (i * 3) + 1 
+          voterWeight: i * 3 + 1,
         },
       });
     }

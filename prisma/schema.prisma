@@ -15,7 +15,8 @@ model Community {
   id          Int       @id @default(autoincrement())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  name        String
+  data        Json      @default("{ \"pfp\": \"\" }")
+  uname       String    @unique // lowercase identifier which should match the subdomain for a community
   ideas       Idea[]
 }
 

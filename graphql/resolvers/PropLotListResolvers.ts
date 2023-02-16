@@ -41,28 +41,28 @@ export const resolveSortFilters = (
         selected:
           root.sortParam === SORT_FILTER_VALUES["LATEST"] || !root.sortParam,
         value: SORT_FILTER_VALUES["LATEST"],
-        label: "Created",
+        label: "Latest",
         icon: "ARROW_UP",
       },
       {
         id: `${FILTER_IDS.SORT}-OLDEST`,
         selected: root.sortParam === SORT_FILTER_VALUES["OLDEST"],
         value: SORT_FILTER_VALUES["OLDEST"],
-        label: "Created",
+        label: "Oldest",
         icon: "ARROW_DOWN",
       },
       {
         id: `${FILTER_IDS.SORT}-VOTES_DESC`,
         selected: root.sortParam === SORT_FILTER_VALUES["VOTES_DESC"],
         value: SORT_FILTER_VALUES["VOTES_DESC"],
-        label: "Votes",
+        label: "Most Votes",
         icon: "ARROW_UP",
       },
       {
         id: `${FILTER_IDS.SORT}-VOTES_ASC`,
         selected: root.sortParam === SORT_FILTER_VALUES["VOTES_ASC"],
         value: SORT_FILTER_VALUES["VOTES_ASC"],
-        label: "Votes",
+        label: "Least Votes",
         icon: "ARROW_DOWN",
       },
     ],
@@ -93,6 +93,7 @@ const resolvers: IResolvers = {
         tagParams,
         requestUUID: args.options.requestUUID,
         timeZone: context.timeZone,
+        communityId: context.communityId,
       };
     },
   },
@@ -102,6 +103,7 @@ const resolvers: IResolvers = {
         sortBy: parseFilterParam(root.sortParam)?.value,
         date: parseFilterParam(root.dateParam)?.value,
         tags: root.tagParams.map((tag: string) => parseFilterParam(tag)?.value),
+        communityId: root.communityId,
       });
 
       return ideas;
