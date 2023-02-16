@@ -19,6 +19,15 @@ async function seed() {
     data: communityData,
   });
 
+  const communityData2 = {
+    uname: "lilnouns",
+    data: {},
+  };
+
+  const community2 = await prisma.community.create({
+    data: communityData2,
+  });
+
   for (const type of [
     TagType.REQUEST,
     TagType.OTHER,
@@ -44,7 +53,7 @@ async function seed() {
   for (let i = 0; i < 15; i++) {
     const idea = await prisma.idea.create({
       data: {
-        communityId: community.id,
+        communityId: i % 2 === 0 ? community.id : community2.id,
         title: chance.word({ length: 5 }),
         tldr: chance.sentence({ words: 5 }),
         description: chance.sentence({ words: 10 }),
