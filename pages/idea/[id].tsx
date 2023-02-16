@@ -70,7 +70,6 @@ const IdeaPage = ({ community }: { community: Community }) => {
     address: data?.getIdea?.creatorId as `0x${string}`,
     cacheTime: 6_000,
   });
-
   const shortAddress = useShortAddress(data?.getIdea?.creatorId || "");
 
   useEffect(() => {
@@ -183,7 +182,7 @@ const IdeaPage = ({ community }: { community: Community }) => {
               className="text-[#2B83F6] underline cursor-pointer"
               href={
                 data.getIdea?.creatorId &&
-                `/proplot/profile/${data.getIdea.creatorId}`
+                `/profile/${data.getIdea.creatorId}`
               }
             >
               {creatorEns || shortAddress}

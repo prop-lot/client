@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Router from "next/router";
 import { ConnectKitButton } from "connectkit";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
@@ -6,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const { isDisconnected } = useAccount();
-  const { isLoggedIn, logout } = useAuth();
+  const { logout } = useAuth();
 
   // Logout when a user changes their wallet in their browser extension
   useEffect(() => {
@@ -41,6 +42,8 @@ const Navbar = () => {
             alt="PropLot logo, which is a car noun with text spelling prop lot."
             width="140"
             height="120"
+            onClick={() => Router.push('/')}
+            className="cursor-pointer"
           />
           <ConnectKitButton />
         </nav>

@@ -33,6 +33,12 @@ export interface PropLotInputOptions {
   requestUUID: string;
 }
 
+export interface PropLotProfileInputOptions {
+  filters?: string[] | null;
+  wallet: string;
+  requestUUID: string;
+}
+
 export interface SubmitCommentInputOptions {
   ideaId: number;
   body: string;

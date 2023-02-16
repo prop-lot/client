@@ -205,7 +205,7 @@ const IdeaRow = ({
                 <span className="flex flex-1 text-[#8c8d92] whitespace-pre sm:self-end">
                   <a
                     className="text-[#2B83F6] underline cursor-pointer"
-                    href={`/proplot/profile/${idea.creatorId}`}
+                    href={`/profile/${idea.creatorId}`}
                   >
                     {creatorEns || shortAddress}
                   </a>{" "}
@@ -234,7 +234,7 @@ const IdeaRow = ({
 
                 <span className="mt-[16px] sm:mt-[0px] w-full sm:w-auto justify-self-end text-[#2b83f6] flex justify-end">
                   <a
-                    className="font-propLot font-semibold text-[16px] flex flex-1 btn !rounded-[10px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#2B83F6]"
+                    className="font-propLot font-semibold text-[16px] flex flex-1 justify-center btn !rounded-[10px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#2B83F6]"
                     href={`/idea/${id}`}
                   >
                     <span className="flex items-center justify-center font-semibold text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
