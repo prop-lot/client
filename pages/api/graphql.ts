@@ -4,8 +4,8 @@ import { ironOptions } from "@/lib/config";
 
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
-import { SUPPORTED_SUBDOMAINS, SupportedTokenGetterMap } from "@/utils/supportedTokenUtils";
 import getCommunityByDomain from "@/utils/communityByDomain";
+import prisma from "@/lib/prisma";
 
 // @ts-ignore
 const server = new ApolloServer({
