@@ -5,7 +5,7 @@ import { Community } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import getCommunityByDomain from "@/utils/communityByDomain";
 
-const DEFAULT_HOMEPAGE_MATCH = "__NONE__";
+export const DEFAULT_HOMEPAGE_MATCH = "__NONE__";
 
 const Home = ({
   communityName,
