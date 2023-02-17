@@ -9,6 +9,7 @@ import { client as ApolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ErrorModalProvider } from "@/hooks/useApiError";
 import NavBar from "../components/Navbar";
+import { DEFAULT_HOMEPAGE_MATCH } from ".";
 
 const alchemyId = process.env.ALCHEMY_ID;
 
@@ -33,7 +34,9 @@ export default function App({ Component, pageProps }: AppProps) {
           <ConnectKitProvider>
             <AuthProvider>
               <ErrorModalProvider>
-                <NavBar />
+                {pageProps?.communityName !== DEFAULT_HOMEPAGE_MATCH && (
+                  <NavBar />
+                )}
                 <Component {...pageProps} />
               </ErrorModalProvider>
             </AuthProvider>
