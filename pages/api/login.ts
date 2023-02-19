@@ -1,6 +1,6 @@
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { SiweMessage,  } from 'siwe'
+import { SiweMessage } from 'siwe'
 import { ironOptions } from '@/lib/config'
 import { provider } from '@/utils/ethers'
 import AuthService from '@/services/auth'
@@ -13,7 +13,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       try {
         const { message, signature } = req.body
         const siweMessage = new SiweMessage(message)
-        const { data: fields } = await siweMessage.verify({ signature, domain: message.domain, nonce: message.nonce, time: message.issuedAt }, { provider })
+        const { data: fields } = await siweMessage.verify({
+          signature,
+          domain: message.domain,
+          nonce: message.nonce,
+          time: message.issuedAt
+        }, { provider })
  
         if (fields.nonce !== req.session.nonce) {
           return res.status(422).json({ message: 'Invalid nonce.' })
