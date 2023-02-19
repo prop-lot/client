@@ -4,7 +4,8 @@ import { Button, FormControl } from "react-bootstrap";
 import { useMutation } from "@apollo/client";
 import { useAuth } from "@/hooks/useAuth";
 import { SUBMIT_COMMENT_MUTATION } from "@/graphql/queries/propLotMutations";
-// import { submitIdeaComment } from "@/graphql/types/__generated__/submitIdeaComment";
+import { submitIdeaComment } from "@/graphql/types/__generated__/submitIdeaComment";
+import { useApiError } from "@/hooks/useApiError";
 
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
@@ -24,8 +25,9 @@ const CommentInput = ({
   const isMobile = breakpoint === "S";
   const canHideInput = typeof hideInput === "function";
   const { isLoggedIn, triggerSignIn } = useAuth();
+  const { setError, error: errorModalVisible } = useApiError();
 
-  const [submitCommentMutation] = useMutation(SUBMIT_COMMENT_MUTATION, {
+  const [submitCommentMutation] = useMutation<submitIdeaComment>(SUBMIT_COMMENT_MUTATION, {
     context: {
       clientName: "PropLot",
     },
@@ -59,17 +61,17 @@ const CommentInput = ({
         const { success } = await triggerSignIn();
         if (success) {
           await submitCommentMutation(
-            //@ts-ignore
             getCommentMutationArgs(ideaId, body, parentId)
           );
+        } else {
+          setError({ message: "Failed to sign in", status: 401 });
         }
       } catch (e) {
         console.log(e);
-        return;
+        setError({ message: "Failed to sign in", status: 401 });
       }
     } else {
       await submitCommentMutation(
-        //@ts-ignore
         getCommentMutationArgs(ideaId, body, parentId)
       );
     }

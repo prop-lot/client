@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useAccount, useEnsName } from "wagmi";
 import { useMutation } from "@apollo/client";
@@ -8,6 +8,7 @@ import moment from "moment";
 import CommentInput from "@/components/CommentInput";
 import { DELETE_IDEA_COMMENT_MUTATION } from "@/graphql/queries/propLotMutations";
 import { deleteIdeaComment, deleteIdeaComment_deleteIdeaComment as Comment, deleteIdeaComment_deleteIdeaComment_replies as Reply } from "@/graphql/types/__generated__/deleteIdeaComment";
+import { useApiError } from "@/hooks/useApiError";
 
 const Comment = ({
   comment,
@@ -23,6 +24,7 @@ const Comment = ({
   const router = useRouter();
 
   const { isLoggedIn, triggerSignIn } = useAuth();
+  const { setError, error: errorModalVisible } = useApiError();
   const [isReply, setIsReply] = useState<boolean>(false);
   const [showReplies, setShowReplies] = useState<boolean>(level > 1);
   const { address: account } = useAccount();
@@ -42,15 +44,24 @@ const Comment = ({
     },
   });
 
+  useEffect(() => {
+    if (error && !errorModalVisible) {
+      setError({ message: error?.message || "Failed to delete comment", status: 500 });
+    }
+  }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const deleteComment = async () => {
     if (!isLoggedIn) {
       try {
         const { success } = await triggerSignIn();
         if (success) {
           deleteCommentMutation(getDeleteCommentMutationArgs());
+        } else {
+          setError({ message: "Failed to sign in", status: 401 });
         }
       } catch (e) {
         console.log(e);
+        setError({ message: "Failed to sign in", status: 401 });
       }
     } else {
       deleteCommentMutation(getDeleteCommentMutationArgs());
