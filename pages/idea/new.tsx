@@ -279,9 +279,12 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                     const { success } = await triggerSignIn();
                     if (success) {
                       submitIdeaMutation(getIdeaVariables());
+                    } else {
+                      setError({ message: "Failed to sign in", status: 401 });
                     }
                   } catch (e) {
                     console.log(e);
+                    setError({ message: "Failed to sign in", status: 401 });
                   }
                 } else {
                   submitIdeaMutation(getIdeaVariables());

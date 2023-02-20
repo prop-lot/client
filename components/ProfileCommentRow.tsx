@@ -16,10 +16,12 @@ import { BigNumber } from 'ethers';
 import { TOKEN_BALANCES_BY_OWNER_SUB } from '@/graphql/subgraph';
 import { StandaloneNounCircular } from '@/components/NounCircular';
 import { SUPPORTED_SUBDOMAINS } from '@/utils/supportedTokenUtils';
+import { useApiError } from '@/hooks/useApiError';
 
 const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comment; refetch: () => void; communityName: SUPPORTED_SUBDOMAINS; }) => {
   const { idea, parent, parentId, createdAt, body, deleted } = comment;
   const { isLoggedIn, triggerSignIn } = useAuth();
+  const { setError, error: errorModalVisible } = useApiError();
   const wallet = parentId && parent ? parent.authorId : idea?.creatorId;
   const { data: creatorEns } = useEnsName({
     address: wallet as `0x${string}`,
@@ -37,7 +39,7 @@ const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comme
     },
   );
 
-  const [deleteCommentMutation, {}] =
+  const [deleteCommentMutation, { error }] =
   useMutation<deleteIdeaComment>(DELETE_IDEA_COMMENT_MUTATION, {
     onCompleted() {
       refetch();
@@ -51,15 +53,25 @@ const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comme
     },
   });
 
+
+  useEffect(() => {
+    if (error && !errorModalVisible) {
+      setError({ message: error?.message || "Failed to delete comment", status: 500 });
+    }
+  }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const deleteComment = async () => {
     if (!isLoggedIn) {
       try {
         const { success } = await triggerSignIn();
         if (success) {
           deleteCommentMutation(getDeleteCommentMutationArgs());
+        } else {
+          setError({ message: "Failed to sign in", status: 401 });
         }
       } catch (e) {
         console.log(e);
+        setError({ message: "Failed to sign in", status: 401 });
       }
     } else {
       deleteCommentMutation(getDeleteCommentMutationArgs());

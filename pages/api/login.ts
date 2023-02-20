@@ -2,6 +2,7 @@ import { withIronSessionApiRoute } from 'iron-session/next'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { SiweMessage } from 'siwe'
 import { ironOptions } from '@/lib/config'
+import { provider } from '@/utils/ethers'
 import AuthService from '@/services/auth'
 import getCommunityByDomain from '@/utils/communityByDomain'
  
@@ -12,7 +13,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       try {
         const { message, signature } = req.body
         const siweMessage = new SiweMessage(message)
-        const fields = await siweMessage.validate(signature)
+        const { data: fields } = await siweMessage.verify({
+          signature,
+          domain: message.domain,
+          nonce: message.nonce,
+          time: message.issuedAt
+        }, { provider })
  
         if (fields.nonce !== req.session.nonce) {
           return res.status(422).json({ message: 'Invalid nonce.' })
@@ -35,7 +41,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           throw new Error(`DAO does not exist in proplot`);
         }
       } catch (_error) {
-        res.json({ ok: false })
+        console.log(_error)
+        res.status(401).send({ ok: false })
       }
       break
     default:

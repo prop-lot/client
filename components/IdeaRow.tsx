@@ -64,9 +64,12 @@ const IdeaRow = ({
         const { success } = await triggerSignIn();
         if (success) {
           deleteIdeaMutation({ variables: { id }});
+        } else {
+          setError({ message: "Failed to sign in", status: 401 });
         }
       } catch (e) {
         console.log(e);
+        setError({ message: "Failed to sign in", status: 401 });
       }
     } else {
       deleteIdeaMutation({ variables: { id }});

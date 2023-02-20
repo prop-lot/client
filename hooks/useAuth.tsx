@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const message = new SiweMessage({
         domain: window.location.host,
         address,
-        statement: 'Sign in with Ethereum to the app.',
+        statement: 'Sign in with Ethereum to Prop Lot.',
         uri: window.location.origin,
         version: '1',
         chainId,
