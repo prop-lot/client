@@ -210,6 +210,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
       label: "Nouns DAO Prop",
       value: TagType.Nouns,
       requiredTokens: 8,
+      disabled: community?.uname !== SUPPORTED_SUBDOMAINS.LIL_NOUNS
     },
   ];
 
@@ -297,7 +298,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
               </span>
               <div className="flex flex-row flex-wrap gap-[16px] my-[16px]">
                 {tags.map((tag) => {
-                  if (nounBalance < tag.requiredTokens) {
+                  if (nounBalance < tag.requiredTokens || tag.disabled) {
                     return null;
                   }
 
@@ -428,7 +429,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   />
                 ) : (
                   <div
-                    className="border rounded-lg p-2 min-h-[240px]"
+                    className="border rounded-lg p-2 min-h-[240px] prose lg:prose-xl"
                     dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(marked.parse(description), {
                         ADD_ATTR: ["target"],
