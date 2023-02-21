@@ -88,12 +88,12 @@ export const SORT_FILTERS: { [key: string]: any } = {
   },
   VOTES_DESC: {
     value: buildFilterParam(FILTER_IDS.SORT, "VOTES_DESC"),
-    displayName: "Votes Desc",
+    displayName: "Most Upvoted",
     icon: "ARROW_UP",
   },
   VOTES_ASC: {
     value: buildFilterParam(FILTER_IDS.SORT, "VOTES_ASC"),
-    displayName: "Votes Asc",
+    displayName: "Most Downvoted",
     icon: "ARROW_DOWN",
   },
 };

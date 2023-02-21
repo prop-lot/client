@@ -26,7 +26,7 @@ const buildSortOptions = (sortParam: string | undefined, appliedFilterTags: Appl
     const selected = sortParam === SORT_FILTERS[key].value;
 
     if (hasAppliedFilters && selected && appliedFilterTags !== undefined) {
-      appliedFilterTags.push({
+      appliedFilterTags.unshift({
         displayName: `Sort by: ${SORT_FILTERS[key].displayName}`,
         param: SORT_FILTERS[key].value,
       })
@@ -72,7 +72,7 @@ const buildDateOptions = (dateParam: string | undefined, appliedFilterTags: Appl
 
     if (selected && hasAppliedFilters) {
       appliedFilterTags.push({
-        displayName: DATE_FILTERS[key].displayName,
+        displayName: `Date: ${DATE_FILTERS[key].displayName}`,
         param: DATE_FILTERS[key].value,
       })
     }
@@ -176,7 +176,6 @@ const resolvers: IResolvers = {
 
       return ideas;
     },
-    sortFilter: (root) => resolveSortFilters(root),
     dateFilter: (root): PropLotFilter => {
       const dateFilter: PropLotFilter = {
         __typename: "PropLotFilter",
@@ -199,6 +198,7 @@ const resolvers: IResolvers = {
 
       return tagFilter;
     },
+    sortFilter: (root) => resolveSortFilters(root),
     appliedFilterTags: (root) => root.appliedFilterTags,
     metadata: async (root): Promise<PropLotResponseMetadataResolvers> => {
       return {

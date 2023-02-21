@@ -39,7 +39,7 @@ const EmptyState = ({
         {appliedFilters.length > 0 && !error && (
           <button
             onClick={() => clearFilters()}
-            className="bg-gray-700 text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-propLot !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
+            className="bg-black text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-propLot !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
           >
             Clear filters
           </button>
@@ -49,7 +49,7 @@ const EmptyState = ({
             onClick={() => {
               return router.reload();
             }}
-            className="bg-gray-700 text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-propLot !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
+            className="bg-black text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-propLot !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
           >
             Retry
           </button>
