@@ -12,7 +12,11 @@ async function seed() {
 
   const communityData = {
     uname: "nouns",
-    data: {},
+    data: {
+      name: "Nouns",
+      pfpUrl:
+        "https://i.seadn.io/gae/vfYB4RarIqixy2-wyfP4lIdK6fsOT8uNrmKxvYCJdjdRwAMj2ZjC2zTSxL-YKky0s-4Pb6eML7ze3Ouj54HrpUlfSWx52xF_ZK2TYw?auto=format&w=384",
+    },
   };
 
   const community = await prisma.community.create({
@@ -21,7 +25,11 @@ async function seed() {
 
   const communityData2 = {
     uname: "lilnouns",
-    data: {},
+    data: {
+      name: "Lil Nouns",
+      pfpUrl:
+        "https://i.seadn.io/gae/NeMen42xORQc--X_rAm6d5HCcRxkL5ZqAFi8LCSdFoRLi3AVNvEJ4Eo_-kFMnk8TVtPsnFxrMZ-DQIy-qjHgZnw4UFZYhjOWTmI_0w?auto=format&w=384",
+    },
   };
 
   const community2 = await prisma.community.create({

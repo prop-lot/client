@@ -1,40 +1,43 @@
-import { Col, Row, Button, Spinner } from 'react-bootstrap';
-import { v4 } from 'uuid';
-import { Alert } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
-import { useLazyQuery } from '@apollo/client';
-import { useRouter } from 'next/router';
-import { GetServerSidePropsContext } from 'next';
-import { BigNumber } from 'ethers';
+import { Col, Row, Button, Spinner } from "react-bootstrap";
+import { v4 } from "uuid";
+import { Alert } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { useLazyQuery } from "@apollo/client";
+import { useRouter } from "next/router";
+import { GetServerSidePropsContext } from "next";
+import { BigNumber } from "ethers";
 import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
 import { useEnsName, useAccount } from "wagmi";
 
-import { GET_PROPLOT_PROFILE_QUERY } from '@/graphql/queries/propLotProfileQuery';
-import { TOKEN_BALANCES_BY_OWNER_SUB } from '@/graphql/subgraph';
+import { GET_PROPLOT_PROFILE_QUERY } from "@/graphql/queries/propLotProfileQuery";
+import { TOKEN_BALANCES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import {
   getPropLotProfile,
   getPropLotProfile_propLotProfile_profile_user_userStats as UserStats,
-} from '@/graphql/types/__generated__/getPropLotProfile';
+} from "@/graphql/types/__generated__/getPropLotProfile";
 
-import ProfileTabFilters from '@/components/ProfileTabFilters';
-import IdeaRow from '@/components/IdeaRow';
-import UIFilter from '@/components/UIFilter';
-import ProfileCommentRow from '@/components/ProfileCommentRow';
-import { StandaloneNounCircular } from '@/components/NounCircular';
+import ProfileTabFilters from "@/components/ProfileTabFilters";
+import IdeaRow from "@/components/IdeaRow";
+import UIFilter from "@/components/UIFilter";
+import ProfileCommentRow from "@/components/ProfileCommentRow";
+import { StandaloneNounCircular } from "@/components/NounCircular";
 
-import { SUPPORTED_SUBDOMAINS } from '@/utils/supportedTokenUtils';
-import { useShortAddress } from '@/utils/addressAndENSDisplayUtils';
-import getCommunityByDomain from '@/utils/communityByDomain';
+import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
+import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
+import getCommunityByDomain from "@/utils/communityByDomain";
 import useSyncURLParams from "@/hooks/useSyncURLParams";
-
 
 // import Davatar from '@davatar/react';
 // import ProfileGovernanceList from '@/components/ProfileGovernanceList';
 // import useProfileGovernanceData, { TabFilterOptionValues } from '@/hooks/useProfileGovernanceData';
 // import { GrayCircle } from '../../components/GrayCircle';
 
-const ProfileCard = (props: { title: string; count: number; isLoading?: boolean }) => {
+const ProfileCard = (props: {
+  title: string;
+  count: number;
+  isLoading?: boolean;
+}) => {
   return (
     <div className="font-propLot whitespace-nowrap py-[8px] px-[16px] gap-[4px] sm:p-[16px] sm:gap-[8px] bg-white border-solid border border-[#e2e3e8] rounded-[16px] box-border flex flex-1 flex-col justify-start">
       {props.isLoading ? (
@@ -43,8 +46,12 @@ const ProfileCard = (props: { title: string; count: number; isLoading?: boolean 
         </div>
       ) : (
         <>
-          <span className="font-semibold text-[12px] text-[#8C8D92]">{props.title}</span>
-          <span className="font-extrabold text-[24px] text-[#212529]">{props.count}</span>
+          <span className="font-semibold text-[12px] text-[#8C8D92]">
+            {props.title}
+          </span>
+          <span className="font-extrabold text-[24px] text-[#212529]">
+            {props.count}
+          </span>
         </>
       )}
     </div>
@@ -67,15 +74,14 @@ const ProfileUserName = () => {
   });
   const shortAddress = useShortAddress(id);
 
-  const profileName = creatorEns || shortAddress ;
+  const profileName = creatorEns || shortAddress;
 
   return (
     <h1 className="font-londrina text-[48px] sm:text-[56px] text-[#212529] font-normal">
       {isMounted && profileName}
     </h1>
-  )
-}
-
+  );
+};
 
 const ProfileLilNounDisplay = ({
   tokensInWallet,
@@ -86,28 +92,29 @@ const ProfileLilNounDisplay = ({
   tokensInWallet: number;
   delegatedTokens: number;
   tokenData: any[];
-  communityName: SUPPORTED_SUBDOMAINS
+  communityName: SUPPORTED_SUBDOMAINS;
 }) => {
   return (
     <div className="flex flex-col justify-end gap-[16px]">
-      {Boolean(tokenData?.length) ? (
-        <div className="flex flex-1 flex-row-reverse gap-[4px] justify-center sm:justify-start">
-          <>
-            {tokenData
-              .map((token: any) => {
-                return (
-                  <StandaloneNounCircular
-                    key={token.id}
-                    seed={token.seed}
-                    nounId={BigNumber.from(token.id)}
-                    height={48}
-                    width={48}
-                    isBigNoun={communityName === SUPPORTED_SUBDOMAINS.NOUNS}
-                  />
-                );
-              })
-              .slice(0, 5)}
-            {/* {lilNounData.length > 5 && (
+      {
+        Boolean(tokenData?.length) ? (
+          <div className="flex flex-1 flex-row-reverse gap-[4px] justify-center sm:justify-start">
+            <>
+              {tokenData
+                .map((token: any) => {
+                  return (
+                    <StandaloneNounCircular
+                      key={token.id}
+                      seed={token.seed}
+                      nounId={BigNumber.from(token.id)}
+                      height={48}
+                      width={48}
+                      isBigNoun={communityName === SUPPORTED_SUBDOMAINS.NOUNS}
+                    />
+                  );
+                })
+                .slice(0, 5)}
+              {/* {lilNounData.length > 5 && (
               <GrayCircle
                 styleOverride="!w-[48px] !h-[48px]"
                 renderOverlay={() => {
@@ -119,21 +126,26 @@ const ProfileLilNounDisplay = ({
                 }}
               />
             )} */}
-          </>
-        </div>
-      ) : (
-        null // <Davatar size={32} address={id} provider={provider} />
-      )}
+            </>
+          </div>
+        ) : null // <Davatar size={32} address={id} provider={provider} />
+      }
       <div className="flex flex-1 text-[12px] text-[#8C8D92] font-semibold whitespace-pre justify-center">
         Tokens owned:<span className="text-[#212529]"> {tokensInWallet}</span>
         {` delegated:`}
-        <span className="text-[#212529]">{` ${delegatedTokens - tokensInWallet}`}</span>
+        <span className="text-[#212529]">{` ${
+          delegatedTokens - tokensInWallet
+        }`}</span>
       </div>
     </div>
   );
 };
 
-const PropLotUserProfile = ({ community }: { community: Community }) => {
+const PropLotUserProfile = ({
+  community,
+}: {
+  community: Community & { data: { name: string } };
+}) => {
   const router = useRouter();
   const { id } = router.query as { id: string };
   const { address: account } = useAccount();
@@ -143,17 +155,15 @@ const PropLotUserProfile = ({ community }: { community: Community }) => {
   //   categorisedProposals,
   // } = useProfileGovernanceData();
 
-  const [getPropLotProfileQuery, { data, refetch }] = useLazyQuery<getPropLotProfile>(
-    GET_PROPLOT_PROFILE_QUERY,
-    {
+  const [getPropLotProfileQuery, { data, refetch }] =
+    useLazyQuery<getPropLotProfile>(GET_PROPLOT_PROFILE_QUERY, {
       context: {
-        clientName: 'PropLot',
+        clientName: "PropLot",
         headers: {
-          'proplot-tz': Intl.DateTimeFormat().resolvedOptions().timeZone,
+          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
       },
-    },
-  );
+    });
 
   const [getTokenBalances, { data: tokenBalanceData }] = useLazyQuery(
     TOKEN_BALANCES_BY_OWNER_SUB,
@@ -161,7 +171,7 @@ const PropLotUserProfile = ({ community }: { community: Community }) => {
       context: {
         clientName: community?.uname as SUPPORTED_SUBDOMAINS,
       },
-    },
+    }
   );
 
   /*
@@ -173,8 +183,8 @@ const PropLotUserProfile = ({ community }: { community: Community }) => {
       const urlParams = window.location.search;
       const currentURLParams = urlParams
         .substring(1)
-        .split('&')
-        .filter(str => Boolean(str));
+        .split("&")
+        .filter((str) => Boolean(str));
 
       getPropLotProfileQuery({
         variables: {
@@ -190,7 +200,7 @@ const PropLotUserProfile = ({ community }: { community: Community }) => {
         variables: {
           id: id.toLowerCase(),
         },
-      })
+      });
     }
   }, [id]);
 
@@ -213,10 +223,12 @@ const PropLotUserProfile = ({ community }: { community: Community }) => {
       ...updatedFilters,
     ];
 
-    refetch({ options: { wallet: id, requestUUID: v4(), filters: selectedfilters } });
+    refetch({
+      options: { wallet: id, requestUUID: v4(), filters: selectedfilters },
+    });
   };
 
-  const [listButtonActive, setListButtonActive] = useState('PROP_LOT');
+  const [listButtonActive, setListButtonActive] = useState("PROP_LOT");
 
   // const lists: { [key: string]: any } = {
   //   PROP_LOT: {
@@ -244,10 +256,22 @@ const PropLotUserProfile = ({ community }: { community: Community }) => {
   const buildProfileCards = (userStats: UserStats) => {
     return (
       <>
-        <ProfileCard count={userStats.totalIdeas || 0} title={'Prop Lot submissions'} />
-        <ProfileCard count={userStats.upvotesReceived || 0} title={'Upvotes received'} />
-        <ProfileCard count={userStats.downvotesReceived || 0} title={'Downvotes received'} />
-        <ProfileCard count={userStats.netVotesReceived || 0} title={'Net votes'} />
+        <ProfileCard
+          count={userStats.totalIdeas || 0}
+          title={"Prop Lot submissions"}
+        />
+        <ProfileCard
+          count={userStats.upvotesReceived || 0}
+          title={"Upvotes received"}
+        />
+        <ProfileCard
+          count={userStats.downvotesReceived || 0}
+          title={"Downvotes received"}
+        />
+        <ProfileCard
+          count={userStats.netVotesReceived || 0}
+          title={"Net votes"}
+        />
         {/* <ProfileCard
           count={categorisedProposals[TabFilterOptionValues.SUBMITTED]?.length || 0}
           title={'On-chain proposals'}
@@ -330,13 +354,13 @@ const PropLotUserProfile = ({ community }: { community: Community }) => {
             )} */}
 
             {/* {listButtonActive === 'PROP_LOT' && ( */}
-              <>
-                <div className="mt-[48px] sm:mt-[81px] flex flex-1 items-center flex-col-reverse gap-[16px] sm:gap-[8px] sm:flex-row">
-                  <h2 className="font-londrina text-[38px] text-[#212529] font-normal flex flex-1">
-                    Prop Lot activity
-                  </h2>
+            <>
+              <div className="mt-[48px] sm:mt-[81px] flex flex-1 items-center flex-col-reverse gap-[16px] sm:gap-[8px] sm:flex-row">
+                <h2 className="font-londrina text-[38px] text-[#212529] font-normal flex flex-1">
+                  Prop Lot activity
+                </h2>
 
-                  {/* <div
+                {/* <div
                     className="flex flex-wrap justify-center !gap-[8px]"
                     role="btn-toolbar"
                     aria-label="Basic example"
@@ -358,70 +382,85 @@ const PropLotUserProfile = ({ community }: { community: Community }) => {
                       );
                     })}
                   </div> */}
+              </div>
+
+              <div className="mt-[32px] mb-[24px] flex flex-col-reverse sm:flex-row">
+                <div className="flex mb-[16px] sm:mt-0 mt-[16px] sm:mb-0">
+                  {data?.propLotProfile?.tabFilter && (
+                    <ProfileTabFilters
+                      filter={data.propLotProfile.tabFilter}
+                      updateFilters={handleUpdateFilters}
+                    />
+                  )}
                 </div>
-
-                <div className="mt-[32px] mb-[24px] flex flex-col-reverse sm:flex-row">
-                  <div className="flex mb-[16px] sm:mt-0 mt-[16px] sm:mb-0">
-                    {data?.propLotProfile?.tabFilter && (
-                      <ProfileTabFilters
-                        filter={data.propLotProfile.tabFilter}
-                        updateFilters={handleUpdateFilters}
-                      />
-                    )}
-                  </div>
-                  <div className="flex flex-1 justify-end">
-                    {data?.propLotProfile?.sortFilter && (
-                      <UIFilter
-                        filter={data.propLotProfile.sortFilter}
-                        updateFilters={handleUpdateFilters}
-                      />
-                    )}
-                  </div>
+                <div className="flex flex-1 justify-end">
+                  {data?.propLotProfile?.sortFilter && (
+                    <UIFilter
+                      filter={data.propLotProfile.sortFilter}
+                      updateFilters={handleUpdateFilters}
+                    />
+                  )}
                 </div>
+              </div>
 
-                {data?.propLotProfile?.list?.map(listItem => {
-                  if (listItem.__typename === 'Idea') {
-                    return (
-                      <div key={`idea-${listItem.id}`} className="mb-[16px] space-y-4" >
-                        <IdeaRow
-                          idea={listItem}
-                          nounBalance={delegatedTokens}
-                          disableControls={isAccountOwner}
-                          refetch={() =>
-                            refetch({
-                              options: { wallet: id, requestUUID: v4(), filters: appliedFilters },
-                            })
-                          }
-                        />
-                      </div>
-                    );
-                  }
+              {data?.propLotProfile?.list?.map((listItem) => {
+                if (listItem.__typename === "Idea") {
+                  return (
+                    <div
+                      key={`idea-${listItem.id}`}
+                      className="mb-[16px] space-y-4"
+                    >
+                      <IdeaRow
+                        idea={listItem}
+                        nounBalance={delegatedTokens}
+                        disableControls={isAccountOwner}
+                        communityName={community.data.name}
+                        refetch={() =>
+                          refetch({
+                            options: {
+                              wallet: id,
+                              requestUUID: v4(),
+                              filters: appliedFilters,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                  );
+                }
 
-                  if (listItem.__typename === 'Comment') {
-                    return (
-                      <div key={`comment-${listItem.id}`} className="mb-[16px] space-y-4">
-                        <ProfileCommentRow
-                          comment={listItem}
-                          refetch={() =>
-                            refetch({
-                              options: { wallet: id, requestUUID: v4(), filters: appliedFilters },
-                            })
-                          }
-                          communityName={community?.uname as SUPPORTED_SUBDOMAINS}
-                        />
-                      </div>
-                    );
-                  }
+                if (listItem.__typename === "Comment") {
+                  return (
+                    <div
+                      key={`comment-${listItem.id}`}
+                      className="mb-[16px] space-y-4"
+                    >
+                      <ProfileCommentRow
+                        comment={listItem}
+                        refetch={() =>
+                          refetch({
+                            options: {
+                              wallet: id,
+                              requestUUID: v4(),
+                              filters: appliedFilters,
+                            },
+                          })
+                        }
+                        communityName={community?.uname as SUPPORTED_SUBDOMAINS}
+                      />
+                    </div>
+                  );
+                }
 
-                  return null;
-                })}
-                {!Boolean(data?.propLotProfile?.list?.length) && (
-                  <Alert variant="secondary">
-                    <Alert.Heading>No data found.</Alert.Heading>
-                    <p>We could not find any data for this user!</p>
-                  </Alert>
-                )}
-              </>
+                return null;
+              })}
+              {!Boolean(data?.propLotProfile?.list?.length) && (
+                <Alert variant="secondary">
+                  <Alert.Heading>No data found.</Alert.Heading>
+                  <p>We could not find any data for this user!</p>
+                </Alert>
+              )}
+            </>
             {/* )} */}
           </div>
         </Col>
