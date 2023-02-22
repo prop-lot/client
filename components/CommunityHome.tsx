@@ -105,7 +105,7 @@ export default function CommunityHome({
   return (
     <main className="pt-8">
       <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
-        <div className="my-12 flex flex-row space-x-4 items-center">
+        <div className="mt-12 mb-4 flex flex-row space-x-4 items-center">
           <img src={community.data.pfpUrl} className="w-52 h-52 rounded-lg" />
           <h3 className="text-3xl font-bold">
             {community?.data?.name} PropLot
@@ -137,7 +137,7 @@ export default function CommunityHome({
               nounBalance > 0
                 ? "!bg-[#2B83F6] !text-white"
                 : "!bg-[#F4F4F8] !text-[#E2E3E8]"
-            } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] mb-[8px] sm:mb-0`}
+            } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] mb-4 sm:!mb-0`}
             onClick={() => {
               if (nounBalance > 0) {
                 Router.push("/idea/new");
@@ -159,21 +159,29 @@ export default function CommunityHome({
                     key={filterTag.displayName}
                     className="text-white bg-black text-sm font-bold rounded-[8px] px-[8px] py-[4px] flex items-center whitespace-nowrap"
                     onClick={() => {
-                      refetch({ options: { requestUUID: v4(), filters: appliedFilters.filter(f => {
-                        return f !== filterTag.param
-                      }) } });
+                      refetch({
+                        options: {
+                          requestUUID: v4(),
+                          filters: appliedFilters.filter((f) => {
+                            return f !== filterTag.param;
+                          }),
+                        },
+                      });
                     }}
                   >
-                    <span className="flex">
-                      {filterTag.displayName}
-                    </span>
+                    <span className="flex">{filterTag.displayName}</span>
                     <span>
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 flex pl-[4px] font-bold">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="w-5 h-5 flex pl-[4px] font-bold"
+                      >
                         <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                       </svg>
                     </span>
                   </button>
-                )
+                );
               })}
             </div>
           </div>

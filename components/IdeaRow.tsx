@@ -208,18 +208,16 @@ const IdeaRow = ({
                 />
               </div>
               <div className="font-propLot font-semibold text-[14px] flex-col sm:flex-row flex flex-1 justify-content-start align-items-start pt-[24px] sm:pt-[16px]">
-                <span className="flex flex-1 text-[#8c8d92] whitespace-pre sm:self-end">
+                <span className="flex flex-1 text-[#8c8d92] whitespace-pre flex-wrap sm:self-end">
                   <a
                     className="text-[#2B83F6] underline cursor-pointer"
                     href={`/profile/${idea.creatorId}`}
                   >
                     {creatorEns || shortAddress}
                   </a>{" "}
-                  {` | ${
-                    creatorTokenWeight === 1
-                      ? `${creatorTokenWeight} ${communityName}`
-                      : `${creatorTokenWeight} ${communityName}`
-                  } | ${moment(createdAt).format("MMM Do YYYY")}`}
+                  <span className="mr-2">{` | ${creatorTokenWeight} ${communityName} | ${moment(
+                    createdAt
+                  ).format("MMM Do YYYY")}`}</span>
                   {account &&
                     account.toLowerCase() === idea.creatorId.toLowerCase() && (
                       <span
@@ -231,7 +229,7 @@ const IdeaRow = ({
                           }
                           await deleteIdea();
                         }}
-                        className="text-red-500 self-end font-bold ml-2"
+                        className="text-red-500 self-end font-bold"
                       >
                         Delete submission
                       </span>
