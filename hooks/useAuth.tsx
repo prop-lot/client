@@ -1,6 +1,11 @@
 import { useContext, createContext, ReactNode, useState, useEffect, useCallback } from "react";
-import { useAccount, useNetwork, useSignMessage } from 'wagmi'
-import { SiweMessage } from "siwe";
+import { useAccount, useNetwork, useSignMessage, useProvider } from 'wagmi'
+import { SiweMessage, checkContractWalletSignature } from "siwe";
+import pRetry from 'p-retry';
+
+import MultiSigAuthModal from '@/components/MultiSigAuthModal';
+
+const AVERAGE_BLOCK_TIME_IN_SECONDS = 13;
 
 interface AuthCtx {
   isLoggedIn: boolean;
@@ -58,8 +63,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   const { address } = useAccount()
+  const provider = useProvider()
   const { chain } = useNetwork()
   const { signMessageAsync } = useSignMessage()
+  const defaultState = {
+    isOpen: false,
+    title: '',
+    content: '',
+    authStatus: '',
+  };
+  const [multisigAuthStatus, setMultisigAuthStatus] = useState(defaultState);
 
   const signIn = async () => {
     try {
@@ -83,6 +96,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         message: message.prepareMessage(),
       })
 
+      const isContractAccount = signature === "0x";
+
+      if (isContractAccount) {
+        setMultisigAuthStatus({
+          authStatus: 'CONFIRMING',
+          isOpen: true,
+          title: 'Awaiting Signatures',
+          content: 'Do not close this modal. Go to your safe and ensure all transactions are signed.'
+        })
+        // wait for tx to go through
+        await pRetry(
+          async () => {
+            const valid = await checkContractWalletSignature(message, signature, provider);
+
+            if (!valid) {
+              throw new Error('Not yet a valid contract signature...');
+            }
+          },
+          {
+            forever: true,
+            minTimeout: AVERAGE_BLOCK_TIME_IN_SECONDS * 1000,
+            maxTimeout: 5 * AVERAGE_BLOCK_TIME_IN_SECONDS * 1000,
+          },
+        );
+      }
+
       // Verify signature
       const verifyRes = await fetch('/api/login', {
         method: 'POST',
@@ -94,6 +133,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (!verifyRes.ok) {
         throw new Error('Error verifying message')
+      }
+
+      if (isContractAccount) {
+        setMultisigAuthStatus({
+          authStatus: 'CONFIRMED',
+          isOpen: true,
+          title: 'Transaction Signed!',
+          content: 'You are now logged in and you can close this modal.'
+        })
       }
 
       setState((x) => ({ ...x, loading: false, currentUser: address }))
@@ -126,6 +174,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
+      {multisigAuthStatus?.isOpen && (
+        <MultiSigAuthModal {...multisigAuthStatus} onDismiss={() => {
+          setMultisigAuthStatus(defaultState);
+        }} />
+      )}
     </AuthContext.Provider>
   );
 };
