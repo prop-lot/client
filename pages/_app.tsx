@@ -12,11 +12,13 @@ import NavBar from "../components/Navbar";
 import { DEFAULT_HOMEPAGE_MATCH } from ".";
 
 const alchemyId = process.env.ALCHEMY_ID;
+const infuraId = process.env.INFURA_ID;
 
 const client = createClient(
   getDefaultClient({
     appName: "Prop Lot",
     alchemyId,
+    infuraId,
   })
 );
 
