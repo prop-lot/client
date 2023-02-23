@@ -81,6 +81,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Web3 provider not available')
       }
 
+      const isContractAccount = await provider.getCode(address) !== "0x";
+
       setState((x) => ({ ...x, loading: true }))
       // Create SIWE message with pre-fetched nonce and sign with wallet
       const message = new SiweMessage({
@@ -92,11 +94,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         chainId,
         nonce: state.nonce,
       })
-      const signature = await signMessageAsync({
-        message: message.prepareMessage(),
-      })
-
-      const isContractAccount = signature === "0x";
 
       if (isContractAccount) {
         setMultisigAuthStatus({
@@ -104,7 +101,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           isOpen: true,
           title: 'Awaiting Signatures',
           content: 'Do not close this modal. Go to your safe and ensure all transactions are signed.'
-        })
+        });
+      }
+
+      const signature = await signMessageAsync({
+        message: message.prepareMessage(),
+      })
+
+      if (isContractAccount) {
         // wait for tx to go through
         await pRetry(
           async () => {
@@ -149,6 +153,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       setState((x) => ({ ...x, loading: false, nonce: undefined, error: error as Error }))
       fetchNonce()
+      setMultisigAuthStatus(defaultState)
       return { success: false }
     }
   }
