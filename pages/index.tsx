@@ -12,7 +12,7 @@ const Home = ({
   community,
 }: {
   communityName: string;
-  community: Community;
+  community: Community & { data: { name: string } };
 }) => {
   if (communityName === DEFAULT_HOMEPAGE_MATCH) {
     return <LandingPage />;
@@ -36,7 +36,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 
   // If there isn't a community then redirect to the landing page
-  const communityName = !community ? DEFAULT_HOMEPAGE_MATCH : communityDomain
+  const communityName = !community ? DEFAULT_HOMEPAGE_MATCH : communityDomain;
 
   // 1. communityDomain and no community = __NONE__ show placeholder
   // 2. communityDomain and community = correct community to show

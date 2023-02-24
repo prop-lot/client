@@ -19,11 +19,13 @@ const IdeaRow = ({
   nounBalance,
   disableControls,
   refetch,
+  communityName,
 }: {
   idea: Idea;
   nounBalance: number;
   disableControls?: boolean;
   refetch: () => void;
+  communityName: string;
 }) => {
   const { address: account } = useAccount();
   const { isLoggedIn, triggerSignIn } = useAuth();
@@ -48,22 +50,23 @@ const IdeaRow = ({
     cacheTime: 6_000,
   });
   const shortAddress = useShortAddress(creatorId);
-  const creatorTokenWeight = votes?.find((vote: any) => vote.voterId === creatorId)
-    ?.voterWeight;
+  const creatorTokenWeight = votes?.find(
+    (vote: any) => vote.voterId === creatorId
+  )?.voterWeight;
 
   const [deleteIdeaMutation, { error, loading: isDeleting }] =
-  useMutation<deleteIdea>(DELETE_IDEA__MUTATION, {
-    onCompleted: () => {
-      refetch();
-    },
-  });
+    useMutation<deleteIdea>(DELETE_IDEA__MUTATION, {
+      onCompleted: () => {
+        refetch();
+      },
+    });
 
   const deleteIdea = async () => {
     if (!isLoggedIn) {
       try {
         const { success } = await triggerSignIn();
         if (success) {
-          deleteIdeaMutation({ variables: { id }});
+          deleteIdeaMutation({ variables: { id } });
         } else {
           setError({ message: "Failed to sign in", status: 401 });
         }
@@ -72,7 +75,7 @@ const IdeaRow = ({
         setError({ message: "Failed to sign in", status: 401 });
       }
     } else {
-      deleteIdeaMutation({ variables: { id }});
+      deleteIdeaMutation({ variables: { id } });
     }
   };
 
@@ -214,8 +217,8 @@ const IdeaRow = ({
                   </a>{" "}
                   {` | ${
                     creatorTokenWeight === 1
-                      ? `${creatorTokenWeight} lil noun`
-                      : `${creatorTokenWeight} lil nouns`
+                      ? `${creatorTokenWeight} ${communityName}`
+                      : `${creatorTokenWeight} ${communityName}`
                   } | ${moment(createdAt).format("MMM Do YYYY")}`}
                   {account &&
                     account.toLowerCase() === idea.creatorId.toLowerCase() && (
