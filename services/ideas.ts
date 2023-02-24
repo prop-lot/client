@@ -310,7 +310,11 @@ class IdeasService {
       if (!existingVote) {
         userDelegatedVotesAtBlock = await getUserVoteWeightAtBlock(user.wallet, idea?.createdAtBlock);
 
-        if (!userDelegatedVotesAtBlock || userDelegatedVotesAtBlock === 0) {
+        if (userDelegatedVotesAtBlock === 0) {
+          throw new Error("NO_VOTES_AT_BLOCK");
+        }
+
+        if (!userDelegatedVotesAtBlock) {
           throw new Error("Failed to get user vote weight");
         }
       }

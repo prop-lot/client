@@ -35,6 +35,7 @@ const IdeaVoteControls = ({
   const [submitVoteMutation, { error, loading, data }] =
     useMutation<submitIdeaVote>(SUBMIT_VOTE_MUTATION, {
       fetchPolicy: 'no-cache',
+      errorPolicy: "all",
       refetchQueries: refetchPropLotOnVote ? ["getPropLot"] : [],
     });
 
@@ -74,7 +75,11 @@ const IdeaVoteControls = ({
 
   useEffect(() => {
     if (error && !errorModalVisible) {
-      setError({ message: error?.message || "Failed to vote", status: 500 });
+      if (error?.message === "NO_VOTES_AT_BLOCK") {
+        setError({ message: "You can't vote on this idea as you didn't own enough tokens when the idea was created.", status: 401 });
+      } else {
+        setError({ message: error?.message || "Failed to vote", status: 500 });
+      }
     }
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 

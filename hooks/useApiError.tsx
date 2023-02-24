@@ -39,8 +39,9 @@ export const ErrorModalProvider = ({ children }: { children: ReactNode }) => {
     >
       {error && (
         <ErrorModal
-          title="Something went wrong!"
+          title={error.status === 401 ? "You're account isn't able to do that" : "Something went wrong!"}
           content={error.message}
+          status={error.status}
           onDismiss={() => {
             setError(undefined);
           }}
