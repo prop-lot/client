@@ -12,7 +12,7 @@ const Home = ({
   community,
 }: {
   communityName: string;
-  community: Community & { data: { name: string } };
+  community: Community & { data: { name: string; pfpUrl: string } };
 }) => {
   if (communityName === DEFAULT_HOMEPAGE_MATCH) {
     return <LandingPage />;
