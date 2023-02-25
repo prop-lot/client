@@ -41,6 +41,10 @@ export const GET_PROPLOT_QUERY = gql`
       tagFilter {
         ...filterProperties
       }
+      appliedFilterTags {
+        param
+        displayName
+      }
       metadata {
         requestUUID
         appliedFilters

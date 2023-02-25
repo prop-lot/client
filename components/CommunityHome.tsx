@@ -11,6 +11,7 @@ import useSyncURLParams from "@/hooks/useSyncURLParams";
 import EmptyState from "@/components/EmptyState";
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
+import { getPropLot } from "@/graphql/types/__generated__/getPropLot";
 
 export default function CommunityHome({
   community,
@@ -19,7 +20,7 @@ export default function CommunityHome({
 }) {
   const { address } = useAccount();
 
-  const [getPropLotQuery, { data, refetch, error }] = useLazyQuery(
+  const [getPropLotQuery, { data, refetch, error }] = useLazyQuery<getPropLot>(
     GET_PROPLOT_QUERY,
     {
       context: {
@@ -55,6 +56,7 @@ export default function CommunityHome({
     These can be parsed to update the local state after each request to ensure the client + API are in sync.
   */
   const appliedFilters = data?.propLot?.metadata?.appliedFilters || [];
+  const appliedFilterTags = data?.propLot?.appliedFilterTags || [];
 
   useSyncURLParams(appliedFilters, data?.propLot?.metadata?.requestUUID);
 
@@ -103,7 +105,7 @@ export default function CommunityHome({
   return (
     <main className="pt-8">
       <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
-        <div className="my-12 flex flex-row space-x-4 items-center">
+        <div className="mt-12 mb-4 flex flex-row space-x-4 items-center">
           <img src={community.data.pfpUrl} className="w-52 h-52 rounded-lg" />
           <h3 className="text-3xl font-bold">
             {community?.data?.name} PropLot
@@ -135,7 +137,7 @@ export default function CommunityHome({
               nounBalance > 0
                 ? "!bg-[#2B83F6] !text-white"
                 : "!bg-[#F4F4F8] !text-[#E2E3E8]"
-            } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] mb-[8px] sm:mb-0`}
+            } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] mb-4 sm:!mb-0`}
             onClick={() => {
               if (nounBalance > 0) {
                 Router.push("/idea/new");
@@ -148,6 +150,42 @@ export default function CommunityHome({
       </section>
 
       <section className="border-t bg-gray-100 pb-8 px-[20px] xl:px-0">
+        {appliedFilterTags?.length > 0 && (
+          <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
+            <div className="flex flex-row items-center gap-[8px] overflow-scroll">
+              {appliedFilterTags.map((filterTag) => {
+                return (
+                  <button
+                    key={filterTag.displayName}
+                    className="text-white bg-black text-sm font-bold rounded-[8px] px-[8px] py-[4px] flex items-center whitespace-nowrap"
+                    onClick={() => {
+                      refetch({
+                        options: {
+                          requestUUID: v4(),
+                          filters: appliedFilters.filter((f) => {
+                            return f !== filterTag.param;
+                          }),
+                        },
+                      });
+                    }}
+                  >
+                    <span className="flex">{filterTag.displayName}</span>
+                    <span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="w-5 h-5 flex pl-[4px] font-bold"
+                      >
+                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                      </svg>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
         <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
           {data?.propLot?.ideas?.map((idea: any, idx: number) => {
             return (

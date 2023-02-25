@@ -7,9 +7,10 @@ import {
   Idea,
   PropLotFilter,
   FilterType,
+  AppliedFilter,
 } from "@/graphql/types/__generated__/apiTypes";
 
-import { FILTER_IDS, DATE_FILTERS } from "../utils/queryUtils";
+import { SORT_FILTERS, FILTER_IDS, DATE_FILTERS } from "../utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
 
 import {
@@ -20,52 +21,39 @@ import {
   getTagParams,
 } from "../utils/queryUtils";
 
+const buildSortOptions = (sortParam: string | undefined, appliedFilterTags: AppliedFilter[] | undefined, hasAppliedFilters: boolean) => {
+  const options = Object.keys(SORT_FILTERS).map((key: string) => {
+    const selected = sortParam === SORT_FILTERS[key].value;
+
+    if (hasAppliedFilters && selected && appliedFilterTags !== undefined) {
+      appliedFilterTags.unshift({
+        displayName: `Sort by: ${SORT_FILTERS[key].displayName}`,
+        param: SORT_FILTERS[key].value,
+      })
+    }
+    return {
+      id: `${FILTER_IDS.SORT}-${key}`,
+      selected,
+      label: SORT_FILTERS[key].displayName,
+      value: SORT_FILTERS[key].value,
+    };
+  });
+
+  return options;
+}
+
 export const resolveSortFilters = (
   root: any,
   exclude?: string[]
 ): PropLotFilter => {
-  const SORT_FILTER_VALUES = {
-    LATEST: buildFilterParam(FILTER_IDS.SORT, "LATEST"),
-    OLDEST: buildFilterParam(FILTER_IDS.SORT, "OLDEST"),
-    VOTES_DESC: buildFilterParam(FILTER_IDS.SORT, "VOTES_DESC"),
-    VOTES_ASC: buildFilterParam(FILTER_IDS.SORT, "VOTES_ASC"),
-  };
+  const options = buildSortOptions(root.sortParam, root.appliedFilterTags, root.appliedFilters.join(",").includes(FILTER_IDS.SORT))
+
   const sortFilter: PropLotFilter = {
     __typename: "PropLotFilter",
     id: FILTER_IDS.SORT,
     type: FilterType.SingleSelect,
     label: "Sort",
-    options: [
-      {
-        id: `${FILTER_IDS.SORT}-LATEST`,
-        selected:
-          root.sortParam === SORT_FILTER_VALUES["LATEST"] || !root.sortParam,
-        value: SORT_FILTER_VALUES["LATEST"],
-        label: "Latest",
-        icon: "ARROW_UP",
-      },
-      {
-        id: `${FILTER_IDS.SORT}-OLDEST`,
-        selected: root.sortParam === SORT_FILTER_VALUES["OLDEST"],
-        value: SORT_FILTER_VALUES["OLDEST"],
-        label: "Oldest",
-        icon: "ARROW_DOWN",
-      },
-      {
-        id: `${FILTER_IDS.SORT}-VOTES_DESC`,
-        selected: root.sortParam === SORT_FILTER_VALUES["VOTES_DESC"],
-        value: SORT_FILTER_VALUES["VOTES_DESC"],
-        label: "Most Votes",
-        icon: "ARROW_UP",
-      },
-      {
-        id: `${FILTER_IDS.SORT}-VOTES_ASC`,
-        selected: root.sortParam === SORT_FILTER_VALUES["VOTES_ASC"],
-        value: SORT_FILTER_VALUES["VOTES_ASC"],
-        label: "Least Votes",
-        icon: "ARROW_DOWN",
-      },
-    ],
+    options,
   };
 
   if (!!exclude) {
@@ -78,19 +66,99 @@ export const resolveSortFilters = (
   return sortFilter;
 };
 
+const buildDateOptions = (dateParam: string | undefined, appliedFilterTags: AppliedFilter[], hasAppliedFilters: boolean) => {
+  const options = Object.keys(DATE_FILTERS).map((key: string) => {
+    const selected = dateParam === DATE_FILTERS[key].value;
+
+    if (selected && hasAppliedFilters) {
+      appliedFilterTags.push({
+        displayName: `Date: ${DATE_FILTERS[key].displayName}`,
+        param: DATE_FILTERS[key].value,
+      })
+    }
+    return {
+      id: `${FILTER_IDS.DATE}-${key}`,
+      selected,
+      label: DATE_FILTERS[key].displayName,
+      value: DATE_FILTERS[key].value,
+    };
+  });
+
+  return options;
+}
+
+const buildTagFilterOptions = async (tagParams: string[], appliedFilterTags: AppliedFilter[], hasAppliedFilters: boolean) => {
+  const tags = await prisma.tag.findMany();
+  // static tag filters are the tags that come from the database
+  // contrast with virtual tags (hot, etc)
+  const staticTagFilterOptions = tags.map((tag) => {
+    const param = buildFilterParam(FILTER_IDS.TAG, tag.type)
+    const selected = Boolean(
+      tagParams?.includes(param)
+    );
+
+    if (selected && hasAppliedFilters) {
+      appliedFilterTags.push({
+        displayName: tag.label,
+        param,
+      })
+    }
+    return {
+      id: `${FILTER_IDS.TAG}-${tag.type}`,
+      label: tag.label,
+      value: param,
+      selected,
+    };
+  });
+
+  const virtualTagFilterOptions = Object.keys(VirtualTags)
+    .filter((key) => key !== "CONSENSUS") // We don't want a consensus tag appearing in the filter dropdown
+    .map((key) => {
+      const vT = VirtualTags[key];
+      const param = buildFilterParam(FILTER_IDS.TAG, vT.type)
+      const selected = Boolean(
+        tagParams?.includes(
+          buildFilterParam(FILTER_IDS.TAG, vT.type)
+        )
+      )
+
+      if (selected) {
+        appliedFilterTags.push({
+          displayName: vT.label,
+          param,
+        })
+      }
+      return {
+        id: `${FILTER_IDS.TAG}-${vT.type}`,
+        label: vT.label,
+        value: buildFilterParam(FILTER_IDS.TAG, vT.type),
+        selected,
+      };
+    });
+
+  return [...staticTagFilterOptions, ...virtualTagFilterOptions];
+}
+
 const resolvers: IResolvers = {
   Query: {
     getPropLot: async (_parent: any, args: QueryGetPropLotArgs, context) => {
       const appliedFilters = args.options.filters || [];
+      const appliedFilterTags: AppliedFilter[] = [];
       const sortParam = getSortParam(appliedFilters);
       const dateParam = getDateParam(appliedFilters);
       const tagParams = getTagParams(appliedFilters);
 
+      const dateOptions = buildDateOptions(dateParam, appliedFilterTags, appliedFilters.join(",").includes(FILTER_IDS.DATE));
+      const tagFilterOptions = await buildTagFilterOptions(tagParams, appliedFilterTags, appliedFilters.join(",").includes(FILTER_IDS.TAG));
+
       return {
         appliedFilters,
+        appliedFilterTags,
         sortParam,
         dateParam,
         tagParams,
+        dateOptions,
+        tagFilterOptions,
         requestUUID: args.options.requestUUID,
         timeZone: context.timeZone,
         communityId: context.communityId,
@@ -108,70 +176,36 @@ const resolvers: IResolvers = {
 
       return ideas;
     },
-    sortFilter: (root) => resolveSortFilters(root),
     dateFilter: (root): PropLotFilter => {
-      const options = Object.keys(DATE_FILTERS).map((key: string) => {
-        return {
-          id: `${FILTER_IDS.DATE}-${key}`,
-          selected: root.dateParam === DATE_FILTERS[key].value,
-          label: DATE_FILTERS[key].displayName,
-          value: DATE_FILTERS[key].value,
-        };
-      });
       const dateFilter: PropLotFilter = {
         __typename: "PropLotFilter",
         id: FILTER_IDS.DATE,
         type: FilterType.SingleSelect,
         label: "Date",
-        options,
+        options: root.dateOptions,
       };
 
       return dateFilter;
     },
-    tagFilter: async (root): Promise<PropLotFilter> => {
-      const tags = await prisma.tag.findMany();
-      // static tag filters are the tags that come from the database
-      // contrast with virtual tags (hot, etc)
-      const staticTagFilterOptions = tags.map((tag) => {
-        return {
-          id: `${FILTER_IDS.TAG}-${tag.type}`,
-          label: tag.label,
-          value: buildFilterParam(FILTER_IDS.TAG, tag.type),
-          selected: Boolean(
-            root.tagParams?.includes(buildFilterParam(FILTER_IDS.TAG, tag.type))
-          ),
-        };
-      });
-
-      const virtualTagFilterOptions = Object.keys(VirtualTags)
-        .filter((key) => key !== "CONSENSUS") // We don't want a consensus tag appearing in the filter dropdown
-        .map((key) => {
-          const vT = VirtualTags[key];
-          return {
-            id: `${FILTER_IDS.TAG}-${vT.type}`,
-            label: vT.label,
-            value: buildFilterParam(FILTER_IDS.TAG, vT.type),
-            selected: Boolean(
-              root.tagParams?.includes(
-                buildFilterParam(FILTER_IDS.TAG, vT.type)
-              )
-            ),
-          };
-        });
+    tagFilter: (root): PropLotFilter => {
       const tagFilter: PropLotFilter = {
         __typename: "PropLotFilter",
         id: FILTER_IDS.TAG,
         type: FilterType.MultiSelect,
         label: "Tags",
-        options: [...staticTagFilterOptions, ...virtualTagFilterOptions],
+        options: root.tagFilterOptions,
       };
 
       return tagFilter;
     },
-    metadata: (root): PropLotResponseMetadataResolvers => ({
-      requestUUID: root.requestUUID || "",
-      appliedFilters: root.appliedFilters,
-    }),
+    sortFilter: (root) => resolveSortFilters(root),
+    appliedFilterTags: (root) => root.appliedFilterTags,
+    metadata: async (root): Promise<PropLotResponseMetadataResolvers> => {
+      return {
+        requestUUID: root.requestUUID || "",
+        appliedFilters: root.appliedFilters,
+      }
+    },
   },
 };
 

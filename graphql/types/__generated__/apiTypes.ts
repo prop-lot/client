@@ -16,6 +16,12 @@ export type Scalars = {
   Date: any;
 };
 
+export type AppliedFilter = {
+  __typename?: 'AppliedFilter';
+  displayName: Scalars['String'];
+  param: Scalars['String'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
   authorId: Scalars['String'];
@@ -170,6 +176,7 @@ export type PropLotResponse = {
 export type PropLotResponseMetadata = {
   __typename?: 'PropLotResponseMetadata';
   appliedFilters?: Maybe<Array<Scalars['String']>>;
+  filterControls?: Maybe<Array<AppliedFilter>>;
   requestUUID: Scalars['String'];
 };
 
@@ -355,6 +362,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  AppliedFilter: ResolverTypeWrapper<AppliedFilter>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Comment: ResolverTypeWrapper<Comment>;
   CommentParent: ResolverTypeWrapper<CommentParent>;
@@ -392,6 +400,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  AppliedFilter: AppliedFilter;
   Boolean: Scalars['Boolean'];
   Comment: Comment;
   CommentParent: CommentParent;
@@ -422,6 +431,12 @@ export type ResolversParentTypes = {
   UserInputOptions: UserInputOptions;
   UserStats: UserStats;
   Vote: Vote;
+};
+
+export type AppliedFilterResolvers<ContextType = any, ParentType extends ResolversParentTypes['AppliedFilter'] = ResolversParentTypes['AppliedFilter']> = {
+  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  param?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CommentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Comment'] = ResolversParentTypes['Comment']> = {
@@ -536,6 +551,7 @@ export type PropLotResponseResolvers<ContextType = any, ParentType extends Resol
 
 export type PropLotResponseMetadataResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotResponseMetadata'] = ResolversParentTypes['PropLotResponseMetadata']> = {
   appliedFilters?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  filterControls?: Resolver<Maybe<Array<ResolversTypes['AppliedFilter']>>, ParentType, ContextType>;
   requestUUID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -583,6 +599,7 @@ export type VoteResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type Resolvers<ContextType = any> = {
+  AppliedFilter?: AppliedFilterResolvers<ContextType>;
   Comment?: CommentResolvers<ContextType>;
   CommentParent?: CommentParentResolvers<ContextType>;
   Date?: GraphQLScalarType;

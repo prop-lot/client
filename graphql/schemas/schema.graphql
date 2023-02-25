@@ -65,6 +65,7 @@ type PropLotResponse {
   sortFilter: PropLotFilter
   tagFilter: PropLotFilter
   dateFilter: PropLotFilter
+  appliedFilterTags: [AppliedFilter!]
   metadata: PropLotResponseMetadata!
 }
 
@@ -100,6 +101,11 @@ type FilterOption {
   label: String
   value: String!
   icon: String
+}
+
+type AppliedFilter {
+  param: String!
+  displayName: String!
 }
 
 type PropLotResponseMetadata {
