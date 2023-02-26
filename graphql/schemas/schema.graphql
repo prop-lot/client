@@ -3,6 +3,7 @@ scalar Date
 type Query {
   getIdea(options: IdeaInputOptions!): Idea
   getIdeas(options: IdeaInputOptions!): [Idea!]
+  getIdeaComments(options: IdeaCommentInputOptions!): [Comment!]
   getAllUsers: [User!]
   getUser(options: UserInputOptions!): User
   getPropLot(options: PropLotInputOptions!): PropLotResponse!
@@ -27,6 +28,10 @@ input UserInputOptions {
 input IdeaInputOptions {
   ideaId: Int
   sort: SORT_TYPE
+}
+
+input IdeaCommentInputOptions {
+  ideaId: Int!
 }
 
 input SubmitVoteInputOptions {

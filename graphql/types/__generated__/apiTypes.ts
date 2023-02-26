@@ -84,6 +84,10 @@ export type Idea = {
   votes?: Maybe<Array<Vote>>;
 };
 
+export type IdeaCommentInputOptions = {
+  ideaId: Scalars['Int'];
+};
+
 export type IdeaInputOptions = {
   ideaId?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<Sort_Type>;
@@ -166,6 +170,7 @@ export type PropLotProfileResponse = {
 
 export type PropLotResponse = {
   __typename?: 'PropLotResponse';
+  appliedFilterTags?: Maybe<Array<AppliedFilter>>;
   dateFilter?: Maybe<PropLotFilter>;
   ideas?: Maybe<Array<Idea>>;
   metadata: PropLotResponseMetadata;
@@ -176,7 +181,6 @@ export type PropLotResponse = {
 export type PropLotResponseMetadata = {
   __typename?: 'PropLotResponseMetadata';
   appliedFilters?: Maybe<Array<Scalars['String']>>;
-  filterControls?: Maybe<Array<AppliedFilter>>;
   requestUUID: Scalars['String'];
 };
 
@@ -189,6 +193,7 @@ export type Query = {
   __typename?: 'Query';
   getAllUsers?: Maybe<Array<User>>;
   getIdea?: Maybe<Idea>;
+  getIdeaComments?: Maybe<Array<Comment>>;
   getIdeas?: Maybe<Array<Idea>>;
   getPropLot: PropLotResponse;
   getPropLotProfile: PropLotProfileResponse;
@@ -198,6 +203,11 @@ export type Query = {
 
 export type QueryGetIdeaArgs = {
   options: IdeaInputOptions;
+};
+
+
+export type QueryGetIdeaCommentsArgs = {
+  options: IdeaCommentInputOptions;
 };
 
 
@@ -372,6 +382,7 @@ export type ResolversTypes = {
   FilterType: FilterType;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   Idea: ResolverTypeWrapper<Idea>;
+  IdeaCommentInputOptions: IdeaCommentInputOptions;
   IdeaInputOptions: IdeaInputOptions;
   IdeaStats: ResolverTypeWrapper<IdeaStats>;
   IdeaTags: ResolverTypeWrapper<IdeaTags>;
@@ -409,6 +420,7 @@ export type ResolversParentTypes = {
   FilterOption: FilterOption;
   Float: Scalars['Float'];
   Idea: Idea;
+  IdeaCommentInputOptions: IdeaCommentInputOptions;
   IdeaInputOptions: IdeaInputOptions;
   IdeaStats: IdeaStats;
   IdeaTags: IdeaTags;
@@ -541,6 +553,7 @@ export type PropLotProfileResponseResolvers<ContextType = any, ParentType extend
 };
 
 export type PropLotResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotResponse'] = ResolversParentTypes['PropLotResponse']> = {
+  appliedFilterTags?: Resolver<Maybe<Array<ResolversTypes['AppliedFilter']>>, ParentType, ContextType>;
   dateFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
   ideas?: Resolver<Maybe<Array<ResolversTypes['Idea']>>, ParentType, ContextType>;
   metadata?: Resolver<ResolversTypes['PropLotResponseMetadata'], ParentType, ContextType>;
@@ -551,7 +564,6 @@ export type PropLotResponseResolvers<ContextType = any, ParentType extends Resol
 
 export type PropLotResponseMetadataResolvers<ContextType = any, ParentType extends ResolversParentTypes['PropLotResponseMetadata'] = ResolversParentTypes['PropLotResponseMetadata']> = {
   appliedFilters?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
-  filterControls?: Resolver<Maybe<Array<ResolversTypes['AppliedFilter']>>, ParentType, ContextType>;
   requestUUID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -564,6 +576,7 @@ export type PropLotUserProfileResolvers<ContextType = any, ParentType extends Re
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getAllUsers?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
   getIdea?: Resolver<Maybe<ResolversTypes['Idea']>, ParentType, ContextType, RequireFields<QueryGetIdeaArgs, 'options'>>;
+  getIdeaComments?: Resolver<Maybe<Array<ResolversTypes['Comment']>>, ParentType, ContextType, RequireFields<QueryGetIdeaCommentsArgs, 'options'>>;
   getIdeas?: Resolver<Maybe<Array<ResolversTypes['Idea']>>, ParentType, ContextType, RequireFields<QueryGetIdeasArgs, 'options'>>;
   getPropLot?: Resolver<ResolversTypes['PropLotResponse'], ParentType, ContextType, RequireFields<QueryGetPropLotArgs, 'options'>>;
   getPropLotProfile?: Resolver<ResolversTypes['PropLotProfileResponse'], ParentType, ContextType, RequireFields<QueryGetPropLotProfileArgs, 'options'>>;
