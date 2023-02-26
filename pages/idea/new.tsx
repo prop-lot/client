@@ -410,7 +410,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   />
                 ) : (
                   <div
-                    className="border rounded-lg p-2 min-h-[240px] prose lg:prose-xl"
+                    className="border rounded-lg p-2 min-h-[240px] prose-base"
                     dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(marked.parse(description), {
                         ADD_ATTR: ["target"],

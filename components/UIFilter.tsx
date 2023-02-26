@@ -46,7 +46,7 @@ const CustomToggle = forwardRef(
   )
 );
 
-CustomToggle.displayName = 'CustomToggle'
+CustomToggle.displayName = "CustomToggle";
 
 const UIFilter = ({
   filter,

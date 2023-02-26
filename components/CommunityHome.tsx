@@ -107,10 +107,17 @@ export default function CommunityHome({
       <div>
         <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
           <div className="mt-8 mb-4 flex flex-col items-center sm:flex-row sm:mt-12">
-            <img src={community.data.pfpUrl} className="w-52 h-52 rounded-lg" />
-            <h3 className="text-3xl font-bold font-londrina mt-4 sm:mt-0 sm:ml-4">
-              {community?.data?.name} Prop Lot
-            </h3>
+            <img src={community.data.pfpUrl} className="w-24 h-24 rounded-lg" />
+            <div className="sm:ml-4 flex flex-col">
+              <h3 className="text-3xl font-bold font-londrina mb-2 mt-[12px] sm:mt-[0px] mr-[auto] ml-[auto] sm:mx-[0px]">
+                {community?.data?.name} Prop Lot
+              </h3>
+              {/* stupid bootstrap css making it impossible to center this text */}
+              {/* <h4 className="max-w-[600px] mr-[auto] ml-[auto] sm:mx-[0px] text-sm">
+                If you own a {community?.data?.name} token you can submit ideas,
+                requests, or suggestions below, and vote on other submissions.{" "}
+              </h4> */}
+            </div>
           </div>
           <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-normal sm:items-center">
             <div className="flex flex-row space-x-4">
@@ -139,7 +146,7 @@ export default function CommunityHome({
                   nounBalance > 0
                     ? "!bg-[#2B83F6] !text-white"
                     : "!bg-[#F4F4F8] !text-[#E2E3E8]"
-                } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] mb-4 sm:!mb-0`}
+                } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] self-center mb-[16px] sm:mb-[0px]`}
                 onClick={() => {
                   if (nounBalance > 0) {
                     Router.push("/idea/new");
