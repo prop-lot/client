@@ -26,16 +26,11 @@ import { client } from "@/lib/apollo";
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
 renderer.link = (href: string, title: string, text: string) => {
-  const localLink = href?.startsWith(
-    `${location.protocol}//${location.hostname}`
-  );
   const html = linkRenderer.call(renderer, href, title, text);
-  return localLink
-    ? html
-    : html.replace(
-        /^<a /,
-        `<a target="_blank" rel="noreferrer noopener nofollow" `
-      );
+  return html.replace(
+    /^<a /,
+    `<a target="_blank" rel="noreferrer noopener nofollow" `
+  );
 };
 
 marked.setOptions({
@@ -54,8 +49,8 @@ const ProfileLink = ({ id }: { id: string }) => {
     cacheTime: 6_000,
     suspense: true,
     onError: (err) => {
-      console.log(err)
-    }
+      console.log(err);
+    },
   });
   const shortAddress = useShortAddress(id);
 
@@ -91,9 +86,8 @@ const IdeaPage = ({
     }
   );
 
-  const [getIdeaCommentsQuery, { data: commentData }] = useLazyQuery<getIdeaComments>(
-    GET_IDEA_COMMENTS,
-    {
+  const [getIdeaCommentsQuery, { data: commentData }] =
+    useLazyQuery<getIdeaComments>(GET_IDEA_COMMENTS, {
       variables: { ideaId: data.getIdea?.id },
       context: {
         clientName: "PropLot",
@@ -101,14 +95,13 @@ const IdeaPage = ({
           "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
       },
-    }
-  );
+    });
 
   useEffect(() => {
     if (data.getIdea?.id) {
       getIdeaCommentsQuery();
     }
-  }, [getIdeaCommentsQuery, data.getIdea?.id])
+  }, [getIdeaCommentsQuery, data.getIdea?.id]);
 
   useEffect(() => {
     if (address) {
@@ -211,7 +204,9 @@ const IdeaPage = ({
           </div>
 
           <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-12 whitespace-pre">
-            {data.getIdea.creatorId && <ProfileLink id={data.getIdea.creatorId} />}
+            {data.getIdea.creatorId && (
+              <ProfileLink id={data.getIdea.creatorId} />
+            )}
             {` | ${
               creatorTokenWeight === 1
                 ? `${creatorTokenWeight} token`
@@ -223,7 +218,10 @@ const IdeaPage = ({
 
           <div className="mt-2 mb-2">
             <h3 className="text-2xl lodrina font-bold">
-              {commentData?.getIdeaComments?.filter((c: any) => !!c.deleted)?.length}{" "}
+              {
+                commentData?.getIdeaComments?.filter((c: any) => !!c.deleted)
+                  ?.length
+              }{" "}
               {commentData?.getIdeaComments?.filter((c: any) => !!c.deleted)
                 ?.length === 1
                 ? "comment"
@@ -261,6 +259,7 @@ const IdeaPage = ({
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { communityDomain } = getCommunityByDomain(context.req);
+  console.log(communityDomain);
 
   if (!communityDomain) {
     return {
@@ -293,7 +292,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const ideaData: ApolloQueryResult<getIdea> = await client.query({
       query: GET_IDEA_QUERY,
       variables: { ideaId: parseInt(context.params.id as string, 10) },
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
       context: {
         clientName: "PropLot",
         uri,
