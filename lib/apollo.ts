@@ -20,6 +20,8 @@ const lilNounsDAOLink = new HttpLink({
 
 //pass them to apollo-client config
 export const client = new ApolloClient({
+  ssrMode: typeof window === 'undefined',
+  credentials: 'include',
   link: ApolloLink.split(
     operation => operation.getContext().clientName === SUPPORTED_SUBDOMAINS.NOUNS,
     nounsDAOLink, //if above

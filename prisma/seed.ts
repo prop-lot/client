@@ -54,7 +54,7 @@ async function seed() {
   }
 
   for (let i = 0; i < 20; i++) {
-    user.wallet = `0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9${i}`;
+    user.wallet = `0xcf7ed3acca5a467e9e704c703e8d87f634fb0f${i < 10 ? `c${i}` : i}`;
     await prisma.user.create({ data: user });
   }
 
@@ -65,7 +65,7 @@ async function seed() {
         title: chance.word({ length: 5 }),
         tldr: chance.sentence({ words: 5 }),
         description: chance.sentence({ words: 10 }),
-        creatorId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9${i}`,
+        creatorId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0f${i < 10 ? `c${i}` : i}`,
         tokenSupplyOnCreate: 7 * i,
         createdAtBlock: 16534162,
       },
@@ -75,7 +75,7 @@ async function seed() {
       await prisma.vote.create({
         data: {
           ideaId: idea.id,
-          voterId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9${i}`,
+          voterId: `0xcf7ed3acca5a467e9e704c703e8d87f634fb0f${i < 10 ? `c${i}` : i}`,
           direction: 1,
           voterWeight: i * 3 + 1,
         },

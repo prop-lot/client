@@ -1,13 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Col, Row, Container } from "react-bootstrap";
 import { useRouter } from "next/router";
 import { useAccount, useEnsName } from "wagmi";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import moment from "moment";
 import { marked } from "marked";
-import DOMPurify from "dompurify";
+import DOMPurify from "isomorphic-dompurify";
 import { getIdea } from "@/graphql/types/__generated__/getIdea";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, ApolloQueryResult } from "@apollo/client";
 import { GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import IdeaVoteControls from "@/components/IdeaVoteControls";
@@ -20,6 +20,7 @@ import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import getCommunityByDomain from "@/utils/communityByDomain";
+import { client } from "@/lib/apollo";
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -40,22 +41,45 @@ marked.setOptions({
   renderer: renderer,
 });
 
-const IdeaPage = ({ community }: { community: Community }) => {
+const ProfileLink = ({ id }: { id: string }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const { data: creatorEns } = useEnsName({
+    address: id as `0x${string}`,
+    cacheTime: 6_000,
+    suspense: true,
+    onError: (err) => {
+      console.log(err)
+    }
+  });
+  const shortAddress = useShortAddress(id);
+
+  const profileName = creatorEns || shortAddress;
+
+  return (
+    <a
+      className="text-[#2B83F6] underline cursor-pointer"
+      href={`/profile/${id}`}
+    >
+      {isMounted && profileName}
+    </a>
+  );
+};
+
+const IdeaPage = ({
+  community,
+  data,
+}: {
+  community: Community;
+  data: getIdea;
+}) => {
   const router = useRouter();
   const { id } = router.query as { id: string };
   const { address } = useAccount();
-
-  const [getIdeaQuery, { data, error: _getIdeaError }] = useLazyQuery<getIdea>(
-    GET_IDEA_QUERY,
-    {
-      context: {
-        clientName: "PropLot",
-        headers: {
-          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-      },
-    }
-  );
 
   const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
     DELEGATED_VOTES_BY_OWNER_SUB,
@@ -66,12 +90,6 @@ const IdeaPage = ({ community }: { community: Community }) => {
     }
   );
 
-  const { data: creatorEns } = useEnsName({
-    address: data?.getIdea?.creatorId as `0x${string}`,
-    cacheTime: 6_000,
-  });
-  const shortAddress = useShortAddress(data?.getIdea?.creatorId || "");
-
   useEffect(() => {
     if (address) {
       getDelegatedVotes({
@@ -81,12 +99,6 @@ const IdeaPage = ({ community }: { community: Community }) => {
       });
     }
   }, [address, getDelegatedVotes]);
-
-  useEffect(() => {
-    if (id) {
-      getIdeaQuery({ variables: { ideaId: parseInt(id) } });
-    }
-  }, [id]);
 
   // loading
   // todo: skeleton loading for better experience
@@ -179,15 +191,7 @@ const IdeaPage = ({ community }: { community: Community }) => {
           </div>
 
           <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-12 whitespace-pre">
-            <a
-              className="text-[#2B83F6] underline cursor-pointer"
-              href={
-                data.getIdea?.creatorId &&
-                `/profile/${data.getIdea.creatorId}`
-              }
-            >
-              {creatorEns || shortAddress}
-            </a>
+            {data.getIdea.creatorId && <ProfileLink id={data.getIdea.creatorId} />}
             {` | ${
               creatorTokenWeight === 1
                 ? `${creatorTokenWeight} token`
@@ -199,17 +203,11 @@ const IdeaPage = ({ community }: { community: Community }) => {
 
           <div className="mt-2 mb-2">
             <h3 className="text-2xl lodrina font-bold">
-              {
-                // @ts-ignore
-                data?.getIdea?.comments?.filter((c: any) => !!c.deleted)?.length
-              }{" "}
-              {
-                // @ts-ignore
-                data?.getIdea?.comments?.filter((c: any) => !!c.deleted)
-                  ?.length === 1
-                  ? "comment"
-                  : "comments"
-              }
+              {data?.getIdea?.comments?.filter((c: any) => !!c.deleted)?.length}{" "}
+              {data?.getIdea?.comments?.filter((c: any) => !!c.deleted)
+                ?.length === 1
+                ? "comment"
+                : "comments"}
             </h3>
           </div>
 
@@ -222,20 +220,17 @@ const IdeaPage = ({ community }: { community: Community }) => {
               />
             )}
             <div className="mt-12 space-y-8">
-              {
-                // @ts-ignore
-                data?.getIdea?.comments?.map((comment: any) => {
-                  return (
-                    <Comment
-                      comment={comment}
-                      key={`comment-${comment.id}`}
-                      hasTokens={hasTokens}
-                      level={1}
-                      isIdeaClosed={!!data.getIdea?.closed}
-                    />
-                  );
-                })
-              }
+              {data?.getIdea?.comments?.map((comment: any) => {
+                return (
+                  <Comment
+                    comment={comment}
+                    key={`comment-${comment.id}`}
+                    hasTokens={hasTokens}
+                    level={1}
+                    isIdeaClosed={!!data.getIdea?.closed}
+                  />
+                );
+              })}
             </div>
           </>
         </Col>
@@ -259,17 +254,48 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     },
   });
 
-  if (!community) {
+  if (!community || !context.params?.id) {
     return {
       notFound: true,
     };
   }
 
-  return {
-    props: {
-      community: JSON.parse(JSON.stringify(community)),
-    },
-  };
+  try {
+    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+    const host = context.req.headers.host;
+    // We set a different uri locally as routing to subdomains here doesn't work unless you add 127.0.0.1 lilnouns.localhost to your /etc/hosts
+    // we could add that as a requirement to the readme but this also works.
+    const uri =
+      process.env.NODE_ENV === "development"
+        ? `http://localhost:3000/api/graphql`
+        : `${protocol}://${host}/api/graphql`;
+
+    const ideaData: ApolloQueryResult<getIdea> = await client.query({
+      query: GET_IDEA_QUERY,
+      variables: { ideaId: parseInt(context.params.id as string, 10) },
+      context: {
+        clientName: "PropLot",
+        uri,
+        headers: {
+          "proplot-cd": communityDomain, // Used for local dev as this query doesn't run on the subdomain
+          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
+          Cookie: context.req.headers.cookie || "",
+        },
+      },
+    });
+
+    return {
+      props: {
+        community: JSON.parse(JSON.stringify(community)),
+        data: ideaData.data,
+      },
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      notFound: true,
+    };
+  }
 }
 
 export default IdeaPage;
