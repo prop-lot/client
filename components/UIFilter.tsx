@@ -121,6 +121,7 @@ const UIFilter = ({
                       type="radio"
                       name={opt.value}
                       checked={isSelected}
+                      onChange={() => {}}
                       className={`${
                         isSelected
                           ? "checked:!bg-[#231F20] checked:!border-[#E2E3E8] border-[#231F20]"

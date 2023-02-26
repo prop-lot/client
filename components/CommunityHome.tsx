@@ -105,13 +105,13 @@ export default function CommunityHome({
   return (
     <main className="pt-8">
       <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
-        <div className="mt-12 mb-4 flex flex-row space-x-4 items-center">
+        <div className="mt-8 mb-4 flex flex-col items-center sm:flex-row sm:mt-12">
           <img src={community.data.pfpUrl} className="w-52 h-52 rounded-lg" />
-          <h3 className="text-3xl font-bold">
-            {community?.data?.name} PropLot
+          <h3 className="text-3xl font-bold font-londrina mt-4 sm:mt-0 sm:ml-4">
+            {community?.data?.name} Prop Lot
           </h3>
         </div>
-        <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-start sm:items-center">
+        <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-normal sm:items-center">
           <div className="flex flex-row space-x-4">
             {data?.propLot?.sortFilter && (
               <UIFilter
