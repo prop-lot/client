@@ -210,7 +210,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
       label: "Nouns DAO Prop",
       value: TagType.Nouns,
       requiredTokens: 8,
-      disabled: community?.uname !== SUPPORTED_SUBDOMAINS.LIL_NOUNS
+      disabled: community?.uname !== SUPPORTED_SUBDOMAINS.LIL_NOUNS,
     },
   ];
 
@@ -257,8 +257,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
               onSubmit={async (event) => {
                 event.preventDefault();
                 const target = event.target as HTMLFormElement; // quiets TS
-                const data = new FormData(target);
-                const tags = data.getAll("tags") as TagType[];
+                const tags = selectedTags as TagType[];
 
                 if (!formValid || loading) {
                   return;
@@ -304,34 +303,16 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
 
                   return (
                     <div className="flex flex-col items-center" key={tag.label}>
-                      <label
-                        htmlFor={tag.label}
-                        className="cursor-pointer text-blue-500 bg-blue-200 text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex"
+                      <button
+                        onClick={() => handleTagChange(tag.value)}
+                        className={`cursor-pointer text-blue-500 border text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex ${
+                          !selectedTags.includes(tag.value)
+                            ? "border-black bg-transparent hover:bg-blue-100 actve:bg-blue-200"
+                            : "border-red-200 bg-blue-200 hover:bg-blue-200 actve:bg-blue-100"
+                        }`}
                       >
                         {tag.label}
-                      </label>
-                      <input
-                        type="checkbox"
-                        onChange={() => handleTagChange(tag.label)}
-                        name="tags"
-                        id={tag.label}
-                        value={tag.value}
-                        hidden
-                      />
-                      {selectedTags.includes(tag.label) && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-6 h-6 text-[#49A758] mt-[8px]"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      )}
+                      </button>
                     </div>
                   );
                 })}

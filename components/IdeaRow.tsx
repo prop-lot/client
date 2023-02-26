@@ -11,6 +11,7 @@ import { deleteIdea } from "@/graphql/types/__generated__/deleteIdea";
 import { useMutation } from "@apollo/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useApiError } from "@/hooks/useApiError";
+import Modal from "@/components/Modal";
 
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
@@ -32,6 +33,7 @@ const IdeaRow = ({
   const { setError, error: errorModalVisible } = useApiError();
   const breakpoint = useBreakpoint();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const {
     id,
     tldr,
@@ -189,6 +191,24 @@ const IdeaRow = ({
 
   return (
     <>
+      {showDeleteModal && (
+        <Modal
+          title="Delete Idea?"
+          description="Are you sure you want to delete this idea? It cannot be undone."
+          action={{
+            title: "Delete",
+            fn: async () => {
+              if (isDeleting) {
+                return undefined;
+              }
+              await deleteIdea();
+              setShowDeleteModal(false);
+            },
+          }}
+          isOpen={showDeleteModal}
+          setIsOpen={setShowDeleteModal}
+        />
+      )}
       {deleted ? (
         <div className="bg-gray-100 p-4 rounded">
           This idea cannot be found.
@@ -224,10 +244,7 @@ const IdeaRow = ({
                         onClick={async (event) => {
                           // stop propagation to prevent the card from closing
                           event.stopPropagation();
-                          if (isDeleting) {
-                            return undefined;
-                          }
-                          await deleteIdea();
+                          setShowDeleteModal(true);
                         }}
                         className="text-red-500 self-end font-bold"
                       >

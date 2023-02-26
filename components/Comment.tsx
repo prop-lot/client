@@ -7,8 +7,13 @@ import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import moment from "moment";
 import CommentInput from "@/components/CommentInput";
 import { DELETE_IDEA_COMMENT_MUTATION } from "@/graphql/queries/propLotMutations";
-import { deleteIdeaComment, deleteIdeaComment_deleteIdeaComment as Comment, deleteIdeaComment_deleteIdeaComment_replies as Reply } from "@/graphql/types/__generated__/deleteIdeaComment";
+import {
+  deleteIdeaComment,
+  deleteIdeaComment_deleteIdeaComment as Comment,
+  deleteIdeaComment_deleteIdeaComment_replies as Reply,
+} from "@/graphql/types/__generated__/deleteIdeaComment";
 import { useApiError } from "@/hooks/useApiError";
+import Modal from "@/components/Modal";
 
 const Comment = ({
   comment,
@@ -22,7 +27,7 @@ const Comment = ({
   isIdeaClosed: boolean;
 }) => {
   const router = useRouter();
-
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
   const [isReply, setIsReply] = useState<boolean>(false);
@@ -40,13 +45,16 @@ const Comment = ({
   const getDeleteCommentMutationArgs = () => ({
     context: {},
     variables: {
-      id: comment.id
+      id: comment.id,
     },
   });
 
   useEffect(() => {
     if (error && !errorModalVisible) {
-      setError({ message: error?.message || "Failed to delete comment", status: 500 });
+      setError({
+        message: error?.message || "Failed to delete comment",
+        status: 500,
+      });
     }
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -81,97 +89,114 @@ const Comment = ({
   }
 
   return (
-    <div key={commentData.id}>
-      {!commentData.deleted ? (
-        <>
-          <div className="flex flex-row items-center space-x-4">
-            <span className="text-2xl text-[#8C8D92] flex align-items-center">
-              {/* <Davatar
+    <>
+      {showDeleteModal && (
+        <Modal
+          title="Delete Comment?"
+          description="Are you sure you want to delete this comment? It cannot be undone."
+          action={{
+            title: "Delete",
+            fn: async () => {
+              if (loading) {
+                return undefined;
+              }
+              await deleteComment();
+              setShowDeleteModal(false);
+            },
+          }}
+          isOpen={showDeleteModal}
+          setIsOpen={setShowDeleteModal}
+        />
+      )}
+      <div key={commentData.id}>
+        {!commentData.deleted ? (
+          <>
+            <div className="flex flex-row items-center space-x-4">
+              <span className="text-2xl text-[#8C8D92] flex align-items-center">
+                {/* <Davatar
                 size={28}
                 address={commentData.authorId}
                 provider={provider}
               /> */}
-              <span
-                className="lodrina pl-2 text-[#2B83F6] underline cursor-pointer"
-                onClick={() => {
-                  router.replace(`/profile/${commentData.authorId}`);
-                }}
-              >
-                {creatorEns || shortAddress}
+                <span
+                  className="lodrina pl-2 text-[#2B83F6] underline cursor-pointer"
+                  onClick={() => {
+                    router.replace(`/profile/${commentData.authorId}`);
+                  }}
+                >
+                  {creatorEns || shortAddress}
+                </span>
+                <span className="text-[#8C8D92] text-base pl-2">
+                  {moment(commentData.createdAt).fromNow()}
+                </span>
               </span>
-              <span className="text-[#8C8D92] text-base pl-2">
-                {moment(commentData.createdAt).fromNow()}
-              </span>
-            </span>
-            {level < 4 && (
-              <span
-                className="text-[#2B83F6] text-base cursor-pointer"
-                onClick={() => setIsReply(true)}
-              >
-                Reply
-              </span>
-            )}
-            {commentData.authorId === account && (
-              <span
-                className="text-red-500 cursor-pointer"
-                onClick={async () => {
-                  if (loading) {
-                    return undefined;
-                  }
-                  await deleteComment();
-                }}
-              >
-                Delete
-              </span>
-            )}
+              {level < 4 && (
+                <span
+                  className="text-[#2B83F6] text-base cursor-pointer"
+                  onClick={() => setIsReply(true)}
+                >
+                  Reply
+                </span>
+              )}
+              {commentData.authorId === account && (
+                <span
+                  className="text-red-500 cursor-pointer"
+                  onClick={() => {
+                    setShowDeleteModal(true);
+                  }}
+                >
+                  Delete
+                </span>
+              )}
 
-            {/* Future addition: Add view more button to move deeper into the thread? */}
+              {/* Future addition: Add view more button to move deeper into the thread? */}
+            </div>
+            <p className="text-[#212529] text ml-2 whitespace-pre-wrap">
+              {comment.body}
+            </p>
+          </>
+        ) : (
+          <div className="bg-gray-100 rounded p-4">
+            This comment cannot be found.
           </div>
-          <p className="text-[#212529] text ml-2 whitespace-pre-wrap">
-            {comment.body}
-          </p>
-        </>
-      ) : (
-        <div className="bg-gray-100 rounded p-4">
-          This comment cannot be found.
-        </div>
-      )}
+        )}
 
-      {!!comment.replies?.length && level === 1 && (
-        <span
-          className="text-[#212529] text-base cursor-pointer font-bold mt-2 block"
-          onClick={() => setShowReplies(!showReplies)}
-        >
-          {`${showReplies ? "Hide" : "Show"} replies`}
-        </span>
-      )}
+        {!!comment.replies?.length && level === 1 && (
+          <span
+            className="text-[#212529] text-base cursor-pointer font-bold mt-2 block"
+            onClick={() => setShowReplies(!showReplies)}
+          >
+            {`${showReplies ? "Hide" : "Show"} replies`}
+          </span>
+        )}
 
-      {showReplies && (
-        <div>
-          {comment.replies?.map((reply) => {
-            return (
-              <div className="ml-8 mt-2" key={`replies-${reply.id}`}>
-                <Comment
-                  comment={reply as Reply}
-                  hasTokens={hasTokens}
-                  level={level + 1}
-                  isIdeaClosed={isIdeaClosed}
-                />
-              </div>
-            );
-          })}
-        </div>
-      )}
+        {showReplies && (
+          <div>
+            {comment.replies?.map((reply) => {
+              return (
+                <div className="ml-8 mt-2" key={`replies-${reply.id}`}>
+                  <Comment
+                    comment={reply as Reply}
+                    hasTokens={hasTokens}
+                    level={level + 1}
+                    isIdeaClosed={isIdeaClosed}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
 
-      {isReply && !isIdeaClosed && (
-        <CommentInput
-          parentId={comment.id}
-          ideaId={comment.ideaId}
-          hideInput={(isHidden: boolean) => setIsReply(!isHidden)}
-          hasTokens={hasTokens}
-        />
-      )}
-    </div>
+        {isReply && !isIdeaClosed && (
+          <CommentInput
+            parentId={comment.id}
+            ideaId={comment.ideaId}
+            hideInput={(isHidden: boolean) => setIsReply(!isHidden)}
+            hasTokens={hasTokens}
+          />
+        )}
+      </div>
+    </>
   );
 };
 
