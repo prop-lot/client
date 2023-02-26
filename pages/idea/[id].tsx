@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Col, Row, Container } from "react-bootstrap";
 import { useRouter } from "next/router";
 import { useAccount, useEnsName } from "wagmi";
@@ -41,6 +41,35 @@ marked.setOptions({
   renderer: renderer,
 });
 
+const ProfileLink = ({ id }: { id: string }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const { data: creatorEns } = useEnsName({
+    address: id as `0x${string}`,
+    cacheTime: 6_000,
+    suspense: true,
+    onError: (err) => {
+      console.log(err)
+    }
+  });
+  const shortAddress = useShortAddress(id);
+
+  const profileName = creatorEns || shortAddress;
+
+  return (
+    <a
+      className="text-[#2B83F6] underline cursor-pointer"
+      href={`/profile/${id}`}
+    >
+      {isMounted && profileName}
+    </a>
+  );
+};
+
 const IdeaPage = ({
   community,
   data,
@@ -60,12 +89,6 @@ const IdeaPage = ({
       },
     }
   );
-
-  const { data: creatorEns } = useEnsName({
-    address: data?.getIdea?.creatorId as `0x${string}`,
-    cacheTime: 6_000,
-  });
-  const shortAddress = useShortAddress(data?.getIdea?.creatorId || "");
 
   useEffect(() => {
     if (address) {
@@ -168,14 +191,7 @@ const IdeaPage = ({
           </div>
 
           <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-12 whitespace-pre">
-            <a
-              className="text-[#2B83F6] underline cursor-pointer"
-              href={
-                data.getIdea?.creatorId && `/profile/${data.getIdea.creatorId}`
-              }
-            >
-              {creatorEns || shortAddress}
-            </a>
+            {data.getIdea.creatorId && <ProfileLink id={data.getIdea.creatorId} />}
             {` | ${
               creatorTokenWeight === 1
                 ? `${creatorTokenWeight} token`
@@ -187,17 +203,11 @@ const IdeaPage = ({
 
           <div className="mt-2 mb-2">
             <h3 className="text-2xl lodrina font-bold">
-              {
-                // @ts-ignore
-                data?.getIdea?.comments?.filter((c: any) => !!c.deleted)?.length
-              }{" "}
-              {
-                // @ts-ignore
-                data?.getIdea?.comments?.filter((c: any) => !!c.deleted)
-                  ?.length === 1
-                  ? "comment"
-                  : "comments"
-              }
+              {data?.getIdea?.comments?.filter((c: any) => !!c.deleted)?.length}{" "}
+              {data?.getIdea?.comments?.filter((c: any) => !!c.deleted)
+                ?.length === 1
+                ? "comment"
+                : "comments"}
             </h3>
           </div>
 
@@ -210,20 +220,17 @@ const IdeaPage = ({
               />
             )}
             <div className="mt-12 space-y-8">
-              {
-                // @ts-ignore
-                data?.getIdea?.comments?.map((comment: any) => {
-                  return (
-                    <Comment
-                      comment={comment}
-                      key={`comment-${comment.id}`}
-                      hasTokens={hasTokens}
-                      level={1}
-                      isIdeaClosed={!!data.getIdea?.closed}
-                    />
-                  );
-                })
-              }
+              {data?.getIdea?.comments?.map((comment: any) => {
+                return (
+                  <Comment
+                    comment={comment}
+                    key={`comment-${comment.id}`}
+                    hasTokens={hasTokens}
+                    level={1}
+                    isIdeaClosed={!!data.getIdea?.closed}
+                  />
+                );
+              })}
             </div>
           </>
         </Col>
