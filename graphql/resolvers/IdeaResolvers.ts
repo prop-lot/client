@@ -21,8 +21,11 @@ import { getBlock } from "@/utils/ethers";
 
 const resolvers: IResolvers = {
   Query: {
-    getIdea: async (_parent: any, args: QueryGetIdeaArgs) => {
-      const idea = await IdeasService.get(args.options.ideaId as number);
+    getIdea: async (_parent: any, args: QueryGetIdeaArgs, context) => {
+      const idea = await IdeasService.get(
+        args.options.ideaId as number,
+        context.communityId as number
+      );
       return idea;
     },
     getIdeas: async (
@@ -40,7 +43,7 @@ const resolvers: IResolvers = {
       _parent: any,
       args: MutationDeleteIdeaCommentArgs,
       context
-    ): Promise<Comment> =>  {
+    ): Promise<Comment> => {
       if (!context.authScope.isAuthorized) {
         throw new Error("Failed to delete comment: unauthorized");
       }
@@ -58,7 +61,7 @@ const resolvers: IResolvers = {
       _parent: any,
       args: MutationDeleteIdeaArgs,
       context
-    ): Promise<DeleteDataResponse> =>  {
+    ): Promise<DeleteDataResponse> => {
       if (!context.authScope.isAuthorized) {
         throw new Error("Failed to delete idea: unauthorized");
       }
@@ -69,7 +72,8 @@ const resolvers: IResolvers = {
         throw new Error("Failed to delete idea: you are not the author");
       }
 
-      const result: { id: number, success: boolean } = await IdeasService.deleteIdea(args.id);
+      const result: { id: number; success: boolean } =
+        await IdeasService.deleteIdea(args.id);
       return result;
     },
     submitIdeaComment: async (
@@ -99,7 +103,6 @@ const resolvers: IResolvers = {
         throw new Error("Failed to save vote: unauthorized");
       }
 
-
       if (!context.communityTokenConfig?.getUserVoteWeightAtBlock) {
         throw new Error("Failed to save idea: token unsupported");
       }
@@ -125,7 +128,11 @@ const resolvers: IResolvers = {
         throw new Error("Failed to save idea: token unsupported");
       }
 
-      const [totalSupply, currentBlock, authorTokenCount] = await Promise.all([communityTokenConfig.getTotalSupply(), getBlock(), communityTokenConfig.getUserTokenCount(context.authScope.user.wallet)]);
+      const [totalSupply, currentBlock, authorTokenCount] = await Promise.all([
+        communityTokenConfig.getTotalSupply(),
+        getBlock(),
+        communityTokenConfig.getUserTokenCount(context.authScope.user.wallet),
+      ]);
 
       if (!totalSupply || !currentBlock || !authorTokenCount) {
         throw new Error("Failed to save idea: couldn't fetch required data");

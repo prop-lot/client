@@ -175,7 +175,7 @@ class IdeasService {
     }
   }
 
-  static async get(id: number) {
+  static async get(id: number, communityId: number) {
     try {
       const idea = await prisma.idea.findUnique({
         where: {
@@ -196,7 +196,7 @@ class IdeasService {
         },
       });
 
-      if (!idea) {
+      if (!idea || idea.communityId !== communityId) {
         throw new Error("Idea not found");
       }
 

@@ -5,9 +5,9 @@ import { useAccount, useEnsName } from "wagmi";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import moment from "moment";
 import { marked } from "marked";
-import DOMPurify from "dompurify";
+import DOMPurify from "isomorphic-dompurify";
 import { getIdea } from "@/graphql/types/__generated__/getIdea";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, ApolloQueryResult } from "@apollo/client";
 import { GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import IdeaVoteControls from "@/components/IdeaVoteControls";
@@ -20,6 +20,7 @@ import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import getCommunityByDomain from "@/utils/communityByDomain";
+import { client } from "@/lib/apollo";
 
 const renderer = new marked.Renderer();
 const linkRenderer = renderer.link;
@@ -40,22 +41,16 @@ marked.setOptions({
   renderer: renderer,
 });
 
-const IdeaPage = ({ community }: { community: Community }) => {
+const IdeaPage = ({
+  community,
+  data,
+}: {
+  community: Community;
+  data: getIdea;
+}) => {
   const router = useRouter();
   const { id } = router.query as { id: string };
   const { address } = useAccount();
-
-  const [getIdeaQuery, { data, error: _getIdeaError }] = useLazyQuery<getIdea>(
-    GET_IDEA_QUERY,
-    {
-      context: {
-        clientName: "PropLot",
-        headers: {
-          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-      },
-    }
-  );
 
   const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
     DELEGATED_VOTES_BY_OWNER_SUB,
@@ -81,12 +76,6 @@ const IdeaPage = ({ community }: { community: Community }) => {
       });
     }
   }, [address, getDelegatedVotes]);
-
-  useEffect(() => {
-    if (id) {
-      getIdeaQuery({ variables: { ideaId: parseInt(id) } });
-    }
-  }, [id]);
 
   // loading
   // todo: skeleton loading for better experience
@@ -182,8 +171,7 @@ const IdeaPage = ({ community }: { community: Community }) => {
             <a
               className="text-[#2B83F6] underline cursor-pointer"
               href={
-                data.getIdea?.creatorId &&
-                `/profile/${data.getIdea.creatorId}`
+                data.getIdea?.creatorId && `/profile/${data.getIdea.creatorId}`
               }
             >
               {creatorEns || shortAddress}
@@ -259,17 +247,48 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     },
   });
 
-  if (!community) {
+  if (!community || !context.params?.id) {
     return {
       notFound: true,
     };
   }
 
-  return {
-    props: {
-      community: JSON.parse(JSON.stringify(community)),
-    },
-  };
+  try {
+    const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+    const host = context.req.headers.host;
+    // We set a different uri locally as routing to subdomains here doesn't work unless you add 127.0.0.1 lilnouns.localhost to your /etc/hosts
+    // we could add that as a requirement to the readme but this also works.
+    const uri =
+      process.env.NODE_ENV === "development"
+        ? `http://localhost:3000/api/graphql`
+        : `${protocol}://${host}/api/graphql`;
+
+    const ideaData: ApolloQueryResult<getIdea> = await client.query({
+      query: GET_IDEA_QUERY,
+      variables: { ideaId: parseInt(context.params.id as string, 10) },
+      context: {
+        clientName: "PropLot",
+        uri,
+        headers: {
+          "proplot-cd": communityDomain, // Used for local dev as this query doesn't run on the subdomain
+          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
+          Cookie: context.req.headers.cookie || "",
+        },
+      },
+    });
+
+    return {
+      props: {
+        community: JSON.parse(JSON.stringify(community)),
+        data: ideaData.data,
+      },
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      notFound: true,
+    };
+  }
 }
 
 export default IdeaPage;
