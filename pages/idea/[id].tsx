@@ -7,8 +7,9 @@ import moment from "moment";
 import { marked } from "marked";
 import DOMPurify from "isomorphic-dompurify";
 import { getIdea } from "@/graphql/types/__generated__/getIdea";
+import { getIdeaComments } from "@/graphql/types/__generated__/getIdeaComments";
 import { useLazyQuery, ApolloQueryResult } from "@apollo/client";
-import { GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
+import { GET_IDEA_COMMENTS, GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import IdeaVoteControls from "@/components/IdeaVoteControls";
 import Comment from "@/components/Comment";
@@ -89,6 +90,25 @@ const IdeaPage = ({
       },
     }
   );
+
+  const [getIdeaCommentsQuery, { data: commentData }] = useLazyQuery<getIdeaComments>(
+    GET_IDEA_COMMENTS,
+    {
+      variables: { ideaId: data.getIdea?.id },
+      context: {
+        clientName: "PropLot",
+        headers: {
+          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (data.getIdea?.id) {
+      getIdeaCommentsQuery();
+    }
+  }, [getIdeaCommentsQuery, data.getIdea?.id])
 
   useEffect(() => {
     if (address) {
@@ -220,7 +240,7 @@ const IdeaPage = ({
               />
             )}
             <div className="mt-12 space-y-8">
-              {data?.getIdea?.comments?.map((comment: any) => {
+              {commentData?.getIdeaComments?.map((comment: any) => {
                 return (
                   <Comment
                     comment={comment}
@@ -273,6 +293,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     const ideaData: ApolloQueryResult<getIdea> = await client.query({
       query: GET_IDEA_QUERY,
       variables: { ideaId: parseInt(context.params.id as string, 10) },
+      fetchPolicy: 'no-cache',
       context: {
         clientName: "PropLot",
         uri,

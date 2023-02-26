@@ -12,6 +12,7 @@ import {
   Comment,
   MutationDeleteIdeaArgs,
   DeleteDataResponse,
+  QueryGetIdeaCommentsArgs,
 } from "@/graphql/types/__generated__/apiTypes";
 import { TagType } from "@prisma/client";
 
@@ -36,6 +37,13 @@ const resolvers: IResolvers = {
         sortBy: args.options.sort as string,
       });
       return ideas;
+    },
+    getIdeaComments: async (
+      _parent: any,
+      args: QueryGetIdeaCommentsArgs
+    ): Promise<Comment[]> => {
+      const comments: Comment[] = await IdeasService.getIdeaComments(args.options.ideaId as number);
+      return comments;
     },
   },
   Mutation: {

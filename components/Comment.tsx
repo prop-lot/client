@@ -70,6 +70,16 @@ const Comment = ({
 
   const commentData = deletedComment?.deleteIdeaComment || comment;
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null
+  }
+
   return (
     <div key={commentData.id}>
       {!commentData.deleted ? (

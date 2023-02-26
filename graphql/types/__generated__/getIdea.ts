@@ -20,41 +20,6 @@ export interface getIdea_getIdea_tags {
   label: string;
 }
 
-export interface getIdea_getIdea_comments_replies_replies {
-  __typename: "Comment";
-  body: string;
-  id: number;
-  deleted: boolean;
-  parentId: number | null;
-  ideaId: number;
-  createdAt: any;
-  authorId: string;
-}
-
-export interface getIdea_getIdea_comments_replies {
-  __typename: "Comment";
-  body: string;
-  id: number;
-  deleted: boolean;
-  parentId: number | null;
-  ideaId: number;
-  createdAt: any;
-  authorId: string;
-  replies: getIdea_getIdea_comments_replies_replies[] | null;
-}
-
-export interface getIdea_getIdea_comments {
-  __typename: "Comment";
-  body: string;
-  id: number;
-  parentId: number | null;
-  deleted: boolean;
-  ideaId: number;
-  createdAt: any;
-  authorId: string;
-  replies: getIdea_getIdea_comments_replies[] | null;
-}
-
 export interface getIdea_getIdea_votes_voter {
   __typename: "User";
   wallet: string;
@@ -84,7 +49,6 @@ export interface getIdea_getIdea {
   closed: boolean;
   consensus: number | null;
   tags: getIdea_getIdea_tags[] | null;
-  comments: getIdea_getIdea_comments[] | null;
   votes: getIdea_getIdea_votes[] | null;
 }
 

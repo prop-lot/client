@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createBreakpoint } from "react-use";
 import { Button, FormControl } from "react-bootstrap";
 import { useMutation } from "@apollo/client";
@@ -31,7 +31,7 @@ const CommentInput = ({
     context: {
       clientName: "PropLot",
     },
-    refetchQueries: ["getIdea"],
+    refetchQueries: ["getIdeaComments"],
   });
 
   const getCommentMutationArgs = (
@@ -77,6 +77,16 @@ const CommentInput = ({
     }
     setCommentValue("");
   };
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null
+  }
 
   return (
     <div className="relative mt-4">
