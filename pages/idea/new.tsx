@@ -257,8 +257,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
               onSubmit={async (event) => {
                 event.preventDefault();
                 const target = event.target as HTMLFormElement; // quiets TS
-                const data = new FormData(target);
-                const tags = data.getAll("tags") as TagType[];
+                const tags = selectedTags as TagType[];
 
                 if (!formValid || loading) {
                   return;
@@ -305,9 +304,9 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   return (
                     <div className="flex flex-col items-center" key={tag.label}>
                       <button
-                        onClick={() => handleTagChange(tag.label)}
-                        className={`cursor-pointer text-blue-500 border text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex active:scale-[.98] ${
-                          !selectedTags.includes(tag.label)
+                        onClick={() => handleTagChange(tag.value)}
+                        className={`cursor-pointer text-blue-500 border text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex ${
+                          !selectedTags.includes(tag.value)
                             ? "border-black bg-transparent hover:bg-blue-100 actve:bg-blue-200"
                             : "border-red-200 bg-blue-200 hover:bg-blue-200 actve:bg-blue-100"
                         }`}

@@ -103,53 +103,57 @@ export default function CommunityHome({
   const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
 
   return (
-    <main className="pt-8">
-      <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
-        <div className="mt-8 mb-4 flex flex-col items-center sm:flex-row sm:mt-12">
-          <img src={community.data.pfpUrl} className="w-52 h-52 rounded-lg" />
-          <h3 className="text-3xl font-bold font-londrina mt-4 sm:mt-0 sm:ml-4">
-            {community?.data?.name} Prop Lot
-          </h3>
-        </div>
-        <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-normal sm:items-center">
-          <div className="flex flex-row space-x-4">
-            {data?.propLot?.sortFilter && (
-              <UIFilter
-                filter={data.propLot.sortFilter}
-                updateFilters={handleUpdateFilters}
-              />
-            )}
-            {data?.propLot?.tagFilter && (
-              <UIFilter
-                filter={data.propLot.tagFilter}
-                updateFilters={handleUpdateFilters}
-              />
-            )}
-            {data?.propLot?.dateFilter && (
-              <UIFilter
-                filter={data.propLot.dateFilter}
-                updateFilters={handleUpdateFilters}
-              />
-            )}
+    <main className="pt-8 min-h-[calc(100vh-72px)] flex flex-col">
+      <div>
+        <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
+          <div className="mt-8 mb-4 flex flex-col items-center sm:flex-row sm:mt-12">
+            <img src={community.data.pfpUrl} className="w-52 h-52 rounded-lg" />
+            <h3 className="text-3xl font-bold font-londrina mt-4 sm:mt-0 sm:ml-4">
+              {community?.data?.name} Prop Lot
+            </h3>
           </div>
-          <button
-            className={`${
-              nounBalance > 0
-                ? "!bg-[#2B83F6] !text-white"
-                : "!bg-[#F4F4F8] !text-[#E2E3E8]"
-            } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] mb-4 sm:!mb-0`}
-            onClick={() => {
-              if (nounBalance > 0) {
-                Router.push("/idea/new");
-              }
-            }}
-          >
-            New Submission
-          </button>
-        </div>
-      </section>
+          <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-normal sm:items-center">
+            <div className="flex flex-row space-x-4">
+              {data?.propLot?.sortFilter && (
+                <UIFilter
+                  filter={data.propLot.sortFilter}
+                  updateFilters={handleUpdateFilters}
+                />
+              )}
+              {data?.propLot?.tagFilter && (
+                <UIFilter
+                  filter={data.propLot.tagFilter}
+                  updateFilters={handleUpdateFilters}
+                />
+              )}
+              {data?.propLot?.dateFilter && (
+                <UIFilter
+                  filter={data.propLot.dateFilter}
+                  updateFilters={handleUpdateFilters}
+                />
+              )}
+            </div>
+            <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-start sm:items-center">
+              <button
+                className={`${
+                  nounBalance > 0
+                    ? "!bg-[#2B83F6] !text-white"
+                    : "!bg-[#F4F4F8] !text-[#E2E3E8]"
+                } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] mb-4 sm:!mb-0`}
+                onClick={() => {
+                  if (nounBalance > 0) {
+                    Router.push("/idea/new");
+                  }
+                }}
+              >
+                New Submission
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
 
-      <section className="border-t bg-gray-100 pb-8 px-[20px] xl:px-0">
+      <section className="border-t bg-gray-100 pb-8 px-[20px] xl:px-0 grow">
         {appliedFilterTags?.length > 0 && (
           <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
             <div className="flex flex-row items-center gap-[8px] overflow-scroll">
