@@ -9,7 +9,8 @@ import DOMPurify from "isomorphic-dompurify";
 import { getIdea } from "@/graphql/types/__generated__/getIdea";
 import { getIdeaComments } from "@/graphql/types/__generated__/getIdeaComments";
 import { useLazyQuery, ApolloQueryResult } from "@apollo/client";
-import { GET_IDEA_COMMENTS, GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
+import { GET_IDEA_QUERY } from "@/graphql/queries/ideaQuery";
+import { GET_IDEA_COMMENTS } from "@/graphql/queries/commentsQuery";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import IdeaVoteControls from "@/components/IdeaVoteControls";
 import Comment from "@/components/Comment";
@@ -47,7 +48,6 @@ const ProfileLink = ({ id }: { id: string }) => {
   const { data: creatorEns } = useEnsName({
     address: id as `0x${string}`,
     cacheTime: 6_000,
-    suspense: true,
     onError: (err) => {
       console.log(err);
     },
@@ -77,6 +77,16 @@ const IdeaPage = ({
   const { id } = router.query as { id: string };
   const { address } = useAccount();
 
+  const [getIdeaCommentsQuery, { data: commentData }] =
+  useLazyQuery<getIdeaComments>(GET_IDEA_COMMENTS, {
+    context: {
+      clientName: "PropLot",
+      headers: {
+        "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+    },
+  });
+
   const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
@@ -86,20 +96,11 @@ const IdeaPage = ({
     }
   );
 
-  const [getIdeaCommentsQuery, { data: commentData }] =
-    useLazyQuery<getIdeaComments>(GET_IDEA_COMMENTS, {
-      variables: { ideaId: data.getIdea?.id },
-      context: {
-        clientName: "PropLot",
-        headers: {
-          "proplot-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-      },
-    });
-
   useEffect(() => {
     if (data.getIdea?.id) {
-      getIdeaCommentsQuery();
+      getIdeaCommentsQuery({
+        variables: { ideaId: data.getIdea?.id },
+      });
     }
   }, [getIdeaCommentsQuery, data.getIdea?.id]);
 
@@ -259,7 +260,6 @@ const IdeaPage = ({
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const { communityDomain } = getCommunityByDomain(context.req);
-  console.log(communityDomain);
 
   if (!communityDomain) {
     return {

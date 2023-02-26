@@ -70,7 +70,6 @@ const ProfileUserName = () => {
   const { data: creatorEns } = useEnsName({
     address: id as `0x${string}`,
     cacheTime: 6_000,
-    suspense: true,
   });
   const shortAddress = useShortAddress(id);
 
