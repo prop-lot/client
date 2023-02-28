@@ -108,15 +108,15 @@ export default function CommunityHome({
         <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
           <div className="mt-8 mb-4 flex flex-col items-center sm:flex-row sm:mt-12">
             <img src={community.data.pfpUrl} className="w-24 h-24 rounded-lg" />
-            <div className="sm:ml-4 flex flex-col">
+            <div className="sm:ml-4 flex flex-col items-center sm:items-start">
               <h3 className="text-3xl font-bold font-londrina mb-2 mt-[12px] sm:mt-[0px] mr-[auto] ml-[auto] sm:mx-[0px]">
                 {community?.data?.name} Prop Lot
               </h3>
               {/* stupid bootstrap css making it impossible to center this text */}
-              {/* <h4 className="max-w-[600px] mr-[auto] ml-[auto] sm:mx-[0px] text-sm">
+              <h4 className="max-w-[600px] mr-[auto] ml-[auto] text-center sm:mx-[0px] sm:!text-left text-sm">
                 If you own a {community?.data?.name} token you can submit ideas,
-                requests, or suggestions below, and vote on other submissions.{" "}
-              </h4> */}
+                requests, or suggestions below, and vote on other submissions.
+              </h4>
             </div>
           </div>
           <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-normal sm:items-center">
