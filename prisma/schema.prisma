@@ -21,31 +21,33 @@ model Community {
 }
 
 model Idea {
-  id          Int       @id @default(autoincrement())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  title       String    @db.VarChar(50)
-  tldr        String    @db.VarChar(240)
-  description String    @db.VarChar(1080)
-  createdBy   User      @relation(fields: [creatorId], references: [wallet])
-  creatorId   String
-  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  communityId Int
-  comments    Comment[]
-  votes       Vote[]
-  tags        Tag[]
-  tokenSupplyOnCreate Int? @default(value: 0) // token supply at time of Idea creation.
-  createdAtBlock Int @default(0)
-  deleted     Boolean @default(value: false)
+  id                    Int       @id @default(autoincrement())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  title                 String    @db.VarChar(50)
+  tldr                  String    @db.VarChar(240)
+  description           String    @db.VarChar(1080)
+  tokenSupplyOnCreate   Int?      @default(value: 0) // token supply at time of Idea creation.
+  createdAtBlock        Int       @default(0)
+  legacyLockedScore     Int       @default(0) // legacy score from old system
+  deleted               Boolean   @default(value: false)
+  createdBy             User      @relation(fields: [creatorId], references: [wallet])
+  creatorId             String
+  community             Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  communityId           Int
+  comments              Comment[]
+  votes                 Vote[]
+  tags                  Tag[]
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  wallet   String    @unique
-  ens      String?
-  ideas    Idea[]
-  votes    Vote[]
-  comments Comment[]
+  id                Int       @id @default(autoincrement())
+  wallet            String    @unique
+  ens               String?
+  legacyTokenCount  Int       @default(0)
+  ideas             Idea[]
+  votes             Vote[]
+  comments          Comment[]
 }
 
 // direction
@@ -53,13 +55,13 @@ model User {
 // -1 for down
 // sum of direction = total score
 model Vote {
-  id        Int    @id @default(autoincrement())
-  direction Int
-  idea      Idea   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  ideaId    Int
-  voter     User   @relation(fields: [voterId], references: [wallet])
-  voterId   String
-  voterWeight Int @default(0)
+  id          Int       @id @default(autoincrement())
+  direction   Int
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  ideaId      Int
+  voter       User      @relation(fields: [voterId], references: [wallet])
+  voterId     String
+  voterWeight Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -67,18 +69,18 @@ model Vote {
 }
 
 model Comment {
-  id          Int    @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   body        String
-  idea        Idea   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
   ideaId      Int
-  author      User   @relation(fields: [authorId], references: [wallet])
+  author      User      @relation(fields: [authorId], references: [wallet])
   authorId    String
   replies     Comment[] @relation("Comment_Children")
   parent      Comment?  @relation("Comment_Children", fields: [parentId], references: [id], onDelete: Cascade)
   parentId    Int?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  deleted     Boolean @default(value: false)
+  deleted     Boolean   @default(value: false)
 }
 
 model Tag {

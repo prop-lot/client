@@ -76,8 +76,13 @@ const parseIdeas = () => {
           // const group = ideas.slice(0, 5);
           const group = [ideas[0]];
 
-          group.forEach((idea) => {
-            const formattedIdea = formatIdea(idea, ideaTags, votes, comments);
+          group.forEach(async (idea) => {
+            const formattedIdea = await formatIdea(
+              idea,
+              ideaTags,
+              votes,
+              comments
+            );
             postIdea(formattedIdea);
           });
         });
@@ -86,10 +91,24 @@ const parseIdeas = () => {
   });
 };
 
-const formatIdea = (idea, ideaTags, allVotes, allComments) => {
+const formatIdea = async (idea, ideaTags, allVotes, allComments) => {
   const tags = ideaTags.filter((it) => it.A === idea.id);
   const comments = allComments.filter((c) => c.ideaId === idea.id);
   const votes = allVotes.filter((v) => v.ideaId === idea.id);
+
+  const formattedVotes = await Promise.all(
+    votes.map(async (v) => {
+      const user = await prisma.user.findUnique({
+        where: { wallet: v.voterId },
+      });
+
+      return {
+        voter: { connect: { wallet: v.voterId } },
+        direction: parseInt(v.direction),
+        voterWeight: parseInt(user.legacyTokenCount),
+      };
+    })
+  );
 
   const formattedIdea = {
     title: idea.title,
@@ -110,10 +129,7 @@ const formatIdea = (idea, ideaTags, allVotes, allComments) => {
       })),
     },
     votes: {
-      create: votes.map((v) => ({
-        voter: { connect: { wallet: v.voterId } },
-        direction: parseInt(v.direction),
-      })),
+      create: formattedVotes,
     },
     // not sure about these... this data isn't in the old database
     tokenSupplyOnCreate: 7000,
@@ -136,7 +152,10 @@ const parseUsers = () => {
       const zip = headers.map((h, i) => [h, row[i]]);
       const user = zip.reduce((acc, [h, v]) => {
         if (h === "id") return acc;
-        if (h === "lilnounCount") return acc;
+        if (h === "lilnounCount") {
+          acc["legacyTokenCount"] = parseInt(v);
+          return acc;
+        }
         acc[h] = v;
         return acc;
       }, {});
@@ -158,3 +177,6 @@ const postUser = async (user) => {
 
 parseIdeas();
 // parseUsers();
+
+/// steps ==> run parse users
+/// steps ==> run parse ideas
