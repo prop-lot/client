@@ -32,6 +32,7 @@
     "bootstrap": "^5.2.3",
     "chance": "^1.1.9",
     "connectkit": "^1.1.1",
+    "csv": "^6.2.12",
     "dompurify": "^2.4.3",
     "eslint": "8.32.0",
     "eslint-config-next": "13.1.4",
