@@ -73,8 +73,7 @@ const parseIdeas = () => {
             return idea;
           });
 
-          // const group = ideas.slice(0, 5);
-          const group = [ideas[0]];
+          const group = ideas.slice(200, 250);
 
           group.forEach(async (idea) => {
             const formattedIdea = await formatIdea(
@@ -111,14 +110,15 @@ const formatIdea = async (idea, ideaTags, allVotes, allComments) => {
   );
 
   const formattedIdea = {
+    index: parseInt(idea.id),
     title: idea.title,
     description: idea.description,
     tldr: idea.tldr,
+    deleted: idea.deleted === "TRUE" ? true : false,
     createdAt: new Date(idea.createdAt),
     updatedAt: new Date(idea.updatedAt),
     createdBy: { connect: { wallet: idea.creatorId } },
-    // TODO -- CHANGE TO 3 WHEN IN PRODUCTION
-    community: { connect: { id: 2 } },
+    community: { connect: { id: 3 } },
     tags: {
       connect: tags.map((t) => ({ id: parseInt(t.B) })),
     },
