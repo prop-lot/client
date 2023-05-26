@@ -110,7 +110,6 @@ const formatIdea = async (idea, ideaTags, allVotes, allComments) => {
   );
 
   const formattedIdea = {
-    index: parseInt(idea.id),
     title: idea.title,
     description: idea.description,
     tldr: idea.tldr,

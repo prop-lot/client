@@ -31,7 +31,6 @@ model Idea {
   createdAtBlock        Int       @default(0)
   legacyLockedScore     Int       @default(0) // legacy score from old system
   deleted               Boolean   @default(value: false)
-  index                 Int       // index of idea in community
   createdBy             User      @relation(fields: [creatorId], references: [wallet])
   creatorId             String
   community             Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
@@ -39,8 +38,6 @@ model Idea {
   comments              Comment[]
   votes                 Vote[]
   tags                  Tag[]
-
-  @@unique([communityId, index])
 }
 
 model User {

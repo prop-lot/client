@@ -42,6 +42,7 @@ async function seed() {
     TagType.SUGGESTION,
     TagType.GOVERNANCE,
     TagType.COMMUNITY,
+    TagType.NOUNS,
   ]) {
     const lowercaseType = type.toLowerCase();
     const label = lowercaseType[0].toUpperCase() + lowercaseType.slice(1);
