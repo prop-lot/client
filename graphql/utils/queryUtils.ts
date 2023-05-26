@@ -1,3 +1,4 @@
+import { TagType } from "@prisma/client";
 import moment from "moment";
 
 export const FILTER_IDS = {
@@ -99,6 +100,12 @@ export const SORT_FILTERS: { [key: string]: any } = {
 };
 
 export const getIsClosed = (idea: any) => {
+  if (idea.tags?.some((ideaTag: any) => ideaTag.type === TagType.NOUNS)) {
+    return moment(idea.createdAt).isBefore(
+      moment().subtract(3, "days").toISOString()
+    );
+  }
+
   return moment(idea.createdAt).isBefore(
     moment().subtract(7, "days").toISOString()
   );
