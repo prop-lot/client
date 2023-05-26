@@ -95,7 +95,6 @@ const IdeaRow = ({
       <div className="font-propLot font-bold text-[18px] flex flex-row flex-1 justify-content-between align-items-start">
         <span className="flex flex-col sm:flex-row text-[#8C8D92] overflow-hidden">
           <span className="flex flex-row flex-1 justify-content-start align-items-start">
-            <span className="mr-4">{id}</span>
             <span className="truncate">{creatorEns || shortAddress}</span>
           </span>
           <div className="flex flex-row flex-1 justify-content-start align-items-start pt-[16px]">
@@ -145,7 +144,6 @@ const IdeaRow = ({
       <div className="flex flex-1 flex-col">
         <div className="flex flex-1">
           <span className="flex text-[#8C8D92] overflow-hidden">
-            <span className="mr-[8px] w-[48px]">{id}</span>
             <span className="truncate mr-[8px] w-[134px]">
               {creatorEns || shortAddress}
             </span>

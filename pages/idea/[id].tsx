@@ -125,6 +125,8 @@ const IdeaPage = ({
   const creatorTokenWeight = data.getIdea.votes?.find(
     (vote) => vote.voterId === data.getIdea?.creatorId
   )?.voterWeight;
+  const commentCount = commentData?.getIdeaComments?.filter((c: any) => !c.deleted)
+  ?.length;
 
   return (
     <Container fluid={"lg"} className="mt-8 mb-12">
@@ -219,12 +221,8 @@ const IdeaPage = ({
 
           <div className="mt-2 mb-2">
             <h3 className="text-2xl lodrina font-bold">
-              {
-                commentData?.getIdeaComments?.filter((c: any) => !!c.deleted)
-                  ?.length
-              }{" "}
-              {commentData?.getIdeaComments?.filter((c: any) => !!c.deleted)
-                ?.length === 1
+              {commentCount}{" "}
+              {commentCount === 1
                 ? "comment"
                 : "comments"}
             </h3>
