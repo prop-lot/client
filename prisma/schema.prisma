@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
   previewFeatures = ["filteredRelationCount"]
@@ -20,6 +17,46 @@ model Community {
   ideas       Idea[]
 }
 
+model Proposal {
+  id                    Int       @id @default(autoincrement())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  title                 String    @db.VarChar(50)
+  description           String    @db.VarChar(1080)
+  createdBy             User      @relation(fields: [creatorId], references: [wallet])
+  creatorId             String
+  deleted               Boolean   @default(value: false)
+  ideaId                Int
+  idea                  Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  requests              OnChainRequest[]
+}
+
+// not sure if we want or need this right now
+model Collection {
+  id                    Int       @id @default(autoincrement())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  title                 String    @db.VarChar(50)
+  ideas                 Idea[]
+  createdBy             User      @relation(fields: [creatorId], references: [wallet])
+  creatorId             String
+  deleted               Boolean   @default(value: false)
+}
+
+
+model OnChainRequest {
+  id                    Int       @id @default(autoincrement())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  contractAddress       String
+  function              String
+  args                  String
+  value                 Int?
+  proposalId            Int
+  proposal              Proposal  @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+}
+
+
 model Idea {
   id                    Int       @id @default(autoincrement())
   createdAt             DateTime  @default(now())
@@ -38,6 +75,8 @@ model Idea {
   comments              Comment[]
   votes                 Vote[]
   tags                  Tag[]
+  proposals             Proposal[]
+  collections           Collection[]
 }
 
 model User {
@@ -48,7 +87,11 @@ model User {
   ideas             Idea[]
   votes             Vote[]
   comments          Comment[]
+  collections       Collection[]
+  proposals         Proposal[]
 }
+
+// how do we want to keep track of edits?
 
 // direction
 // +1 for up
