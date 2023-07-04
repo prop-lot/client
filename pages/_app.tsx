@@ -20,7 +20,7 @@ const client = createClient(
     appName: "Prop Lot",
     alchemyId,
     infuraId,
-    walletConnectProjectId: walletconnectId,
+    walletConnectProjectId: walletconnectId || "",
   })
 );
 
