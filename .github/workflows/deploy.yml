@@ -55,7 +55,7 @@ jobs:
           build-args: |
             COMMIT_SHA=${{ github.sha }}
             NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=${{ secrets.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID }}
-            NEXT_PUBLIC_ALCHEMY_ID=${{ NEXT_PUBLIC_ALCHEMY_ID }}
+            NEXT_PUBLIC_ALCHEMY_ID=${{ secrets.NEXT_PUBLIC_ALCHEMY_ID }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
       - name: 🚚 Move cache
