@@ -8,6 +8,7 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
+      ptRootUI: ["PT Root UI", "sans-serif"],
       propLot: ["Inter", "sans-serif"],
       londrina: ["Londrina Solid"],
     },
