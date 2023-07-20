@@ -1,4 +1,5 @@
 import Router from "next/router";
+import Image from "next/image";
 import { useEffect } from "react";
 import { v4 } from "uuid";
 import { useAccount } from "wagmi";
@@ -105,60 +106,197 @@ export default function CommunityHome({
   return (
     <main className="pt-8 min-h-[calc(100vh-72px)] flex flex-col">
       <div>
-        <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
-          <div className="mt-8 mb-4 flex flex-col items-center sm:flex-row sm:mt-12">
-            <img src={community.data.pfpUrl} className="w-24 h-24 rounded-lg" />
-            <div className="sm:ml-4 flex flex-col items-center sm:items-start">
-              <h3 className="text-3xl font-bold font-londrina mb-2 mt-[12px] sm:mt-[0px] mr-[auto] ml-[auto] sm:mx-[0px]">
-                {community?.data?.name} Prop Lot
-              </h3>
-              {/* stupid bootstrap css making it impossible to center this text */}
-              <h4 className="max-w-[600px] mr-[auto] ml-[auto] text-center sm:mx-[0px] sm:!text-left text-sm">
-                If you own a {community?.data?.name} token you can submit ideas,
-                requests, or suggestions below, and vote on other submissions.
-              </h4>
-            </div>
-          </div>
-          <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-normal sm:items-center">
-            <div className="flex flex-row space-x-4">
-              {data?.propLot?.sortFilter && (
-                <UIFilter
-                  filter={data.propLot.sortFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-              {data?.propLot?.tagFilter && (
-                <UIFilter
-                  filter={data.propLot.tagFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-              {data?.propLot?.dateFilter && (
-                <UIFilter
-                  filter={data.propLot.dateFilter}
-                  updateFilters={handleUpdateFilters}
-                />
-              )}
-            </div>
-            <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-start sm:items-center">
-              <button
-                className={`${
-                  nounBalance > 0
-                    ? "!bg-[#2B83F6] !text-white"
-                    : "!bg-[#F4F4F8] !text-[#E2E3E8]"
-                } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] self-center mb-[16px] sm:mb-[0px]`}
-                onClick={() => {
-                  if (nounBalance > 0) {
-                    Router.push("/idea/new");
-                  }
-                }}
-              >
-                New Submission
-              </button>
+        <section className="!font-ptRootUI max-w-screen-xl mx-auto px-[20px] xl:px-0">
+          <div className="py-16 flex-col flex">
+            <div className="flex flex-col gap-8 justify-center items-center text-center md:flex-row md:justify-start md:gap-24 md:inline-flex md:!text-start">
+              <div className="flex-col gap-8 inline-flex">
+                <div className="flex-col gap-3 flex">
+                  <div className="text-indigo-600 text-[18px] font-medium">
+                    Find ideas and propose to
+                  </div>
+                  <div className="text-black text-[60px]">Build with Nouns</div>
+                  <div className="self-stretch text-gray-500 text-[18px] font-normal">
+                    Prop Lot is the easiest way to find things Nouns want to
+                    fund and build them! Simply find an idea you like and
+                    propose a build. Nouns voters will vote to fund your build.
+                  </div>
+                </div>
+                <div className="flex-col gap-8 flex">
+                  <div className="self-stretch h-px border border-gray-200"></div>
+                  <div className="flex-col gap-2 flex">
+                    <div className="gap-2">
+                      <div>
+                        <span className="text-black text-base font-medium leading-normal">
+                          Are you a creator or vendor? &nbsp;
+                        </span>
+                        <a
+                          className="text-[#2B83F6] cursor-pointer inline-flex gap-2"
+                          href={`/idea`}
+                        >
+                          <span className="text-indigo-600 text-base font-medium leading-normal">
+                            Find ideas to build
+                          </span>
+                          <Image
+                            src="/arrow-right.svg"
+                            alt="arrow-right icon."
+                            width="16"
+                            height="16"
+                          />
+                        </a>
+                      </div>
+                    </div>
+                    <div className="gap-2">
+                      <div>
+                        <span className="text-black text-base font-medium leading-normal">
+                          Are you a Nouns voter? &nbsp;
+                        </span>
+                        <a
+                          className="text-[#2B83F6] cursor-pointer inline-flex gap-2"
+                          href={`/idea`}
+                        >
+                          <span className="text-indigo-600 text-base font-medium leading-normal">
+                            Submit and vote on ideas
+                          </span>
+                          <Image
+                            src="/arrow-right.svg"
+                            alt="arrow-right icon."
+                            width="16"
+                            height="16"
+                          />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-col justify-start items-start gap-8 inline-flex">
+                <div className="self-stretch justify-start items-start gap-8 inline-flex">
+                  <div className="grow shrink basis-0 flex-col justify-center items-center md:justify-start md:items-start gap-4 inline-flex">
+                    <div className="w-20 h-14 relative">
+                      <Image
+                        src="/bag.svg"
+                        alt="Bag image."
+                        width="75"
+                        height="54"
+                      />
+                    </div>
+                    <div className="self-stretch flex-col justify-start items-start gap-2 flex">
+                      <div className="self-stretch text-black text-[24px] font-bold">
+                        $60M treasury
+                      </div>
+                      <div className="self-stretch text-gray-500 text-[18px] font-normal">
+                        Community governed treasury to fund Nounish ideas
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grow shrink basis-0 flex-col justify-center items-center md:justify-start md:items-start gap-4 inline-flex">
+                    <div className="w-10 h-14 relative">
+                      <Image
+                        src="/pencil.svg"
+                        alt="Pencil image."
+                        width="75"
+                        height="54"
+                      />
+                    </div>
+                    <div className="self-stretch flex-col justify-start items-start gap-2 flex">
+                      <div className="self-stretch text-black text-[24px] font-bold">
+                        CC0 brand
+                      </div>
+                      <div className="self-stretch text-gray-500 text-[18px] font-normal">
+                        Use the Noun brand however, whenever you like
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="self-stretch justify-start items-start gap-8 inline-flex">
+                  <div className="grow shrink basis-0 flex-col justify-center items-center md:justify-start md:items-start gap-4 inline-flex">
+                    <div className="w-14 h-14 relative">
+                      <Image
+                        src="/gameboy.svg"
+                        alt="Gameboy image."
+                        width="75"
+                        height="54"
+                      />
+                    </div>
+                    <div className="self-stretch flex-col justify-start items-start gap-2 flex">
+                      <div className="self-stretch text-black text-[24px] font-bold">
+                        Fund anything cool
+                      </div>
+                      <div className="self-stretch text-gray-500 text-[18px] font-normal">
+                        Community governed treasury to fund Nounish ideas
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grow shrink basis-0 flex-col justify-center items-center md:justify-start md:items-start gap-4 inline-flex">
+                    <div className="w-20 h-14 relative">
+                      <Image
+                        src="/sun.svg"
+                        alt="Sun image."
+                        width="75"
+                        height="54"
+                      />
+                    </div>
+                    <div className="self-stretch flex-col justify-start items-start gap-2 flex">
+                      <div className="self-stretch text-black text-[24px] font-bold">
+                        Build any idea
+                      </div>
+                      <div className="self-stretch text-gray-500 text-[18px] font-normal">
+                        Use the Noun brand however, whenever you like
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
       </div>
+
+      <section className="!font-ptRootUI max-w-screen-xl mx-auto mb-[20px] px-[20px] xl:px-0">
+        <div className="flex-col justify-start items-center gap-3 flex">
+          <div className="text-indigo-600 text-lg font-medium">
+            Browse ideas
+          </div>
+          <div className="text-black text-6xl font-bold">Latest ideas</div>
+          <div className="justify-start items-start gap-4 inline-flex">
+            <div className="px-4 py-2 bg-indigo-600 bg-opacity-10 rounded-[10px] justify-center items-center gap-1 flex">
+              <div className="text-indigo-600 text-base font-bold leading-normal">
+                Art
+              </div>
+            </div>
+            <div className="px-4 py-2 bg-pink-400 bg-opacity-10 rounded-[10px] justify-center items-center gap-1 flex">
+              <div className="text-pink-400 text-base font-bold leading-normal">
+                Public Goods
+              </div>
+            </div>
+            <div className="px-4 py-2 bg-orange-600 bg-opacity-10 rounded-[10px] justify-center items-center gap-1 flex">
+              <div className="text-orange-600 text-base font-bold leading-normal">
+                Events
+              </div>
+            </div>
+            <div className="px-4 py-2 bg-green-700 bg-opacity-10 rounded-[10px] justify-center items-center gap-1 flex">
+              <div className="text-green-700 text-base font-bold leading-normal">
+                DAO toos
+              </div>
+            </div>
+            <div className="px-4 py-2 bg-fuchsia-500 bg-opacity-10 rounded-[10px] justify-center items-center gap-1 flex">
+              <div className="text-fuchsia-500 text-base font-bold leading-normal">
+                Media
+              </div>
+            </div>
+            <div className="px-4 py-2 bg-sky-400 bg-opacity-10 rounded-[10px] justify-center items-center gap-1 flex">
+              <div className="text-sky-400 text-base font-bold leading-normal">
+                Memeing
+              </div>
+            </div>
+            <div className="px-4 py-2 bg-amber-400 bg-opacity-10 rounded-[10px] justify-center items-center gap-1 flex">
+              <div className="text-amber-400 text-base font-bold leading-normal">
+                Community
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="border-t bg-gray-100 pb-8 px-[20px] xl:px-0 grow">
         {appliedFilterTags?.length > 0 && (
