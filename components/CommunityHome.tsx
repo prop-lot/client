@@ -7,12 +7,13 @@ import { useLazyQuery } from "@apollo/client";
 import { GET_PROPLOT_QUERY } from "@/graphql/queries/propLotQuery";
 import { DELEGATED_VOTES_BY_OWNER_SUB } from "@/graphql/subgraph";
 import IdeaRow from "@/components/IdeaRow";
-import UIFilter from "@/components/UIFilter";
-import useSyncURLParams from "@/hooks/useSyncURLParams";
 import EmptyState from "@/components/EmptyState";
+import FAQAccordion from "@/components/FAQAccordion"
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import { getPropLot } from "@/graphql/types/__generated__/getPropLot";
+
+const PROPLOT_HOME_FILTER = "PROPLOT_HOME";
 
 export default function CommunityHome({
   community,
@@ -52,213 +53,161 @@ export default function CommunityHome({
     }
   }, [address, getDelegatedVotes]);
 
-  /*
-    Filters that are applied to the current response.
-    These can be parsed to update the local state after each request to ensure the client + API are in sync.
-  */
-  const appliedFilters = data?.propLot?.metadata?.appliedFilters || [];
-  const appliedFilterTags = data?.propLot?.appliedFilterTags || [];
-
-  useSyncURLParams(appliedFilters, data?.propLot?.metadata?.requestUUID);
-
-  /*
-    Parse the query params from the url on page load and send them as filters in the initial
-    PropLot query.
-  */
   useEffect(() => {
-    const urlParams = window.location.search;
-    const currentURLParams = urlParams
-      .substring(1)
-      .split("&")
-      .filter((str) => Boolean(str));
-
     getPropLotQuery({
       variables: {
         options: {
           requestUUID: v4(),
-          filters: currentURLParams,
+          filters: [PROPLOT_HOME_FILTER],
         },
       },
     });
   }, [getPropLotQuery]);
 
   const handleRefresh = () => {
-    refetch({ options: { requestUUID: v4(), filters: appliedFilters } });
+    refetch({ options: { requestUUID: v4(), filters: [PROPLOT_HOME_FILTER] } });
   };
 
-  const handleUpdateFilters = (updatedFilters: string[], filterId: string) => {
-    /*
-      Keep previously applied filters, remove any that match the filterId value.
-      Then add the selection of updatedFilters and remove the __typename property.
-    */
-    const selectedfilters: string[] = [
-      ...appliedFilters.filter((f: string) => {
-        return !f.includes(`${filterId}=`);
-      }),
-      ...updatedFilters,
-    ];
-
-    refetch({ options: { requestUUID: v4(), filters: selectedfilters } });
-  };
-
-  const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
+  const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0;
 
   return (
     <main className="pt-8 min-h-[calc(100vh-72px)] flex flex-col">
-      <div>
-        <section className="!font-ptRootUI max-w-screen-xl mx-auto px-[20px] xl:px-0">
-          <div className="py-16 flex-col flex">
-            <div className="flex flex-col gap-8 justify-center items-center text-center md:flex-row md:justify-start md:gap-24 md:inline-flex md:!text-start">
-              <div className="flex-col gap-8 inline-flex">
-                <div className="flex-col gap-3 flex">
-                  <div className="text-indigo-600 text-[18px] font-medium">
-                    Find ideas and propose to
-                  </div>
-                  <div className="text-black text-[60px]">Build with Nouns</div>
-                  <div className="self-stretch text-gray-500 text-[18px] font-normal">
-                    Prop Lot is the easiest way to find things Nouns want to
-                    fund and build them! Simply find an idea you like and
-                    propose a build. Nouns voters will vote to fund your build.
-                  </div>
-                </div>
-                <div className="flex-col gap-8 flex">
-                  <div className="self-stretch h-px border border-gray-200"></div>
-                  <div className="flex-col gap-2 flex">
-                    <div className="gap-2">
-                      <div>
-                        <span className="text-black text-base font-medium leading-normal">
-                          Are you a creator or vendor? &nbsp;
-                        </span>
-                        <a
-                          className="text-[#2B83F6] cursor-pointer inline-flex gap-2"
-                          href={`/idea`}
-                        >
-                          <span className="text-indigo-600 text-base font-medium leading-normal">
-                            Find ideas to build
-                          </span>
-                          <Image
-                            src="/arrow-right.svg"
-                            alt="arrow-right icon."
-                            width="16"
-                            height="16"
-                          />
-                        </a>
-                      </div>
-                    </div>
-                    <div className="gap-2">
-                      <div>
-                        <span className="text-black text-base font-medium leading-normal">
-                          Are you a Nouns voter? &nbsp;
-                        </span>
-                        <a
-                          className="text-[#2B83F6] cursor-pointer inline-flex gap-2"
-                          href={`/idea`}
-                        >
-                          <span className="text-indigo-600 text-base font-medium leading-normal">
-                            Submit and vote on ideas
-                          </span>
-                          <Image
-                            src="/arrow-right.svg"
-                            alt="arrow-right icon."
-                            width="16"
-                            height="16"
-                          />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+      <section className="!font-ptRootUI max-w-screen-xl mx-auto px-[20px] xl:px-0 py-[72px] gap-8 flex flex-col md:flex-row md:justify-start">
+        <div className="flex flex-col items-center text-center gap-8 md:text-left">
+          <div className="flex flex-col gap-3">
+            <div className="text-indigo-600 text-[18px] font-medium">
+              Find ideas and propose to
+            </div>
+            <div className="text-black text-[60px] font-bold">
+              Build with Nouns
+            </div>
+            <div className="text-gray-500 text-[18px]">
+              Prop Lot is the easiest way to find things Nouns want to fund and
+              build them! Simply find an idea you like and propose a build.
+              Nouns voters will vote to fund your build.
+            </div>
+          </div>
+          <div className="flex flex-col gap-8">
+            <div className="border-t border-gray-200"></div>
+            <div className="flex flex-col gap-2">
+              <div className="gap-2">
+                <div>
+                  <span className="text-black text-base font-medium leading-normal">
+                    Are you a creator or vendor? &nbsp;
+                  </span>
+                  <a
+                    className="text-[#2B83F6] cursor-pointer inline-flex gap-2"
+                    href={`/ideas`}
+                  >
+                    <span className="text-indigo-600 text-base font-medium leading-normal">
+                      Find ideas to build
+                    </span>
+                    <Image
+                      src="/arrow-right.svg"
+                      alt="arrow-right icon."
+                      width="16"
+                      height="16"
+                    />
+                  </a>
                 </div>
               </div>
-              <div className="flex-col justify-start items-start gap-8 inline-flex">
-                <div className="self-stretch justify-start items-start gap-8 inline-flex">
-                  <div className="grow shrink basis-0 flex-col justify-center items-center md:justify-start md:items-start gap-4 inline-flex">
-                    <div className="w-20 h-14 relative">
-                      <Image
-                        src="/bag.svg"
-                        alt="Bag image."
-                        width="75"
-                        height="54"
-                      />
-                    </div>
-                    <div className="self-stretch flex-col justify-start items-start gap-2 flex">
-                      <div className="self-stretch text-black text-[24px] font-bold">
-                        $60M treasury
-                      </div>
-                      <div className="self-stretch text-gray-500 text-[18px] font-normal">
-                        Community governed treasury to fund Nounish ideas
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grow shrink basis-0 flex-col justify-center items-center md:justify-start md:items-start gap-4 inline-flex">
-                    <div className="w-10 h-14 relative">
-                      <Image
-                        src="/pencil.svg"
-                        alt="Pencil image."
-                        width="75"
-                        height="54"
-                      />
-                    </div>
-                    <div className="self-stretch flex-col justify-start items-start gap-2 flex">
-                      <div className="self-stretch text-black text-[24px] font-bold">
-                        CC0 brand
-                      </div>
-                      <div className="self-stretch text-gray-500 text-[18px] font-normal">
-                        Use the Noun brand however, whenever you like
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="self-stretch justify-start items-start gap-8 inline-flex">
-                  <div className="grow shrink basis-0 flex-col justify-center items-center md:justify-start md:items-start gap-4 inline-flex">
-                    <div className="w-14 h-14 relative">
-                      <Image
-                        src="/gameboy.svg"
-                        alt="Gameboy image."
-                        width="75"
-                        height="54"
-                      />
-                    </div>
-                    <div className="self-stretch flex-col justify-start items-start gap-2 flex">
-                      <div className="self-stretch text-black text-[24px] font-bold">
-                        Fund anything cool
-                      </div>
-                      <div className="self-stretch text-gray-500 text-[18px] font-normal">
-                        Community governed treasury to fund Nounish ideas
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grow shrink basis-0 flex-col justify-center items-center md:justify-start md:items-start gap-4 inline-flex">
-                    <div className="w-20 h-14 relative">
-                      <Image
-                        src="/sun.svg"
-                        alt="Sun image."
-                        width="75"
-                        height="54"
-                      />
-                    </div>
-                    <div className="self-stretch flex-col justify-start items-start gap-2 flex">
-                      <div className="self-stretch text-black text-[24px] font-bold">
-                        Build any idea
-                      </div>
-                      <div className="self-stretch text-gray-500 text-[18px] font-normal">
-                        Use the Noun brand however, whenever you like
-                      </div>
-                    </div>
-                  </div>
+              <div className="gap-2">
+                <div>
+                  <span className="text-black text-base font-medium leading-normal">
+                    Are you a Nouns voter? &nbsp;
+                  </span>
+                  <a
+                    className="text-[#2B83F6] cursor-pointer inline-flex gap-2"
+                    href={`/ideas`}
+                  >
+                    <span className="text-indigo-600 text-base font-medium leading-normal">
+                      Submit and vote on ideas
+                    </span>
+                    <Image
+                      src="/arrow-right.svg"
+                      alt="arrow-right icon."
+                      width="16"
+                      height="16"
+                    />
+                  </a>
                 </div>
               </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+        <div className="flex flex-col items-center md:items-start gap-8">
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <div className="w-20 h-14 relative">
+              <Image src="/bag.svg" alt="Bag image." width="75" height="54" />
+            </div>
+            <div className="flex flex-col gap-2 items-center md:items-start">
+              <div className="text-black text-[24px] font-bold">
+                $60M treasury
+              </div>
+              <div className="text-gray-500 text-[18px]">
+                Community governed treasury to fund Nounish ideas
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 items-center md:items-start">
+            <div className="w-10 h-14 relative">
+              <Image
+                src="/pencil.svg"
+                alt="Pencil image."
+                width="75"
+                height="54"
+              />
+            </div>
+            <div className="flex flex-col gap-2 items-center md:items-start">
+              <div className="text-black text-[24px] font-bold">CC0 brand</div>
+              <div className="text-gray-500 text-[18px]">
+                Use the Noun brand however, whenever you like
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col items-center md:items-start gap-8">
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <div className="w-14 h-14 relative">
+              <Image
+                src="/gameboy.svg"
+                alt="Gameboy image."
+                width="75"
+                height="54"
+              />
+            </div>
+            <div className="flex flex-col gap-2 items-center md:items-start">
+              <div className="text-black text-[24px] font-bold">
+                Fund anything cool
+              </div>
+              <div className="text-gray-500 text-[18px]">
+                Community governed treasury to fund Nounish ideas
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <div className="w-20 h-14 relative">
+              <Image src="/sun.svg" alt="Sun image." width="75" height="54" />
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <div className="text-black text-[24px] font-bold">
+                Build any idea
+              </div>
+              <div className="text-gray-500 text-[18px]">
+                Use the Noun brand however, whenever you like
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <section className="!font-ptRootUI max-w-screen-xl mx-auto mb-[20px] px-[20px] xl:px-0">
+      <section className="!font-ptRootUI max-w-screen-xl mx-auto mb-[20px] px-[20px] py-[72px] xl:px-0">
         <div className="flex-col justify-start items-center gap-3 flex">
           <div className="text-indigo-600 text-lg font-medium">
             Browse ideas
           </div>
           <div className="text-black text-6xl font-bold">Latest ideas</div>
-          <div className="justify-start items-start gap-4 inline-flex">
+          <div className="justify-center items-center gap-2 inline-flex flex-wrap">
             <div className="px-4 py-2 bg-indigo-600 bg-opacity-10 rounded-[10px] justify-center items-center gap-1 flex">
               <div className="text-indigo-600 text-base font-bold leading-normal">
                 Art
@@ -298,43 +247,7 @@ export default function CommunityHome({
         </div>
       </section>
 
-      <section className="border-t bg-gray-100 pb-8 px-[20px] xl:px-0 grow">
-        {appliedFilterTags?.length > 0 && (
-          <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
-            <div className="flex flex-row items-center gap-[8px] overflow-scroll">
-              {appliedFilterTags.map((filterTag) => {
-                return (
-                  <button
-                    key={filterTag.displayName}
-                    className="text-white bg-black text-sm font-bold rounded-[8px] px-[8px] py-[4px] flex items-center whitespace-nowrap"
-                    onClick={() => {
-                      refetch({
-                        options: {
-                          requestUUID: v4(),
-                          filters: appliedFilters.filter((f) => {
-                            return f !== filterTag.param;
-                          }),
-                        },
-                      });
-                    }}
-                  >
-                    <span className="flex">{filterTag.displayName}</span>
-                    <span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="w-5 h-5 flex pl-[4px] font-bold"
-                      >
-                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-                      </svg>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
+      <section className="pb-8 px-[20px] xl:px-0 grow">
         <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
           {data?.propLot?.ideas?.map((idea: any, idx: number) => {
             return (
@@ -351,7 +264,7 @@ export default function CommunityHome({
           })}
           {data?.propLot?.ideas?.length === 0 && (
             <EmptyState
-              appliedFilters={appliedFilters}
+              appliedFilters={[]}
               error={error}
               clearFilters={() => {
                 refetch({ options: { requestUUID: v4(), filters: [] } });
@@ -359,6 +272,20 @@ export default function CommunityHome({
             />
           )}
         </div>
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-center mt-4">
+          <button
+            className="!bg-[#34AC80] !text-[#FFF] !border-none !text-[16px] !rounded-[10px] !font-ptRootUI !font-bold !pt-[8px] !pb-[8px] !pl-[24px] !pr-[24px] self-center"
+            onClick={() => {
+              Router.push("/ideas");
+            }}
+          >
+            Browse all ideas
+          </button>
+        </div>
+      </section>
+
+      <section className="!font-ptRootUI flex flex-1 justify-center px-[20px] xl:px-0 py-[72px] gap-8">
+        <FAQAccordion />
       </section>
     </main>
   );
