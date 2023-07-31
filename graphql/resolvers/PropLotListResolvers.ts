@@ -147,6 +147,7 @@ const resolvers: IResolvers = {
       const sortParam = getSortParam(appliedFilters);
       const dateParam = getDateParam(appliedFilters);
       const tagParams = getTagParams(appliedFilters);
+      const isHomePage = appliedFilters.includes("PROPLOT_HOME");
 
       const dateOptions = buildDateOptions(dateParam, appliedFilterTags, appliedFilters.join(",").includes(FILTER_IDS.DATE));
       const tagFilterOptions = await buildTagFilterOptions(tagParams, appliedFilterTags, appliedFilters.join(",").includes(FILTER_IDS.TAG));
@@ -159,6 +160,7 @@ const resolvers: IResolvers = {
         tagParams,
         dateOptions,
         tagFilterOptions,
+        isHomePage,
         requestUUID: args.options.requestUUID,
         timeZone: context.timeZone,
         communityId: context.communityId,
@@ -172,6 +174,7 @@ const resolvers: IResolvers = {
         date: parseFilterParam(root.dateParam)?.value,
         tags: root.tagParams.map((tag: string) => parseFilterParam(tag)?.value),
         communityId: root.communityId,
+        isHomePage: root.isHomePage
       });
 
       return ideas;

@@ -110,6 +110,7 @@ class IdeasService {
     tab,
     hideDeleted = true,
     communityId,
+    isHomePage = false,
   }: {
     sortBy?: string;
     tags?: TagType[];
@@ -118,10 +119,12 @@ class IdeasService {
     tab?: string;
     hideDeleted?: boolean;
     communityId: number;
+    isHomePage?: boolean;
   }) {
     try {
       const dateRange: any = DATE_FILTERS[date || "ALL_TIME"].filterFn();
       const profileFilters: any = PROFILE_TAB_FILTERS[tab || "DEFAULT"](wallet);
+
       const ideas = await prisma.idea.findMany({
         where: {
           ...(hideDeleted && { deleted: false }),
@@ -145,6 +148,7 @@ class IdeasService {
             },
           },
         },
+        ...(isHomePage && { take: 5 }),
       });
 
       const ideaData = ideas
