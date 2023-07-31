@@ -136,7 +136,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
 
   useEffect(() => {
     if (data?.submitIdea?.id) {
-      Router.push(`/idea/${data.submitIdea.id}`);
+      Router.push(`/ideas/${data.submitIdea.id}`);
     }
   }, [data]);
 

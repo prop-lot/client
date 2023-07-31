@@ -149,7 +149,7 @@ export default function IdeasHome({
                 } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] self-center mb-[16px] sm:mb-[0px]`}
                 onClick={() => {
                   if (nounBalance > 0) {
-                    Router.push("/idea/new");
+                    Router.push("/ideas/new");
                   }
                   
                 }}

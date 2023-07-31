@@ -1,4 +1,3 @@
-import LandingPage from "@/components/LandingPage";
 import IdeasHome from "@/components/IdeasHome";
 import { GetServerSidePropsContext } from "next";
 import { Community } from "@prisma/client";
