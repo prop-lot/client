@@ -9,6 +9,12 @@
   src: url(./fonts/Londrina_Solid/LondrinaSolid-Regular.ttf);
 }
 @font-face {
+  font-family: 'Londrina Light';
+  src: url(./fonts/Londrina_Solid/LondrinaSolid-Black.ttf);
+  src: url(./fonts/Londrina_Solid/LondrinaSolid-Light.ttf);
+}
+
+@font-face {
   font-family: 'PT Root UI';
   src: url(./fonts/PT_Root_UI/PT-Root-UI_Regular.woff2) format('woff2'),
     url(./fonts/PT_Root_UI/PT-Root-UI_Regular.woff) format('woff');
@@ -53,4 +59,15 @@
   
 .inter {
   font-family: 'Inter';
+}
+
+/* For Webkit-based browsers (Chrome, Safari and Opera) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

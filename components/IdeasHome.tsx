@@ -103,24 +103,35 @@ export default function IdeasHome({
   const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
 
   return (
-    <main className="pt-8 min-h-[calc(100vh-72px)] flex flex-col">
+    <main className="pt-xl min-h-[calc(100vh-72px)] flex flex-col">
       <div>
-        <section className="max-w-screen-xl mx-auto px-[20px] xl:px-0">
-          <div className="mt-8 mb-4 flex flex-col items-center sm:flex-row sm:mt-12">
-            <img src={community.data.pfpUrl} className="w-24 h-24 rounded-lg" />
-            <div className="sm:ml-4 flex flex-col items-center sm:items-start">
-              <h3 className="text-3xl font-bold font-londrina mb-2 mt-[12px] sm:mt-[0px] mr-[auto] ml-[auto] sm:mx-[0px]">
-                {community?.data?.name} Prop Lot
-              </h3>
-              {/* stupid bootstrap css making it impossible to center this text */}
-              <h4 className="max-w-[600px] mr-[auto] ml-[auto] text-center sm:mx-[0px] sm:!text-left text-sm">
-                If you own a {community?.data?.name} token you can submit ideas,
-                requests, or suggestions below, and vote on other submissions.
-              </h4>
+        <section className="max-w-screen-xl mx-auto gap-lg px-lg flex flex-col">
+          <div className="w-full h-[150px] justify-start items-start gap-lg inline-flex">
+            <div className="grow shrink basis-0 self-stretch p-md bg-slate/40 rounded-xl border border-slate/40 justify-start items-start gap-sm flex">
+              <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                <div className="text-black text-base font-bold">
+                  Trending
+                </div>
+              </div>
+            </div>
+            <div className="grow shrink basis-0 self-stretch p-md bg-slate/40 rounded-xl border border-slate/40 justify-start items-start gap-sm flex">
+              <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                <div className="text-black text-base font-bold leading-7">
+                  Activities
+                </div>
+              </div>
+            </div>
+            <div className="grow shrink basis-0 self-stretch p-md bg-slate/40 rounded-xl border border-slate/40 justify-start items-start gap-sm flex">
+              <div className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
+                <div className="text-black text-base font-bold leading-7">
+                  Nouns DAO stats
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-normal sm:items-center">
-            <div className="flex flex-row space-x-4">
+
+          <div className="flex flex-col-reverse sm:flex-row justify-between gap-lg items-normal sm:items-center">
+            <div className="flex flex-row gap-sm">
               {data?.propLot?.sortFilter && (
                 <UIFilter
                   filter={data.propLot.sortFilter}
@@ -140,18 +151,17 @@ export default function IdeasHome({
                 />
               )}
             </div>
-            <div className="flex flex-col-reverse sm:flex-row justify-between mb-4 items-start sm:items-center">
+            <div className="flex flex-col-reverse sm:flex-row justify-between items-start sm:items-center">
               <button
                 className={`${
-                  nounBalance > 0
-                    ? "!bg-[#2B83F6] !text-white"
-                    : "!bg-[#F4F4F8] !text-[#E2E3E8]"
-                } !border-none !text-[16px] !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px] self-center mb-[16px] sm:mb-[0px]`}
+                  nounBalance === 0
+                    ? "!bg-blue !text-white"
+                    : "!bg-grey/20 !text-grey"
+                } !border-none !text-base !rounded-[10px] !font-inter !font-bold !pt-sm !pb-sm !pl-md !pr-md self-center`}
                 onClick={() => {
                   if (nounBalance > 0) {
                     Router.push("/ideas/new");
                   }
-                  
                 }}
               >
                 New Submission
@@ -161,15 +171,14 @@ export default function IdeasHome({
         </section>
       </div>
 
-      <section className="border-t bg-gray-100 pb-8 px-[20px] xl:px-0 grow">
+      <section className="max-w-screen-xl mx-auto mt-lg gap-lg flex flex-col px-lg w-full">
         {appliedFilterTags?.length > 0 && (
-          <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
-            <div className="flex flex-row items-center gap-[8px] overflow-scroll">
+            <div className="flex flex-row items-center gap-sm overflow-x-scroll scrollbar-hide">
               {appliedFilterTags.map((filterTag) => {
                 return (
                   <button
                     key={filterTag.displayName}
-                    className="text-white bg-black text-sm font-bold rounded-[8px] px-[8px] py-[4px] flex items-center whitespace-nowrap"
+                    className="text-white bg-black text-sm font-bold rounded-[8px] px-sm py-xs flex items-center whitespace-nowrap"
                     onClick={() => {
                       refetch({
                         options: {
@@ -187,7 +196,7 @@ export default function IdeasHome({
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                         fill="currentColor"
-                        className="w-5 h-5 flex pl-[4px] font-bold"
+                        className="w-[20px] h-[20px] flex pl-[4px] font-bold"
                       >
                         <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                       </svg>
@@ -196,9 +205,8 @@ export default function IdeasHome({
                 );
               })}
             </div>
-          </div>
         )}
-        <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
+        <div className="gap-lg flex flex-row flex-wrap items-center w-full overflow-scroll">
           {data?.propLot?.ideas?.map((idea: any, idx: number) => {
             return (
               <IdeaRow

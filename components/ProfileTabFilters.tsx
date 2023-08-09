@@ -56,7 +56,7 @@ export const TabOption = ({
         isSelected
           ? 'text-[#2B83F6] underline underline-offset-8 decoration-2'
           : 'hover:text-[#2B83F6] pb-[6px]'
-      } whitespace-nowrap cursor-pointer text-[#8C8D92] flex-1 sm:flex-none font-semibold font-propLot pb-[2px]`}
+      } whitespace-nowrap cursor-pointer text-[#8C8D92] flex-1 sm:flex-none font-semibold font-inter pb-[2px]`}
     >
       {children}
     </div>

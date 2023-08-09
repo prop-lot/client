@@ -34,7 +34,7 @@ const Navbar = () => {
   }, [isDisconnected]); // eslint-disable-line
 
   return (
-    <main className="pt-8 px-[20px] xl:px-0">
+    <main className="pt-xl px-lg xl:px-0">
       <section className="max-w-screen-xl mx-auto">
         <nav className="flex justify-between">
           <Image

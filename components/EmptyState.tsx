@@ -35,11 +35,11 @@ const EmptyState = ({
         <h1 className="font-medium font-londrina text-3xl py-[8px]">
           No ideas found
         </h1>
-        <p className="font-medium font-propLot pt-[8px] pb-[16px]">{message}</p>
+        <p className="font-medium font-inter pt-[8px] pb-[16px]">{message}</p>
         {appliedFilters.length > 0 && !error && (
           <button
             onClick={() => clearFilters()}
-            className="bg-black text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-propLot !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
+            className="bg-black text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-inter !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
           >
             Clear filters
           </button>
@@ -49,7 +49,7 @@ const EmptyState = ({
             onClick={() => {
               return router.reload();
             }}
-            className="bg-black text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-propLot !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
+            className="bg-black text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-inter !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
           >
             Retry
           </button>

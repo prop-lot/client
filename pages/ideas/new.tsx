@@ -426,7 +426,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                     formValid
                       ? "!bg-[#2B83F6] !text-white"
                       : "!bg-[#F4F4F8] !text-[#E2E3E8]"
-                  } !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-propLot !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`}
+                  } !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-inter !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`}
                 >
                   Submit
                 </button>

@@ -37,9 +37,9 @@ const CustomToggle = forwardRef(
         e.preventDefault();
         onClick(e);
       }}
-      className="font-propLot flex flex-1 justify-center btn !rounded-[6px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-[#333]"
+      className="font-inter flex flex-1 justify-center btn !rounded-[12px] bg-white border border-[#E2E3E8] p-0 hover:!bg-[#F4F4F8] focus:!bg-[#E2E3E8] !text-black"
     >
-      <span className="flex items-center justify-center text-[16px] normal-case pt-[8px] pb-[8px] pl-[16px] pr-[16px]">
+      <span className="flex items-center justify-center text-base normal-case pt-sm pb-sm pl-md pr-md gap-md">
         {children}
       </span>
     </a>
@@ -83,7 +83,7 @@ const UIFilter = ({
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="currentColor"
-          className="w-5 h-5"
+          className="w-[20px] h-[20px]"
         >
           <path
             fillRule="evenodd"

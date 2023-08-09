@@ -65,7 +65,7 @@ const ProposalWrapper = ({
       onClick={onClick}
       className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-[24px] pb-[24px] px-3"
     >
-      <div className="font-propLot font-bold text-[18px] flex flex-row flex-1 justify-content-between align-items-start">
+      <div className="font-inter font-bold text-[18px] flex flex-row flex-1 justify-content-between align-items-start">
         <span className="flex flex-col sm:flex-row text-[#8C8D92] overflow-hidden gap-[8px]">
           <span className="flex flex-row gap-[8px] flex-1 justify-content-start align-items-start">
             <span>{id}</span>
@@ -88,7 +88,7 @@ const ProposalWrapper = ({
       onClick={onClick}
       className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-[24px] pb-[24px] px-3"
     >
-      <div className="font-propLot font-bold text-[18px] flex flex-row flex-1 justify-content-start align-items-start">
+      <div className="font-inter font-bold text-[18px] flex flex-row flex-1 justify-content-start align-items-start">
         <div className="flex flex-1 flex-col">
           <div className="flex flex-1 gap-[8px]">
             <span className="flex text-[#8C8D92] gap-[8px] overflow-hidden">
@@ -191,7 +191,7 @@ const ProfileGovernanceList = ({
                 key={p.proposal.id}
               >
                 <div className="flex flex-row flex-1 justify-content-start align-items-center pt-[12px] pt-[12px]">
-                  <span className="font-propLot text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1">
+                  <span className="font-inter text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1">
                     {p.reason || 'No reason given'}
                   </span>
                 </div>
@@ -215,7 +215,7 @@ const ProfileGovernanceList = ({
                 key={p.proposal.id}
               >
                 <div className="flex flex-row flex-1 justify-content-start align-items-center pt-[12px] pt-[12px]">
-                  <span className="font-propLot text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1">
+                  <span className="font-inter text-[16px] text-[#212529] border border-[#e2e3e8] bg-[#F4F4F8] p-4 rounded-lg flex-1">
                     {p.reason || 'No reason given'}
                   </span>
                 </div>

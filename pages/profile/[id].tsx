@@ -39,7 +39,7 @@ const ProfileCard = (props: {
   isLoading?: boolean;
 }) => {
   return (
-    <div className="font-propLot whitespace-nowrap py-[8px] px-[16px] gap-[4px] sm:p-[16px] sm:gap-[8px] bg-white border-solid border border-[#e2e3e8] rounded-[16px] box-border flex flex-1 flex-col justify-start">
+    <div className="font-inter whitespace-nowrap py-[8px] px-[16px] gap-[4px] sm:p-[16px] sm:gap-[8px] bg-white border-solid border border-[#e2e3e8] rounded-[16px] box-border flex flex-1 flex-col justify-start">
       {props.isLoading ? (
         <div className="flex flex-1 justify-center mt-[18px]">
           <Spinner animation="border" />
@@ -118,7 +118,7 @@ const ProfileLilNounDisplay = ({
                 styleOverride="!w-[48px] !h-[48px]"
                 renderOverlay={() => {
                   return (
-                    <span className="flex flex-1 mb-[-48px] text-[12px] h-full font-propLot font-semibold z-10 !text-[#212529] items-center justify-center">{`+${
+                    <span className="flex flex-1 mb-[-48px] text-[12px] h-full font-inter font-semibold z-10 !text-[#212529] items-center justify-center">{`+${
                       lilNounData.length - 5
                     }`}</span>
                   );
@@ -309,7 +309,7 @@ const PropLotUserProfile = ({
               </div>
             </div>
           </Row>
-          <div className="font-propLot">
+          <div className="font-inter">
             <div className="grid gap-[16px] grid-cols-2 sm:!grid-cols-3 md:!grid-cols-4">
               {data?.propLotProfile?.profile.user.userStats &&
                 buildProfileCards(data?.propLotProfile?.profile.user.userStats)}
