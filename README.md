@@ -1,5 +1,8 @@
 ## Proplot Client
 
+Deprecated.
+The original maintainers are no longer supporting this version of Prop Lot in favor of moving efforts towards v2. PRs are welcome.
+
 ## Getting Started
 
 First, run the development server:
