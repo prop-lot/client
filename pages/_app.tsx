@@ -2,8 +2,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { WagmiConfig, createClient } from "wagmi";
-import { ConnectKitProvider, getDefaultClient } from "connectkit";
+import { WagmiConfig, createConfig } from "wagmi";
+import { mainnet, goerli } from "wagmi/chains";
+import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import { ApolloProvider } from "@apollo/client";
 import { client as ApolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -14,12 +15,14 @@ import { DEFAULT_HOMEPAGE_MATCH } from ".";
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
 const walletconnectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROEJCT_ID;
+const chains = [mainnet, goerli];
 
-const client = createClient(
-  getDefaultClient({
+const config = createConfig(
+  getDefaultConfig({
     appName: "Prop Lot",
     alchemyId,
     infuraId,
+    chains,
     walletConnectProjectId: walletconnectId || "",
   })
 );
@@ -34,8 +37,8 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <ApolloProvider client={ApolloClient}>
-        <WagmiConfig client={client}>
-          <ConnectKitProvider>
+        <WagmiConfig config={config}>
+          <ConnectKitProvider options={{ initialChainId: 0 }}>
             <AuthProvider>
               <ErrorModalProvider>
                 {pageProps?.communityName !== DEFAULT_HOMEPAGE_MATCH && (
