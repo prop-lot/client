@@ -4,7 +4,7 @@ import { Row, Container, Col } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
 import { useAccount } from "wagmi";
-import { useMutation, useLazyQuery } from "@apollo/client";
+import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 import { SUBMIT_IDEA_MUTATION } from "@/graphql/queries/propLotMutations";
@@ -20,6 +20,7 @@ import prisma from "@/lib/prisma";
 import { Community } from "@prisma/client";
 import { SUPPORTED_SUBDOMAINS } from "@/utils/supportedTokenUtils";
 import getCommunityByDomain from "@/utils/communityByDomain";
+import { GET_TAGS } from "@/graphql/queries/tagsQuery";
 
 enum FORM_VALIDATION {
   TITLE_MAX = 50,
@@ -99,6 +100,15 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
   const { setError, error: errorModalVisible } = useApiError();
   const { isLoggedIn, triggerSignIn } = useAuth();
 
+  const { data: tagsResponse } = useQuery(
+    GET_TAGS,
+    {
+      context: {
+        clientName: "PropLot",
+      },
+    }
+  );
+
   const [getDelegatedVotes, { data: getDelegatedVotesData }] = useLazyQuery(
     DELEGATED_VOTES_BY_OWNER_SUB,
     {
@@ -140,8 +150,6 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
     }
   }, [data]);
 
-  const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0;
-
   const [title, setTitle] = useState<string>("");
   const [tldr, setTldr] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -180,42 +188,10 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
   };
 
   // TODO: Load tags from API
-  const tags = [
-    {
-      label: "Suggestion",
-      value: TagType.Suggestion,
-      requiredTokens: 1,
-    },
-    {
-      label: "Governance",
-      value: TagType.Governance,
-      requiredTokens: 1,
-    },
-    {
-      label: "Community",
-      value: TagType.Community,
-      requiredTokens: 1,
-    },
-    {
-      label: "Request",
-      value: TagType.Request,
-      requiredTokens: 1,
-    },
-    {
-      label: "Other",
-      value: TagType.Other,
-      requiredTokens: 1,
-    },
-    {
-      label: "Nouns DAO Prop",
-      value: TagType.Nouns,
-      requiredTokens: 8,
-      disabled: community?.uname !== SUPPORTED_SUBDOMAINS.LIL_NOUNS,
-    },
-  ];
+  const tags = tagsResponse;
 
   return (
-    <Container fluid={"lg"} className="mt-8 mb-12">
+    <Container fluid={"lg"} className="mt-xl mb-xl">
       <Row className="align-items-center">
         <Col lg={10} className="mx-auto">
           <section>
@@ -225,14 +201,14 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
             />
             <Row>
               <Link
-                className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
+                className="cursor-pointer text-slate flex flex-row items-center"
                 href="/"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="currentColor"
-                  className="w-6 h-6 mr-2 cursor-pointer"
+                  className="w-[24px] h-[24px] mr-sm cursor-pointer"
                 >
                   <path
                     fillRule="evenodd"
@@ -243,9 +219,9 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
 
                 <span className="text-lg lodrina">Back</span>
               </Link>
-              <h1 className="lodrina text-black text-[56px]">Submit an Idea</h1>
+              <h1 className="font-londrina text-black text-[56px]">Submit an Idea</h1>
             </Row>
-            <p className="mb-2">
+            <p className="mb-sm">
               {`You must hold at least one ${getCopyFor(
                 "nouns",
                 "tokenName"
@@ -291,24 +267,21 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                 }
               }}
             >
-              <p className="lodrina font-bold text-2xl mb-2">Tags</p>
+              <p className="font-londrina font-bold text-xl mb-sm">Tags</p>
               <span className="text-xs">
                 Apply the tags that relate to your idea. Click to apply.
               </span>
-              <div className="flex flex-row flex-wrap gap-[16px] my-[16px]">
-                {tags.map((tag) => {
-                  if (nounBalance < tag.requiredTokens || tag.disabled) {
-                    return null;
-                  }
-
+              <div className="flex flex-row flex-wrap gap-md my-md">
+                {tagsResponse?.tags?.map((tag: any) => {
+                  console.log(tag.type)
                   return (
                     <div className="flex flex-col items-center" key={tag.label}>
                       <button
-                        onClick={() => handleTagChange(tag.value)}
-                        className={`cursor-pointer text-blue-500 border text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex ${
-                          !selectedTags.includes(tag.value)
-                            ? "border-black bg-transparent hover:bg-blue-100 actve:bg-blue-200"
-                            : "border-red-200 bg-blue-200 hover:bg-blue-200 actve:bg-blue-100"
+                        onClick={() => handleTagChange(tag.type)}
+                        className={`cursor-pointer text-blue border text-xs font-bold rounded-[8px] px-sm py-xs flex ${
+                          !selectedTags.includes(tag.type)
+                            ? "border-black hover:bg-blue hover:text-white actve:bg-blue"
+                            : "border-red-200 bg-blue text-white hover:bg-blue actve:bg-blue"
                         }`}
                       >
                         {tag.label}
@@ -317,9 +290,9 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   );
                 })}
               </div>
-              <div className="flex flex-col my-[16px]">
+              <div className="flex flex-col my-md">
                 <div className="flex justify-between w-full items-center">
-                  <label className="lodrina font-bold text-2xl mb-2">
+                  <label className="font-londrina font-bold text-xl mb-sm">
                     Title
                   </label>
                   <span
@@ -337,13 +310,13 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   onChange={(e) => setTitle(e.target.value)}
                   type="text"
                   name="title"
-                  className="border rounded-lg p-2"
+                  className="border rounded-lg p-sm"
                   placeholder="Give your idea a name..."
                 />
               </div>
-              <div className="flex flex-col my-[16px]">
+              <div className="flex flex-col my-md">
                 <div className="flex justify-between w-full items-center">
-                  <label className="lodrina font-bold text-2xl mb-2">
+                  <label className="lodrina font-bold text-xl mb-sm">
                     tl;dr
                   </label>
                   <span
@@ -360,18 +333,18 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   value={tldr}
                   onChange={(e) => setTldr(e.target.value)}
                   name="tldr"
-                  className="border rounded-lg p-2 min-h-[120px]"
+                  className="border rounded-lg p-sm min-h-[120px]"
                   placeholder="In the simplest language possible, describe your idea in a few sentences..."
                 />
               </div>
-              <div className="flex flex-col my-[16px]">
+              <div className="flex flex-col my-md">
                 <div className="flex justify-between w-full items-center">
-                  <div className="space-x-2">
-                    <label className="lodrina font-bold text-2xl mb-2">
+                  <div className="space-x-sm">
+                    <label className="lodrina font-bold text-xl mb-sm">
                       Description
                     </label>
                     <span
-                      className="text-sm text-gray-500 cursor-pointer"
+                      className="text-sm text-slate cursor-pointer"
                       onClick={handleShowMarkdownModal}
                     >
                       Markdown supported
@@ -388,7 +361,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                 <Nav
                   variant="tabs"
                   defaultActiveKey="WRITE"
-                  className="mb-2"
+                  className="mb-sm"
                   onSelect={handleSelect}
                 >
                   <Nav.Item>
@@ -405,12 +378,12 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     name="description"
-                    className="border rounded-lg p-2 min-h-[240px]"
+                    className="border rounded-lg p-sm min-h-[240px]"
                     placeholder="Describe your idea in full..."
                   />
                 ) : (
                   <div
-                    className="border rounded-lg p-2 min-h-[240px] prose-base"
+                    className="border rounded-lg p-sm min-h-[240px] prose-base"
                     dangerouslySetInnerHTML={{
                       __html: DOMPurify.sanitize(marked.parse(description), {
                         ADD_ATTR: ["target"],
@@ -419,14 +392,14 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   />
                 )}
               </div>
-              <div className="flex justify-end my-[16px]">
+              <div className="flex justify-end my-md">
                 <button
                   type="submit"
                   className={`${
                     formValid
                       ? "!bg-[#2B83F6] !text-white"
                       : "!bg-[#F4F4F8] !text-[#E2E3E8]"
-                  } !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-inter !font-bold !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]`}
+                  } !border-none !text-base flex-1 sm:flex-none !rounded-[10px] !font-inter !font-bold !pt-sm !pb-sm !pl-md !pr-md`}
                 >
                   Submit
                 </button>
