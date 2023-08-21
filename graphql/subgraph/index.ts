@@ -47,3 +47,66 @@ export const TOTAL_NOUNS_CREATED = gql`
   }
 }
 `;
+
+export const GET_CURRENT_AUCTION = gql`
+{
+  auctions(where: { settled_not: true}) {
+    id
+    noun {
+      id
+      seed {
+        id
+        background
+        body
+        accessory
+        head
+        glasses
+      }
+    }
+    amount
+  }
+}
+`
+
+export const GET_PREVIOUS_AUCTIONS = gql`
+query getPreviousAuctions($nounIds: [ID!]!) {
+  auctions(orderDirection: asc, orderBy: id, where: {
+    noun_: {
+      id_in: $nounIds
+    }
+  }){
+    id
+    noun {
+      id
+      seed {
+        id
+        background
+        body
+        accessory
+        head
+        glasses
+      }
+    }
+    amount
+  }
+}
+`
+
+export const GET_RECENT_PROPOSALS = gql`
+query getRecentProposals($recentTimestamp: Int!) {
+  proposals(where: { createdTimestamp_gt: $recentTimestamp }, orderBy: id, orderDirection: desc){
+    id
+    title
+    status
+  }
+}
+`
+
+export const GET_GOVERNANCE_DATA = gql`
+{
+  governance(id: "GOVERNANCE") {
+    currentTokenHolders
+    delegatedVotes
+  }
+}
+`
