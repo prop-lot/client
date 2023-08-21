@@ -6,6 +6,7 @@ type Query {
   getIdeaComments(options: IdeaCommentInputOptions!): [Comment!]
   getAllUsers: [User!]
   getUser(options: UserInputOptions!): User
+  getTags: [IdeaTags!]
   getPropLot(options: PropLotInputOptions!): PropLotResponse!
   getPropLotProfile(
     options: PropLotProfileInputOptions!
@@ -66,10 +67,12 @@ input PropLotProfileInputOptions {
 # Query response types
 
 type PropLotResponse {
-  ideas: [Idea!]
+  ideas: [Idea!] @deprecated(reason: "Use list instead")
+  list: [PropLotListItems!]
   sortFilter: PropLotFilter
   tagFilter: PropLotFilter
   dateFilter: PropLotFilter
+  listFilter: PropLotFilter
   appliedFilterTags: [AppliedFilter!]
   metadata: PropLotResponseMetadata!
 }
@@ -91,6 +94,7 @@ type PropLotUserProfile {
   user: User!
 }
 
+# Extend with Proposal when ready
 union PropLotListItems = Idea | Comment
 
 type PropLotFilter {
@@ -104,6 +108,7 @@ type FilterOption {
   id: String!
   selected: Boolean!
   label: String
+  count: Int
   value: String!
   icon: String
 }
@@ -218,15 +223,15 @@ enum SORT_TYPE {
 enum TagType {
   NEW
   INFO
-  QUORUM
   ARCHIVED
   DISCUSSION
-  SUGGESTION
+  PUBLIC_GOOD
   GOVERNANCE
   COMMUNITY
-  REQUEST
+  CREATIVE
   OTHER
   CONSENSUS
   CLOSED
-  NOUNS
+  SOFTWARE
+  HARDWARE
 }

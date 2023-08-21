@@ -3,32 +3,34 @@ import { gql } from "@apollo/client";
 export const GET_PROPLOT_QUERY = gql`
   query getPropLot($options: PropLotInputOptions!) {
     propLot: getPropLot(options: $options) {
-      ideas {
-        id
-        title
-        tldr
-        creatorId
-        description
-        votecount
-        createdAt
-        deleted
-        ideaStats {
-          comments
-        }
-        closed
-        consensus
-        tags {
-          type
-          label
-        }
-        votes {
+      list {
+        ... on Idea {
           id
-          voterId
-          ideaId
-          direction
-          voterWeight
-          voter {
-            wallet
+          title
+          tldr
+          creatorId
+          description
+          votecount
+          createdAt
+          deleted
+          ideaStats {
+            comments
+          }
+          closed
+          consensus
+          tags {
+            type
+            label
+          }
+          votes {
+            id
+            voterId
+            ideaId
+            direction
+            voterWeight
+            voter {
+              wallet
+            }
           }
         }
       }
@@ -39,6 +41,9 @@ export const GET_PROPLOT_QUERY = gql`
         ...filterProperties
       }
       tagFilter {
+        ...filterProperties
+      }
+      listFilter {
         ...filterProperties
       }
       appliedFilterTags {
@@ -62,6 +67,7 @@ export const GET_PROPLOT_QUERY = gql`
       selected
       value
       icon
+      count
     }
   }
 `;

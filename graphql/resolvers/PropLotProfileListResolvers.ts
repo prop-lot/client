@@ -164,7 +164,7 @@ const resolvers: IResolvers = {
       const tabFilter: PropLotFilter = {
         __typename: "PropLotFilter",
         id: FILTER_IDS.PROFILE_TAB,
-        type: FilterType.SingleSelect,
+        type: FilterType.SINGLE_SELECT,
         label: "Tabs",
         options,
       };

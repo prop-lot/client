@@ -1,4 +1,3 @@
-import { TagType } from "@prisma/client";
 import moment from "moment";
 
 export const FILTER_IDS = {
@@ -6,6 +5,7 @@ export const FILTER_IDS = {
   SORT: "sort",
   TAG: "tag",
   PROFILE_TAB: "profile_tab",
+  LIST_TYPE: "list",
 };
 
 export const buildFilterParam = (id: string, value: string) => {
@@ -40,6 +40,11 @@ export const getProfileTabParams = (appliedFilters: string[]) =>
   appliedFilters.find(
     (aF: any) => parseFilterParam(aF)?.id === FILTER_IDS.PROFILE_TAB
   ) || buildFilterParam(FILTER_IDS.PROFILE_TAB, "SUBMISSIONS");
+
+export const getProfileListTypeParams = (appliedFilters: string[]) =>
+  appliedFilters.find(
+    (aF: any) => parseFilterParam(aF)?.id === FILTER_IDS.LIST_TYPE
+  ) || buildFilterParam(FILTER_IDS.LIST_TYPE, "IDEAS");
 
 export const DATE_FILTERS: { [key: string]: any } = {
   TODAY: {
@@ -99,14 +104,34 @@ export const SORT_FILTERS: { [key: string]: any } = {
   },
 };
 
-export const getIsClosed = (idea: any) => {
-  if (idea.tags?.some((ideaTag: any) => ideaTag.type === TagType.NOUNS)) {
-    return moment(idea.createdAt).isBefore(
-      moment().subtract(3, "days").toISOString()
-    );
-  }
+export const LIST_TYPE_FILTERS: { [key: string]: any } = {
+  IDEAS: {
+    value: buildFilterParam(FILTER_IDS.LIST_TYPE, "IDEAS"),
+    displayName: "Ideas",
+    count: 20, // TODO: pull from DB
+  },
+  PROPOSALS: {
+    value: buildFilterParam(FILTER_IDS.LIST_TYPE, "PROPOSALS"),
+    displayName: "Proposals",
+    count: 10, // TODO: pull from DB
+  },
+};
 
+export const getIsClosed = (idea: any) => {
   return moment(idea.createdAt).isBefore(
     moment().subtract(7, "days").toISOString()
   );
+};
+
+export const getTimeToClose = (idea: any) => {
+  const closeDate = moment(idea.createdAt).add(7, "days");
+  const now = moment();
+
+  const hoursDifference = closeDate.diff(now, "hours");
+  const daysDifference = closeDate.diff(now, "days");
+
+  return {
+    daysLeft: daysDifference,
+    hoursLeft: hoursDifference,
+  };
 };

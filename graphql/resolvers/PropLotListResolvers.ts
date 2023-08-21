@@ -8,9 +8,10 @@ import {
   PropLotFilter,
   FilterType,
   AppliedFilter,
+  PropLotListItems,
 } from "@/graphql/types/__generated__/apiTypes";
 
-import { SORT_FILTERS, FILTER_IDS, DATE_FILTERS } from "../utils/queryUtils";
+import { SORT_FILTERS, FILTER_IDS, DATE_FILTERS, getProfileListTypeParams, LIST_TYPE_FILTERS } from "../utils/queryUtils";
 import { VirtualTags } from "@/utils/virtual";
 
 import {
@@ -51,7 +52,7 @@ export const resolveSortFilters = (
   const sortFilter: PropLotFilter = {
     __typename: "PropLotFilter",
     id: FILTER_IDS.SORT,
-    type: FilterType.SingleSelect,
+    type: FilterType.SINGLE_SELECT,
     label: "Sort",
     options,
   };
@@ -147,6 +148,7 @@ const resolvers: IResolvers = {
       const sortParam = getSortParam(appliedFilters);
       const dateParam = getDateParam(appliedFilters);
       const tagParams = getTagParams(appliedFilters);
+      const listParam = getProfileListTypeParams(appliedFilters);
       const isHomePage = appliedFilters.includes("PROPLOT_HOME");
 
       const dateOptions = buildDateOptions(dateParam, appliedFilterTags, appliedFilters.join(",").includes(FILTER_IDS.DATE));
@@ -158,6 +160,7 @@ const resolvers: IResolvers = {
         sortParam,
         dateParam,
         tagParams,
+        listParam,
         dateOptions,
         tagFilterOptions,
         isHomePage,
@@ -179,11 +182,36 @@ const resolvers: IResolvers = {
 
       return ideas;
     },
+    list: async (root): Promise<PropLotListItems[]> => {
+      const listParam = parseFilterParam(root.listParam)?.value;
+      let listItems: PropLotListItems[] = [];
+
+      if (listParam === "IDEAS") {
+        const ideas: Idea[] = await IdeasService.findWhere({
+          sortBy: parseFilterParam(root.sortParam)?.value,
+          date: parseFilterParam(root.dateParam)?.value,
+          tags: root.tagParams.map((tag: string) => parseFilterParam(tag)?.value),
+          communityId: root.communityId,
+          isHomePage: root.isHomePage
+        });
+
+        listItems = [...ideas];
+      }
+
+      if (listParam === "PROPOSALS") {
+
+        // QUERY FOR PROPOSALS HERE ONCE IMPLEMENTED IN THE DB.
+        // This param will be passed in when a user taps the "Proposals" button on the PropLotList screen.
+
+      }
+
+      return listItems;
+    },
     dateFilter: (root): PropLotFilter => {
       const dateFilter: PropLotFilter = {
         __typename: "PropLotFilter",
         id: FILTER_IDS.DATE,
-        type: FilterType.SingleSelect,
+        type: FilterType.SINGLE_SELECT,
         label: "Date",
         options: root.dateOptions,
       };
@@ -194,7 +222,7 @@ const resolvers: IResolvers = {
       const tagFilter: PropLotFilter = {
         __typename: "PropLotFilter",
         id: FILTER_IDS.TAG,
-        type: FilterType.MultiSelect,
+        type: FilterType.MULTI_SELECT,
         label: "Tags",
         options: root.tagFilterOptions,
       };
@@ -202,6 +230,26 @@ const resolvers: IResolvers = {
       return tagFilter;
     },
     sortFilter: (root) => resolveSortFilters(root),
+    listFilter: (root): PropLotFilter => {
+      const options = Object.keys(LIST_TYPE_FILTERS)
+        .map((key: string) => {
+          return {
+            id: `${FILTER_IDS.LIST_TYPE}-${key}`,
+            selected: root.listParam === LIST_TYPE_FILTERS[key].value,
+            label: LIST_TYPE_FILTERS[key].displayName,
+            value: LIST_TYPE_FILTERS[key].value,
+            count: LIST_TYPE_FILTERS[key].count,
+          };
+        });
+      const listFilter: PropLotFilter = {
+        __typename: "PropLotFilter",
+        id: FILTER_IDS.LIST_TYPE,
+        type: FilterType.SINGLE_SELECT,
+        options,
+      };
+
+      return listFilter;
+    },
     appliedFilterTags: (root) => root.appliedFilterTags,
     metadata: async (root): Promise<PropLotResponseMetadataResolvers> => {
       return {
