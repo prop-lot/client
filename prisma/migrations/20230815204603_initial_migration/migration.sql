@@ -1,12 +1,13 @@
 -- CreateEnum
-CREATE TYPE "TagType" AS ENUM ('SUGGESTION', 'GOVERNANCE', 'COMMUNITY', 'REQUEST', 'NOUNS', 'OTHER');
+CREATE TYPE "TagType" AS ENUM ('CREATIVE', 'COMMUNITY', 'GOVERNANCE', 'PUBLIC_GOOD', 'SOFTWARE', 'HARDWARE', 'OTHER');
 
 -- CreateTable
 CREATE TABLE "Community" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "name" TEXT NOT NULL,
+    "data" JSONB NOT NULL DEFAULT '{ "pfp": "" }',
+    "uname" TEXT NOT NULL,
 
     CONSTRAINT "Community_pkey" PRIMARY KEY ("id")
 );
@@ -19,10 +20,12 @@ CREATE TABLE "Idea" (
     "title" VARCHAR(50) NOT NULL,
     "tldr" VARCHAR(240) NOT NULL,
     "description" VARCHAR(1080) NOT NULL,
+    "tokenSupplyOnCreate" INTEGER DEFAULT 0,
+    "createdAtBlock" INTEGER NOT NULL DEFAULT 0,
+    "legacyLockedScore" INTEGER NOT NULL DEFAULT 0,
+    "deleted" BOOLEAN NOT NULL DEFAULT false,
     "creatorId" TEXT NOT NULL,
     "communityId" INTEGER NOT NULL,
-    "tokenSupplyOnCreate" INTEGER DEFAULT 0,
-    "deleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Idea_pkey" PRIMARY KEY ("id")
 );
@@ -32,7 +35,7 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "wallet" TEXT NOT NULL,
     "ens" TEXT,
-    "lilnounCount" INTEGER NOT NULL,
+    "legacyTokenCount" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -43,6 +46,7 @@ CREATE TABLE "Vote" (
     "direction" INTEGER NOT NULL,
     "ideaId" INTEGER NOT NULL,
     "voterId" TEXT NOT NULL,
+    "voterWeight" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -77,6 +81,9 @@ CREATE TABLE "_IdeaToTag" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Community_uname_key" ON "Community"("uname");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_wallet_key" ON "User"("wallet");
