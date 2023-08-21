@@ -10,6 +10,10 @@ const nextConfig = {
 
     return config;
   },
+  images: {
+    domains: ['i.seadn.io'],
+    loader: 'default',
+  },
   publicRuntimeConfig: {},
   serverRuntimeConfig: {
     SECRET_AUTH_PASSWORD: process.env.SECRET_AUTH_PASSWORD,
