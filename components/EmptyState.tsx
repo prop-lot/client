@@ -25,21 +25,21 @@ const EmptyState = ({
 
   return (
     <>
-      <div className="text-center place-items-center grid py-24">
+      <div className="text-center place-items-center justify-center grid w-full py-24">
         <Image
           src="/logo.svg"
           alt="PropLot logo, which is a car noun with text spelling prop lot."
           width="280"
           height="120"
         />
-        <h1 className="font-medium font-londrina text-3xl py-[8px]">
+        <h1 className="font-medium font-londrina text-xxl py-sm">
           No ideas found
         </h1>
-        <p className="font-medium font-inter pt-[8px] pb-[16px]">{message}</p>
+        <p className="font-medium font-inter pt-sm pb-md">{message}</p>
         {appliedFilters.length > 0 && !error && (
           <button
             onClick={() => clearFilters()}
-            className="bg-black text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-inter !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
+            className="bg-black text-white font-bold !border-none !text-base flex-1 sm:flex-none !rounded-[10px] !font-inter !pt-sm !pb-sm !pl-md !pr-md"
           >
             Clear filters
           </button>
@@ -49,7 +49,7 @@ const EmptyState = ({
             onClick={() => {
               return router.reload();
             }}
-            className="bg-black text-white font-bold !border-none !text-[16px] flex-1 sm:flex-none !rounded-[10px] !font-inter !pt-[8px] !pb-[8px] !pl-[16px] !pr-[16px]"
+            className="bg-black text-white font-bold !border-none !text-base flex-1 sm:flex-none !rounded-[10px] !font-inter !pt-sm !pb-sm !pl-md !pr-md"
           >
             Retry
           </button>
