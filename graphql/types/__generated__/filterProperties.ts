@@ -16,6 +16,7 @@ export interface filterProperties_options {
   selected: boolean;
   value: string;
   icon: string | null;
+  count: number | null;
 }
 
 export interface filterProperties {

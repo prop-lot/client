@@ -53,6 +53,7 @@ export type DeleteDataResponse = {
 
 export type FilterOption = {
   __typename?: 'FilterOption';
+  count?: Maybe<Scalars['Int']>;
   icon?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
@@ -61,8 +62,8 @@ export type FilterOption = {
 };
 
 export enum FilterType {
-  MultiSelect = 'MULTI_SELECT',
-  SingleSelect = 'SINGLE_SELECT'
+  MULTI_SELECT = 'MULTI_SELECT',
+  SINGLE_SELECT = 'SINGLE_SELECT'
 }
 
 export type Idea = {
@@ -172,7 +173,10 @@ export type PropLotResponse = {
   __typename?: 'PropLotResponse';
   appliedFilterTags?: Maybe<Array<AppliedFilter>>;
   dateFilter?: Maybe<PropLotFilter>;
+  /** @deprecated Use list instead */
   ideas?: Maybe<Array<Idea>>;
+  list?: Maybe<Array<PropLotListItems>>;
+  listFilter?: Maybe<PropLotFilter>;
   metadata: PropLotResponseMetadata;
   sortFilter?: Maybe<PropLotFilter>;
   tagFilter?: Maybe<PropLotFilter>;
@@ -197,6 +201,7 @@ export type Query = {
   getIdeas?: Maybe<Array<Idea>>;
   getPropLot: PropLotResponse;
   getPropLotProfile: PropLotProfileResponse;
+  getTags?: Maybe<Array<IdeaTags>>;
   getUser?: Maybe<User>;
 };
 
@@ -231,10 +236,10 @@ export type QueryGetUserArgs = {
 };
 
 export enum Sort_Type {
-  Latest = 'LATEST',
-  Oldest = 'OLDEST',
-  VotesAsc = 'VOTES_ASC',
-  VotesDesc = 'VOTES_DESC'
+  LATEST = 'LATEST',
+  OLDEST = 'OLDEST',
+  VOTES_ASC = 'VOTES_ASC',
+  VOTES_DESC = 'VOTES_DESC'
 }
 
 export type SubmitCommentInputOptions = {
@@ -256,19 +261,19 @@ export type SubmitVoteInputOptions = {
 };
 
 export enum TagType {
-  Archived = 'ARCHIVED',
-  Closed = 'CLOSED',
-  Community = 'COMMUNITY',
-  Consensus = 'CONSENSUS',
-  Discussion = 'DISCUSSION',
-  Governance = 'GOVERNANCE',
-  Info = 'INFO',
-  New = 'NEW',
-  Nouns = 'NOUNS',
-  Other = 'OTHER',
-  Quorum = 'QUORUM',
-  Request = 'REQUEST',
-  Suggestion = 'SUGGESTION'
+  ARCHIVED = 'ARCHIVED',
+  CLOSED = 'CLOSED',
+  COMMUNITY = 'COMMUNITY',
+  CONSENSUS = 'CONSENSUS',
+  CREATIVE = 'CREATIVE',
+  DISCUSSION = 'DISCUSSION',
+  GOVERNANCE = 'GOVERNANCE',
+  HARDWARE = 'HARDWARE',
+  INFO = 'INFO',
+  NEW = 'NEW',
+  OTHER = 'OTHER',
+  PUBLIC_GOOD = 'PUBLIC_GOOD',
+  SOFTWARE = 'SOFTWARE'
 }
 
 export type User = {
@@ -393,7 +398,7 @@ export type ResolversTypes = {
   PropLotListItems: ResolversTypes['Comment'] | ResolversTypes['Idea'];
   PropLotProfileInputOptions: PropLotProfileInputOptions;
   PropLotProfileResponse: ResolverTypeWrapper<Omit<PropLotProfileResponse, 'list'> & { list?: Maybe<Array<ResolversTypes['PropLotListItems']>> }>;
-  PropLotResponse: ResolverTypeWrapper<PropLotResponse>;
+  PropLotResponse: ResolverTypeWrapper<Omit<PropLotResponse, 'list'> & { list?: Maybe<Array<ResolversTypes['PropLotListItems']>> }>;
   PropLotResponseMetadata: ResolverTypeWrapper<PropLotResponseMetadata>;
   PropLotUserProfile: ResolverTypeWrapper<PropLotUserProfile>;
   Query: ResolverTypeWrapper<{}>;
@@ -431,7 +436,7 @@ export type ResolversParentTypes = {
   PropLotListItems: ResolversParentTypes['Comment'] | ResolversParentTypes['Idea'];
   PropLotProfileInputOptions: PropLotProfileInputOptions;
   PropLotProfileResponse: Omit<PropLotProfileResponse, 'list'> & { list?: Maybe<Array<ResolversParentTypes['PropLotListItems']>> };
-  PropLotResponse: PropLotResponse;
+  PropLotResponse: Omit<PropLotResponse, 'list'> & { list?: Maybe<Array<ResolversParentTypes['PropLotListItems']>> };
   PropLotResponseMetadata: PropLotResponseMetadata;
   PropLotUserProfile: PropLotUserProfile;
   Query: {};
@@ -485,6 +490,7 @@ export type DeleteDataResponseResolvers<ContextType = any, ParentType extends Re
 };
 
 export type FilterOptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['FilterOption'] = ResolversParentTypes['FilterOption']> = {
+  count?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   icon?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   label?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -556,6 +562,8 @@ export type PropLotResponseResolvers<ContextType = any, ParentType extends Resol
   appliedFilterTags?: Resolver<Maybe<Array<ResolversTypes['AppliedFilter']>>, ParentType, ContextType>;
   dateFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
   ideas?: Resolver<Maybe<Array<ResolversTypes['Idea']>>, ParentType, ContextType>;
+  list?: Resolver<Maybe<Array<ResolversTypes['PropLotListItems']>>, ParentType, ContextType>;
+  listFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
   metadata?: Resolver<ResolversTypes['PropLotResponseMetadata'], ParentType, ContextType>;
   sortFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
   tagFilter?: Resolver<Maybe<ResolversTypes['PropLotFilter']>, ParentType, ContextType>;
@@ -580,6 +588,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getIdeas?: Resolver<Maybe<Array<ResolversTypes['Idea']>>, ParentType, ContextType, RequireFields<QueryGetIdeasArgs, 'options'>>;
   getPropLot?: Resolver<ResolversTypes['PropLotResponse'], ParentType, ContextType, RequireFields<QueryGetPropLotArgs, 'options'>>;
   getPropLotProfile?: Resolver<ResolversTypes['PropLotProfileResponse'], ParentType, ContextType, RequireFields<QueryGetPropLotProfileArgs, 'options'>>;
+  getTags?: Resolver<Maybe<Array<ResolversTypes['IdeaTags']>>, ParentType, ContextType>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'options'>>;
 };
 

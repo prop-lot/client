@@ -115,6 +115,7 @@ export interface getPropLotProfile_propLotProfile_sortFilter_options {
   selected: boolean;
   value: string;
   icon: string | null;
+  count: number | null;
 }
 
 export interface getPropLotProfile_propLotProfile_sortFilter {
@@ -132,6 +133,7 @@ export interface getPropLotProfile_propLotProfile_tabFilter_options {
   selected: boolean;
   value: string;
   icon: string | null;
+  count: number | null;
 }
 
 export interface getPropLotProfile_propLotProfile_tabFilter {

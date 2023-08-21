@@ -9,33 +9,37 @@ import { PropLotInputOptions, TagType, FilterType } from "./globalTypes";
 // GraphQL query operation: getPropLot
 // ====================================================
 
-export interface getPropLot_propLot_ideas_ideaStats {
+export interface getPropLot_propLot_list_Comment {
+  __typename: "Comment";
+}
+
+export interface getPropLot_propLot_list_Idea_ideaStats {
   __typename: "IdeaStats";
   comments: number | null;
 }
 
-export interface getPropLot_propLot_ideas_tags {
+export interface getPropLot_propLot_list_Idea_tags {
   __typename: "IdeaTags";
   type: TagType;
   label: string;
 }
 
-export interface getPropLot_propLot_ideas_votes_voter {
+export interface getPropLot_propLot_list_Idea_votes_voter {
   __typename: "User";
   wallet: string;
 }
 
-export interface getPropLot_propLot_ideas_votes {
+export interface getPropLot_propLot_list_Idea_votes {
   __typename: "Vote";
   id: number;
   voterId: string;
   ideaId: number;
   direction: number;
   voterWeight: number;
-  voter: getPropLot_propLot_ideas_votes_voter;
+  voter: getPropLot_propLot_list_Idea_votes_voter;
 }
 
-export interface getPropLot_propLot_ideas {
+export interface getPropLot_propLot_list_Idea {
   __typename: "Idea";
   id: number;
   title: string;
@@ -45,12 +49,14 @@ export interface getPropLot_propLot_ideas {
   votecount: number;
   createdAt: any;
   deleted: boolean;
-  ideaStats: getPropLot_propLot_ideas_ideaStats | null;
+  ideaStats: getPropLot_propLot_list_Idea_ideaStats | null;
   closed: boolean;
   consensus: number | null;
-  tags: getPropLot_propLot_ideas_tags[] | null;
-  votes: getPropLot_propLot_ideas_votes[] | null;
+  tags: getPropLot_propLot_list_Idea_tags[] | null;
+  votes: getPropLot_propLot_list_Idea_votes[] | null;
 }
+
+export type getPropLot_propLot_list = getPropLot_propLot_list_Comment | getPropLot_propLot_list_Idea;
 
 export interface getPropLot_propLot_sortFilter_options {
   __typename: "FilterOption";
@@ -59,6 +65,7 @@ export interface getPropLot_propLot_sortFilter_options {
   selected: boolean;
   value: string;
   icon: string | null;
+  count: number | null;
 }
 
 export interface getPropLot_propLot_sortFilter {
@@ -76,6 +83,7 @@ export interface getPropLot_propLot_dateFilter_options {
   selected: boolean;
   value: string;
   icon: string | null;
+  count: number | null;
 }
 
 export interface getPropLot_propLot_dateFilter {
@@ -93,6 +101,7 @@ export interface getPropLot_propLot_tagFilter_options {
   selected: boolean;
   value: string;
   icon: string | null;
+  count: number | null;
 }
 
 export interface getPropLot_propLot_tagFilter {
@@ -101,6 +110,24 @@ export interface getPropLot_propLot_tagFilter {
   type: FilterType;
   label: string | null;
   options: getPropLot_propLot_tagFilter_options[];
+}
+
+export interface getPropLot_propLot_listFilter_options {
+  __typename: "FilterOption";
+  id: string;
+  label: string | null;
+  selected: boolean;
+  value: string;
+  icon: string | null;
+  count: number | null;
+}
+
+export interface getPropLot_propLot_listFilter {
+  __typename: "PropLotFilter";
+  id: string;
+  type: FilterType;
+  label: string | null;
+  options: getPropLot_propLot_listFilter_options[];
 }
 
 export interface getPropLot_propLot_appliedFilterTags {
@@ -117,10 +144,11 @@ export interface getPropLot_propLot_metadata {
 
 export interface getPropLot_propLot {
   __typename: "PropLotResponse";
-  ideas: getPropLot_propLot_ideas[] | null;
+  list: getPropLot_propLot_list[] | null;
   sortFilter: getPropLot_propLot_sortFilter | null;
   dateFilter: getPropLot_propLot_dateFilter | null;
   tagFilter: getPropLot_propLot_tagFilter | null;
+  listFilter: getPropLot_propLot_listFilter | null;
   appliedFilterTags: getPropLot_propLot_appliedFilterTags[] | null;
   metadata: getPropLot_propLot_metadata;
 }
