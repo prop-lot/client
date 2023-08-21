@@ -129,7 +129,7 @@ const IdeaPage = ({
   ?.length;
 
   return (
-    <Container fluid={"lg"} className="mt-8 mb-12">
+    <Container fluid={"lg"} className="mt-xl mb-xl">
       <Row className="align-items-center">
         <Col lg={10} className="mx-auto">
           <Row>
@@ -141,8 +141,8 @@ const IdeaPage = ({
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="w-6 h-6 mr-2 cursor-pointer"
-              >
+                className="w-[24px] h-[24px] mr-sm cursor-pointer"
+                >
                 <path
                   fillRule="evenodd"
                   d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-4.28 9.22a.75.75 0 000 1.06l3 3a.75.75 0 101.06-1.06l-1.72-1.72h5.69a.75.75 0 000-1.5h-5.69l1.72-1.72a.75.75 0 00-1.06-1.06l-3 3z"
@@ -153,9 +153,9 @@ const IdeaPage = ({
               <span className="text-lg lodrina">Back</span>
             </Link>
 
-            <div className="flex flex-col mb-4">
+            <div className="flex flex-col mb-lg">
               <div className="flex flex-row justify-between items-center">
-                <h1 className="mb-0 lodrina text-5xl self-end">
+                <h1 className="mb-0 lodrina text-xxl self-end">
                   {data.getIdea.title}
                 </h1>
                 <div className="flex flex-row justify-end">
@@ -167,15 +167,15 @@ const IdeaPage = ({
                 </div>
               </div>
               {data.getIdea.tags && data.getIdea.tags.length > 0 && (
-                <div className="flex flex-row gap-[8px] mt-4 flex-wrap">
-                  {data.getIdea.tags.map((tag, idx) => {
+                <div className="flex flex-row gap-sm mt-lg flex-wrap">
+                  {data.getIdea.tags.map((tag) => {
                     return (
                       <span
                         key={tag.label}
                         className={`${
-                          virtualTagColorMap[tag.type] ||
-                          "text-blue-500 bg-blue-200"
-                        } text-xs font-bold rounded-[8px] px-[8px] py-[4px] flex`}
+                          virtualTagColorMap[tag.type]?.colors ||
+                          "text-white bg-blue"
+                        } text-xs font-bold rounded-[8px] px-sm py-xs flex`}
                       >
                         {tag.label}
                       </span>
@@ -185,13 +185,13 @@ const IdeaPage = ({
               )}
             </div>
           </Row>
-          <div className="space-y-8">
+          <div className="space-y-xl">
             <div className="flex flex-col">
-              <h3 className="lodrina font-bold text-2xl mb-2">tl:dr</h3>
+              <h3 className="lodrina font-bold text-xl mb-sm">tl:dr</h3>
               <p>{data.getIdea.tldr}</p>
             </div>
             <div className="flex flex-col">
-              <h3 className="lodrina font-bold text-2xl mb-2">Description</h3>
+              <h3 className="lodrina font-bold text-xl mb-sm">Description</h3>
               <div
                 className="prose-base"
                 dangerouslySetInnerHTML={{
@@ -206,7 +206,7 @@ const IdeaPage = ({
             </div>
           </div>
 
-          <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-12 whitespace-pre">
+          <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-xl whitespace-pre">
             {data.getIdea.creatorId && (
               <ProfileLink id={data.getIdea.creatorId} />
             )}
@@ -219,8 +219,8 @@ const IdeaPage = ({
             }`}
           </div>
 
-          <div className="mt-2 mb-2">
-            <h3 className="text-2xl lodrina font-bold">
+          <div className="mt-sm mb-sm">
+            <h3 className="text-xl lodrina font-bold">
               {commentCount}{" "}
               {commentCount === 1
                 ? "comment"
@@ -236,7 +236,7 @@ const IdeaPage = ({
                 parentId={undefined}
               />
             )}
-            <div className="mt-12 space-y-8">
+            <div className="mt-xl space-y-xl">
               {commentData?.getIdeaComments?.map((comment: any) => {
                 return (
                   <Comment
