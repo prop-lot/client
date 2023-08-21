@@ -31,7 +31,7 @@ export const VirtualTags: { [key: string]: any } = {
     label: `consensus`,
     color: 'pink',
     filterFn: (idea: UIIdea) => {
-      return !idea.closed && idea.consensus >= 1;
+      return idea.consensus >= 1;
     },
   },
   CLOSED: {
