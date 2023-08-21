@@ -4,7 +4,7 @@ import { useAccount, useEnsName } from "wagmi";
 import { createBreakpoint } from "react-use";
 import { useShortAddress } from "@/utils/addressAndENSDisplayUtils";
 import IdeaVoteControls from "./IdeaVoteControls";
-import { getPropLot_propLot_ideas as Idea } from "@/graphql/types/__generated__/getPropLot";
+import { getPropLot_propLot_list_Idea as Idea } from "@/graphql/types/__generated__/getPropLot";
 import { virtualTagColorMap } from "@/utils/virtualTagColors";
 import { DELETE_IDEA__MUTATION } from "@/graphql/queries/propLotMutations";
 import { deleteIdea } from "@/graphql/types/__generated__/deleteIdea";
@@ -13,51 +13,61 @@ import { useAuth } from "@/hooks/useAuth";
 import { useApiError } from "@/hooks/useApiError";
 import Modal from "@/components/Modal";
 import Router from "next/router";
+import { getTimeToClose } from "@/graphql/utils/queryUtils";
 
 const useBreakpoint = createBreakpoint({ XL: 1440, L: 940, M: 650, S: 540 });
 
 export const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  
+
   const day = date.getDate();
   const year = date.getFullYear();
-  
+
   const monthIndex = date.getMonth();
-  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
   const monthName = months[monthIndex];
 
   return `${day} ${monthName}, ${year}`;
-}
+};
 
 const IdeaRow = ({
   idea,
   nounBalance,
   disableControls,
   refetch,
-  communityName,
 }: {
   idea: Idea;
   nounBalance: number;
   disableControls?: boolean;
   refetch: () => void;
-  communityName: string;
 }) => {
   const { address: account } = useAccount();
   const { isLoggedIn, triggerSignIn } = useAuth();
   const { setError, error: errorModalVisible } = useApiError();
   const breakpoint = useBreakpoint();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const {
     id,
-    tldr,
     title,
     creatorId,
     votes,
     createdAt,
-    ideaStats,
     tags,
     deleted,
+    closed,
   } = idea;
   const isMobile = breakpoint === "S";
 
@@ -103,6 +113,8 @@ const IdeaRow = ({
       });
     }
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const { daysLeft, hoursLeft } = getTimeToClose(idea);
 
   return (
     <>
@@ -151,12 +163,19 @@ const IdeaRow = ({
                   </span>
                   {tags && tags.length > 0 && (
                     <div className="flex flex-row items-center flex-wrap gap-sm">
-                      {tags.map((tag: any, idx) => {
+                      <div className="text-slate text-sm">
+                        {formatDate(createdAt)}
+                      </div>
+                      {tags.map((tag: any) => {
+                        // We'll pull the closed tag out into it's own distinct UI.
+                        if (tag.type === "CLOSED") {
+                          return null;
+                        }
                         return (
                           <span
                             key={tag.type}
                             className={`${
-                              virtualTagColorMap[tag.type] ||
+                              virtualTagColorMap[tag.type]?.colors ||
                               "text-black bg-grey"
                             } text-xs font-bold rounded-[6px] px-sm py-xs flex`}
                           >
@@ -167,16 +186,22 @@ const IdeaRow = ({
                     </div>
                   )}
                 </div>
-                <div className="flex-col justify-start items-start gap-xs inline-flex">
-                  <div className="text-black text-base font-semibold leading-normal">{formatDate(createdAt)}</div>
-                  <div className="text-slate text-sm font-normal leading-tight">Posted</div>
+
+                <div className="flex-col justify-center items-center gap-xs inline-flex">
+                  {closed ? (
+                    <div className="flex gap-sm !bg-grey/80 !text-slate font-semibold !border-none !text-sm !rounded-[10px] !font-inter !pt-sm !pb-sm !pl-md !pr-md self-center">
+                      Closed
+                    </div>
+                  ) : (
+                    <div className="flex gap-sm !bg-light-green/10 !text-black font-semibold !border-none !text-sm !rounded-[10px] !font-inter !pt-sm !pb-sm !pl-md !pr-md self-center">
+                      {daysLeft > 0
+                        ? `Closes in ${daysLeft} day${daysLeft > 1 ? "s" : ""}`
+                        : `Closes in ${hoursLeft} hour${
+                            hoursLeft > 1 ? "s" : ""
+                          }`}
+                    </div>
+                  )}
                 </div>
-                {ideaStats?.proposalCount > 0 && (
-                <div className="flex-col justify-start items-start gap-xs inline-flex">
-                <div className="text-black text-base font-semibold leading-normal">{ideaStats.proposalCount}</div>
-                <div className="text-slate text-sm font-normal leading-tight">Proposals</div>
-              </div>
-                )}
                 <div className="flex-col justify-center items-center gap-xs inline-flex">
                   <IdeaVoteControls
                     idea={idea}
