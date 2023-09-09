@@ -1,108 +1,19 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
+
 import { Community } from "@prisma/client";
-import {
-  SUPPORTED_SUBDOMAINS,
-  SupportedTokenGetterMap,
-} from "@/utils/supportedTokenUtils";
+
 import Link from "next/link";
-import { formatEthValue, getEtherBalance } from "@/utils/ethers";
+import { formatEthValue } from "@/utils/ethers";
 import { StandaloneNounCircular } from "./NounCircular";
 import { BigNumber } from "ethers";
+import useHomeLiveData from "@/hooks/useHomeLiveData";
 
 const CommunityHomeLiveDataBoard = ({
   community,
 }: {
   community: Community;
 }) => {
-  const [liveData, setLiveData] = useState<any>({});
-  useEffect(() => {
-    async function getBalance() {
-      const supportedTokenConfig =
-        SupportedTokenGetterMap[community?.uname as SUPPORTED_SUBDOMAINS];
-      let balance = 0;
-      try {
-        balance = (
-          await getEtherBalance(supportedTokenConfig.account)
-        ).toNumber();
-      } catch (e) {
-        console.log(e);
-      }
-
-      setLiveData((l: any) => ({
-        ...l,
-        balance: balance,
-      }));
-    }
-
-    getBalance();
-  }, []);
-
-  useEffect(() => {
-    async function getCurrentAuction() {
-      const supportedTokenConfig =
-        SupportedTokenGetterMap[community?.uname as SUPPORTED_SUBDOMAINS];
-      try {
-        const currentAuction = await supportedTokenConfig.getCurrentAuction();
-        setLiveData((l: any) => ({
-          ...l,
-          currentAuction,
-        }));
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    getCurrentAuction();
-  }, []);
-
-  // Fetch previous auctions after the latest auction has loaded. Need to do this sequentially to get the latest auctions
-  // as there doesn't seem to be a way to query backwards in the subgraph.
-  useEffect(() => {
-    async function getPreviousAuctions() {
-      let start = liveData.currentAuction?.id || 1;
-      let previousAuctionIds = [];
-
-      for (let i = 1; i <= 10; i++) {
-        previousAuctionIds.push(start - i);
-      }
-      const supportedTokenConfig =
-        SupportedTokenGetterMap[community?.uname as SUPPORTED_SUBDOMAINS];
-      try {
-        const previousAuctions = await supportedTokenConfig.getPreviousAuctions(
-          previousAuctionIds
-        );
-        setLiveData((l: any) => ({
-          ...l,
-          previousAuctions,
-        }));
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    if (liveData.currentAuction?.id) {
-      getPreviousAuctions();
-    }
-  }, [liveData.currentAuction, community?.uname]);
-
-  useEffect(() => {
-    async function getRecentProposals() {
-      const supportedTokenConfig =
-        SupportedTokenGetterMap[community?.uname as SUPPORTED_SUBDOMAINS];
-      try {
-        const recentProposals = await supportedTokenConfig.getRecentProposals();
-        setLiveData((l: any) => ({
-          ...l,
-          recentProposals,
-        }));
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    getRecentProposals();
-  }, []);
+  const liveData = useHomeLiveData(community.uname);
 
   return (
     <section className="flex flex-1 flex-col gap-lg max-w-screen-xl mx-auto px-lg mt-xl w-full">
@@ -173,7 +84,7 @@ const CommunityHomeLiveDataBoard = ({
                   />
                 </Link>
                 <div className="rounded-lg flex-col justify-start items-start inline-flex">
-                  <div className="text-black text-base font-bold">Noun 754</div>
+                  <div className="text-black text-base font-bold">Noun {auction.noun?.id}</div>
                   <div className="justify-start items-start gap-2 inline-flex">
                     <div className="opacity-50 text-black text-base font-bold">
                       Sold for
