@@ -70,7 +70,7 @@ export const GET_CURRENT_AUCTION = gql`
 
 export const GET_PREVIOUS_AUCTIONS = gql`
 query getPreviousAuctions($nounIds: [ID!]!) {
-  auctions(orderDirection: asc, orderBy: id, where: {
+  auctions(orderDirection: desc, orderBy: id, where: {
     noun_: {
       id_in: $nounIds
     }
