@@ -2,6 +2,8 @@
 
 Deprecated.
 The original maintainers are no longer supporting this version of Prop Lot in favor of moving efforts towards v2. PRs are welcome.
+Please not that redeploying via GH actions will break the build. There are environment variables that are extremely annoying to set up via fly.io (the current provider).
+As a result, environment variables need to be set from the local command line and a build will need to be queued there.
 
 ## Getting Started
 
