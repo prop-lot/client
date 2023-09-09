@@ -13,7 +13,7 @@ import { DEFAULT_HOMEPAGE_MATCH } from ".";
 
 const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
-const walletconnectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROEJCT_ID;
+const walletconnectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 
 const client = createClient(
   getDefaultClient({
