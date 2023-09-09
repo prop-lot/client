@@ -95,9 +95,9 @@ const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comme
       <div className="bg-gray-100 rounded p-4">This comment cannot be found.</div>
     ) : (
       <Card className="border border-[#E2E3E8] !rounded-[16px] box-border bg-white">
-        <Card.Header className="bg-white font-semibold text-[#8C8D92] text-[12px] !rounded-[16px] !border-0">
+        <Card.Header className="bg-white font-semibold text-dark-grey text-[12px] !rounded-[16px] !border-0">
           <div className="flex flex-1 flex-row items-center gap-[8px] border-solid !border-[#E2E3E8] border-b-1 border-l-0 border-r-0 border-t-0 pb-[8px]">
-            <span className="flex text-[#8C8D92] overflow-hidden gap-[8px] items-center">
+            <span className="flex text-dark-grey overflow-hidden gap-[8px] items-center">
               {Boolean(tokenData.length) ? (
                 <StandaloneNounCircular
                   nounId={BigNumber.from(tokenData[0].id)}
@@ -120,7 +120,7 @@ const ProfileCommentRow = ({ comment, refetch, communityName }: { comment: Comme
           <Card.Text className="font-medium text-[16px] text-[#212529] !mb-[0px] !p-[0px]">
             {body}
           </Card.Text>
-          <Card.Text className="font-semibold text-[12px] text-[#8C8D92] !mb-[0px] !p-[0px]">
+          <Card.Text className="font-semibold text-[12px] text-dark-grey !mb-[0px] !p-[0px]">
             {moment(createdAt).format('MMM Do YYYY')}
             {comment.authorId === account && (
               <span

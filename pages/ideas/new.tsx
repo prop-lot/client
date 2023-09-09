@@ -297,7 +297,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   </label>
                   <span
                     className={`${
-                      !titleValid ? "text-[#E40535]" : "text-[#8C8D92]"
+                      !titleValid ? "text-[#E40535]" : "text-dark-grey"
                     }`}
                   >
                     {title.length}/{FORM_VALIDATION.TITLE_MAX}
@@ -321,7 +321,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   </label>
                   <span
                     className={`${
-                      !tldrValid ? "text-[#E40535]" : "text-[#8C8D92]"
+                      !tldrValid ? "text-[#E40535]" : "text-dark-grey"
                     }`}
                   >
                     {tldr.length}/{FORM_VALIDATION.TLDR_MAX}
@@ -352,7 +352,7 @@ const CreateIdeaPage = ({ community }: { community: Community }) => {
                   </div>
                   <span
                     className={`${
-                      !descriptionValid ? "text-[#E40535]" : "text-[#8C8D92]"
+                      !descriptionValid ? "text-[#E40535]" : "text-dark-grey"
                     }`}
                   >
                     {description.length}/{FORM_VALIDATION.DESCRIPTION_MAX}

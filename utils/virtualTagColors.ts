@@ -12,7 +12,7 @@ export const virtualTagColorMap: { [key: string]: { colors: string; logo?: strin
     logo: undefined,
   },
   CLOSED: {
-    colors: "bg-[#8C8D92] text-white",
+    colors: "bg-dark-grey text-white",
     logo: undefined,
   },
   CREATIVE: {

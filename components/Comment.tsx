@@ -112,7 +112,7 @@ const Comment = ({
         {!commentData.deleted ? (
           <>
             <div className="flex flex-row items-center space-x-4">
-              <span className="text-2xl text-[#8C8D92] flex align-items-center">
+              <span className="text-2xl text-dark-grey flex align-items-center">
                 {/* <Davatar
                 size={28}
                 address={commentData.authorId}
@@ -126,7 +126,7 @@ const Comment = ({
                 >
                   {creatorEns || shortAddress}
                 </span>
-                <span className="text-[#8C8D92] text-base pl-2">
+                <span className="text-dark-grey text-base pl-2">
                   {moment(commentData.createdAt).fromNow()}
                 </span>
               </span>

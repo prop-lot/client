@@ -134,7 +134,7 @@ const IdeaPage = ({
         <Col lg={10} className="mx-auto">
           <Row>
             <Link
-              className="cursor-pointer text-[#8C8D92] flex flex-row items-center"
+              className="cursor-pointer text-dark-grey flex flex-row items-center"
               href="/"
             >
               <svg
@@ -206,7 +206,7 @@ const IdeaPage = ({
             </div>
           </div>
 
-          <div className="flex flex-1 font-bold text-sm text-[#8c8d92] mt-xl whitespace-pre">
+          <div className="flex flex-1 font-bold text-sm text-dark-grey mt-xl whitespace-pre">
             {data.getIdea.creatorId && (
               <ProfileLink id={data.getIdea.creatorId} />
             )}

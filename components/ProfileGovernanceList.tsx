@@ -66,7 +66,7 @@ const ProposalWrapper = ({
       className="flex flex-col border border-[#e2e3e8] rounded-lg cursor-pointer pt-[24px] pb-[24px] px-3"
     >
       <div className="font-inter font-bold text-[18px] flex flex-row flex-1 justify-content-between align-items-start">
-        <span className="flex flex-col sm:flex-row text-[#8C8D92] overflow-hidden gap-[8px]">
+        <span className="flex flex-col sm:flex-row text-dark-grey overflow-hidden gap-[8px]">
           <span className="flex flex-row gap-[8px] flex-1 justify-content-start align-items-start">
             <span>{id}</span>
             <span className="truncate">{type === 'LIL_NOUN' ? 'Lil Nouns DAO' : 'Nouns DAO'}</span>
@@ -91,7 +91,7 @@ const ProposalWrapper = ({
       <div className="font-inter font-bold text-[18px] flex flex-row flex-1 justify-content-start align-items-start">
         <div className="flex flex-1 flex-col">
           <div className="flex flex-1 gap-[8px]">
-            <span className="flex text-[#8C8D92] gap-[8px] overflow-hidden">
+            <span className="flex text-dark-grey gap-[8px] overflow-hidden">
               <span>{id}</span>
               <span className="truncate">
                 {type === 'LIL_NOUN' ? 'Lil Nouns DAO' : 'Nouns DAO'}

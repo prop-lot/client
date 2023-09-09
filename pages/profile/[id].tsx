@@ -46,7 +46,7 @@ const ProfileCard = (props: {
         </div>
       ) : (
         <>
-          <span className="font-semibold text-[12px] text-[#8C8D92]">
+          <span className="font-semibold text-[12px] text-dark-grey">
             {props.title}
           </span>
           <span className="font-extrabold text-[24px] text-[#212529]">
@@ -129,7 +129,7 @@ const ProfileLilNounDisplay = ({
           </div>
         ) : null // <Davatar size={32} address={id} provider={provider} />
       }
-      <div className="flex flex-1 text-[12px] text-[#8C8D92] font-semibold whitespace-pre justify-center">
+      <div className="flex flex-1 text-[12px] text-dark-grey font-semibold whitespace-pre justify-center">
         Tokens owned:<span className="text-[#212529]"> {tokensInWallet}</span>
         {` delegated:`}
         <span className="text-[#212529]">{` ${
@@ -291,7 +291,7 @@ const PropLotUserProfile = ({
         <Col lg={10} className="ml-auto mr-auto">
           <Row>
             <div>
-              <span className="text-[#8C8D92] flex flex-row items-center justify-center sm:justify-start">
+              <span className="text-dark-grey flex flex-row items-center justify-center sm:justify-start">
                 <span className="text-[24px] font-londrina">Profile</span>
               </span>
             </div>
@@ -333,7 +333,7 @@ const PropLotUserProfile = ({
                           className={`!border-box !flex !flex-row justify-center items-center !py-[8px] !px-[12px] !bg-white !border !rounded-[100px] ${
                             listButtonActive === list
                               ? '!text-[#212529] !border-[#2B83F6] !border-[2px]'
-                              : '!text-[#8C8D92] !border-[#E2E3E8] !border-[1px]'
+                              : '!text-dark-grey !border-[#E2E3E8] !border-[1px]'
                           } !text-[16px] !font-semibold`}
                           id={list}
                           onClick={e => setListButtonActive(list)}
@@ -371,7 +371,7 @@ const PropLotUserProfile = ({
                           className={`!border-box !flex !flex-row justify-center items-center !py-[8px] !px-[12px] !bg-white !border !rounded-[100px] ${
                             listButtonActive === list
                               ? '!text-[#212529] !border-[#2B83F6] !border-[2px]'
-                              : '!text-[#8C8D92] !border-[#E2E3E8] !border-[1px]'
+                              : '!text-dark-grey !border-[#E2E3E8] !border-[1px]'
                           } !text-[16px] !font-semibold`}
                           id={list}
                           onClick={e => setListButtonActive(list)}

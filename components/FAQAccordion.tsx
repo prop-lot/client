@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 const faqs = [
   {
@@ -70,9 +70,8 @@ function FAQAccordion() {
 
       <div className="flex flex-col items-start w-full gap-8">
         {faqs.map((faq, i) => (
-          <>
+          <Fragment key={i}>
             <div
-              key={i}
               className="w-full border-b-2 border-[#E9ECEF] py-[16px]"
             >
               <button
@@ -83,14 +82,14 @@ function FAQAccordion() {
                 <span>{openIndex === i ? <ChevronUp /> : <ChevronDown />}</span>
               </button>
             </div>
-            <>
+            <Fragment>
               {openIndex === i && (
                 <div className="w-full gap-8 text-[#6B7280] border-b-2 border-[#E9ECEF] pb-8">
                   {faq.answer}
                 </div>
               )}
-            </>
-          </>
+            </Fragment>
+          </Fragment>
         ))}
       </div>
     </div>

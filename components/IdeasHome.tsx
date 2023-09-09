@@ -1,5 +1,5 @@
 import Router from "next/router";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { v4 } from "uuid";
 import { useAccount } from "wagmi";
 import { useLazyQuery } from "@apollo/client";
@@ -20,7 +20,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatEthValue, getEtherBalance } from "@/utils/ethers";
 
-const CommunityDataCard = ({ title, icon, content }) => {
+const CommunityDataCard = ({ title, icon, content }: { title: string; icon: ReactNode; content: string; }) => {
   return (
     <div className="grow shrink w-[215px] h-[94px] basis-0 self-stretch p-md bg-white rounded-xl border border-slate/40 justify-start items-start gap-sm flex">
       <div className="grow shrink basis-0 flex-col justify-start gap-md items-start inline-flex">
@@ -120,7 +120,7 @@ export default function IdeasHome({
   };
 
   const nounBalance = getDelegatedVotesData?.delegate?.delegatedVotes || 0; // todo: replace
-  const openIdeas = data?.propLot?.list?.map((li) => { return li.__typename === "Idea" && li.closed })?.length || 0; // todo: add to metadata response
+  const openIdeas = data?.propLot?.list?.filter((li) => li.__typename === "Idea" && !li.closed)?.length || 0; // todo: add to metadata response
 
   return (
     <main className="pt-xl min-h-[calc(100vh-72px)] flex flex-col">
@@ -427,7 +427,7 @@ function CommunityDataCards({
             />
           </svg>
         }
-        content={openIdeas}
+        content={`${openIdeas}`}
       />
     </div>
   );

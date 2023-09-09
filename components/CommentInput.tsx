@@ -106,7 +106,7 @@ const CommentInput = ({
       >
         {canHideInput && (
           <span
-            className={`font-bold text-[#8C8D92] cursor-pointer ${
+            className={`font-bold text-dark-grey cursor-pointer ${
               isMobile ? "!pt-[8px]" : "mr-4"
             }`}
             onClick={() => hideInput(true)}
@@ -119,7 +119,7 @@ const CommentInput = ({
           className={`${
             hasTokens
               ? "rounded-lg !bg-[#2B83F6] !text-white !font-bold"
-              : "!text-[#8C8D92] !bg-[#F4F4F8] !border-[#E2E3E8] !font-bold"
+              : "!text-dark-grey !bg-[#F4F4F8] !border-[#E2E3E8] !font-bold"
           } p-1 rounded`}
           onClick={() => {
             if (hasTokens && commentValue.length > 0) {
