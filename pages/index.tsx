@@ -25,7 +25,7 @@ export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   let community;
-  const { communityDomain } = getCommunityByDomain(context.req);
+  const communityDomain = "lilnouns";
 
   if (communityDomain) {
     community = await prisma.community.findFirst({
