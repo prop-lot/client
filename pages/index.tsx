@@ -28,9 +28,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     context.req
   );
 
-  console.log(cd);
-  console.log(supportedTokenConfig);
-
   let community;
   const communityDomain = "lilnouns";
 

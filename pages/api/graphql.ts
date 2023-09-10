@@ -6,6 +6,10 @@ import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import getCommunityByDomain from "@/utils/communityByDomain";
 import prisma from "@/lib/prisma";
+import {
+  SUPPORTED_SUBDOMAINS,
+  SupportedTokenGetterMap,
+} from "../../utils/supportedTokenUtils";
 
 // @ts-ignore
 const server = new ApolloServer({
@@ -15,7 +19,11 @@ const server = new ApolloServer({
 export default withIronSessionApiRoute(
   startServerAndCreateNextHandler(server, {
     context: async (req) => {
-      const { communityDomain, supportedTokenConfig } = getCommunityByDomain(req);
+      // const { communityDomain, supportedTokenConfig } =
+      //   getCommunityByDomain(req);
+
+      const communityDomain = "lilnouns";
+      const supportedTokenConfig = SupportedTokenGetterMap["lilnouns"];
 
       // We could avoid doing this lookup and just hardcode the community id in
       // the supportedTokenConfig for each community but this is a bit more
@@ -29,7 +37,7 @@ export default withIronSessionApiRoute(
       // If there is no subdomain then don't throw an error here as we're on
       // proplot.wtf and may want to handle API calls differently.
       if (communityDomain && !supportedTokenConfig) {
-        throw new Error('This community does not exist');
+        throw new Error("This community does not exist");
       }
 
       return {
