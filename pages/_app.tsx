@@ -2,8 +2,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { WagmiConfig, createClient } from "wagmi";
-import { ConnectKitProvider, getDefaultClient } from "connectkit";
+import { WagmiConfig, createConfig } from "wagmi";
+import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import { ApolloProvider } from "@apollo/client";
 import { client as ApolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -15,8 +15,8 @@ const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
 const walletconnectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
 
-const client = createClient(
-  getDefaultClient({
+const client = createConfig(
+  getDefaultConfig({
     appName: "Prop Lot",
     alchemyId,
     infuraId,
