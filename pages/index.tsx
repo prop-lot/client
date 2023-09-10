@@ -24,6 +24,13 @@ const Home = ({
 export default Home;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const { communityDomain: cd, supportedTokenConfig } = getCommunityByDomain(
+    context.req
+  );
+
+  console.log(cd);
+  console.log(supportedTokenConfig);
+
   let community;
   const communityDomain = "lilnouns";
 
