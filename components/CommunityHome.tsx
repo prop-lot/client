@@ -198,6 +198,10 @@ export default function CommunityHome({
           </div>
         )}
         <div className="max-w-screen-xl mx-auto pt-8 space-y-4">
+          {appliedFilterTags?.length === 0 && (
+            <p className="text-sm text-gray-500">
+              Showing ideas posted this month, use the filters above to find more. </p>
+          )}
           {data?.propLot?.ideas?.map((idea: any, idx: number) => {
             return (
               <IdeaRow

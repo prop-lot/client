@@ -120,7 +120,7 @@ class IdeasService {
     communityId: number;
   }) {
     try {
-      const dateRange: any = DATE_FILTERS[date || "ALL_TIME"].filterFn();
+      const dateRange: any = DATE_FILTERS[date || "THIS_MONTH"].filterFn();
       const profileFilters: any = PROFILE_TAB_FILTERS[tab || "DEFAULT"](wallet);
       const ideas = await prisma.idea.findMany({
         where: {
