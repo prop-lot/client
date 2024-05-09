@@ -2,29 +2,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { WagmiConfig, createClient } from "wagmi";
-import { ConnectKitProvider, getDefaultClient } from "connectkit";
-import { ApolloProvider } from "@apollo/client";
-import { client as ApolloClient } from "@/lib/apollo";
-import { AuthProvider } from "@/hooks/useAuth";
-import { ErrorModalProvider } from "@/hooks/useApiError";
-import NavBar from "../components/Navbar";
-import { DEFAULT_HOMEPAGE_MATCH } from ".";
 
-const alchemyId = process.env.NEXT_PUBLIC_ALCHEMY_ID;
-const infuraId = process.env.NEXT_PUBLIC_INFURA_ID;
-const walletconnectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
-
-const client = createClient(
-  getDefaultClient({
-    appName: "Prop Lot",
-    alchemyId,
-    infuraId,
-    walletConnectProjectId: walletconnectId || "",
-  })
-);
-
-export default function App({ Component, pageProps }: AppProps) {
+export default function App() {
   return (
     <>
       <Head>
@@ -33,20 +12,34 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <ApolloProvider client={ApolloClient}>
-        <WagmiConfig client={client}>
-          <ConnectKitProvider>
-            <AuthProvider>
-              <ErrorModalProvider>
-                {pageProps?.communityName !== DEFAULT_HOMEPAGE_MATCH && (
-                  <NavBar />
-                )}
-                <Component {...pageProps} />
-              </ErrorModalProvider>
-            </AuthProvider>
-          </ConnectKitProvider>
-        </WagmiConfig>
-      </ApolloProvider>
+      <main className="max-w-2xl mx-auto mt-4">
+        <h1 className="text-2xl font-bold text-center">Goodbye for now!</h1>
+        <p className="text-gray-700 mt-4">
+          After two years of service, PropLot has been deprecated. Since January
+          of 2024, only 3 ideas have been posted to PropLot, and the team
+          decided it wasn't worth the infra cost to host the project + database
+          given the limited use. Thank you for two great years of ideas!
+        </p>
+        <p className="text-gray-700 mt-4">
+          The code and snapshots of the data can be found below.
+        </p>
+        <div className="flex flex-col mt-4">
+          <a
+            href="https://github.com/prop-lot/client"
+            target="_blank"
+            className="text-blue-500"
+          >
+            Code
+          </a>
+          <a
+            href="https://github.com/prop-lot/client"
+            target="_blank"
+            className="text-blue-500"
+          >
+            Data
+          </a>
+        </div>
+      </main>
     </>
   );
 }
