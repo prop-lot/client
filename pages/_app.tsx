@@ -17,7 +17,7 @@ export default function App() {
         <p className="text-gray-700 mt-4">
           After two years of service, PropLot has been deprecated. Since January
           of 2024, only 3 ideas have been posted to PropLot, and the team
-          decided it wasn't worth the infra cost to host the project + database
+          decided it is not worth the infra cost to host the project + database
           given the limited use. Thank you for two great years of ideas!
         </p>
         <p className="text-gray-700 mt-4">
@@ -27,6 +27,7 @@ export default function App() {
           <a
             href="https://github.com/prop-lot/client"
             target="_blank"
+            rel="noopener"
             className="text-blue-500"
           >
             Code
@@ -34,6 +35,7 @@ export default function App() {
           <a
             href="https://github.com/prop-lot/client/tree/main/data_snapshot"
             target="_blank"
+            rel="noopener"
             className="text-blue-500"
           >
             Data
