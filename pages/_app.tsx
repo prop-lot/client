@@ -32,7 +32,7 @@ export default function App() {
             Code
           </a>
           <a
-            href="https://github.com/prop-lot/client"
+            href="https://github.com/prop-lot/client/tree/main/data_snapshot"
             target="_blank"
             className="text-blue-500"
           >
