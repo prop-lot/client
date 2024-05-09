@@ -27,7 +27,7 @@ export default function App() {
           <a
             href="https://github.com/prop-lot/client"
             target="_blank"
-            rel="noopener"
+            rel="noreferrer"
             className="text-blue-500"
           >
             Code
@@ -35,7 +35,7 @@ export default function App() {
           <a
             href="https://github.com/prop-lot/client/tree/main/data_snapshot"
             target="_blank"
-            rel="noopener"
+            rel="noreferrer"
             className="text-blue-500"
           >
             Data
